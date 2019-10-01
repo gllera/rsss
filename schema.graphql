@@ -1,0 +1,3 @@
+type Query {
+    Feeds: String
+}
