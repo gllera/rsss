@@ -1,3 +1,45 @@
 type Query {
-    Feeds: String
+    Feeds(seen: Int, star: Int, source_id: Int): [tFeed]!
+    Sources: [tSource]!
+    Test(url: String!): String!
+}
+
+type Mutation {
+    modFeed(
+        feed_id: Int!
+        seen: Int
+        star: Int
+    ): Int!
+    addSource(
+        url: String!
+    ) : Int!
+    addSourceBulk(
+        urls: [String]!
+    ) : [Int]!
+    delSource(source_id: Int!) : Int!
+}
+
+type tSource {
+  source_id: Int!
+  url: String!
+  title: String!
+  count: Int!
+  unseen: Int!
+  stars: Int!
+  description: String
+  siteUrl: String
+  lang: String
+  err: String
+}
+
+type tFeed {
+  feed_id: Int!
+  source_id: Int!
+  guid: String!
+  url: String!
+  title: String!
+  content: String!
+  date: Float
+  seen: Int
+  star: Int
 }

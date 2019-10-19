@@ -1,112 +1,88 @@
-const Parser = require('rss-parser')
 const EventEmitter = require('events')
 const async = require('async')
 const debug = require('debug')('rsss:fetcher')
 const _ = require('loadsh')
-const process = require('./procesor')
+const { Parse, configs } = require('../utils')
 
-const defaults = {
-    interval: 15 * 60 * 1000, // 15min
-    timeout: 5 * 1000,
-    agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36',
-}
+const fields = ['title', 'content', 'link', 'date', 'guid', 'source_id']
+
+/** @typedef {Fetcher} Fetcher */
 
 class Feed {
-    constructor(id, url, parser) {
-        this._id = id
+    constructor(fetcher, source_id, url, source) {
+        this._fetcher = fetcher
+        this._lastGuid = null
+        this._source_id = source_id
         this._url = url
-        this._parser = parser
-        this._last = null
-        this._error = null
+
+        setImmediate(() => {
+            this._timer = setInterval(() => this.fetch(), fetcher.interval)
+            this.fetch(source)
+        }, this)
     }
 
-    async fetch() {
-        let sol = []
+    async fetch(source) {
+        debug(`${this._source_id} PARSING`)
 
         try {
-            let res = await this._parser.parseURL(this._url)
+            let res = source ? source : await Parse(this._url)
 
             if (!Array.isArray(res.items))
                 throw new Error('Invalid feed')
+            if (!res.items.length)
+                return
 
-            for (let i = 0; i < res.items.length; i++) {
-                if (res.items[i].guid == this._last)
-                    break
+            let passed
 
-                res.items[i].feedID = this._id
-                sol.push(res.items[i])
-            }
+            res.items
+                .filter(e => {
+                    e.guid = e.guid || e.link
+                    return !(passed = passed || e.guid == this._lastGuid)
+                })
+                .forEach(e => {
+                    e.source_id = this._source_id
+                    e.date = new Date(e.isoDate).getTime()
+                    this._fetcher.emit('feed', this._fetcher.procesor(_.pick(e, fields)))
+                })
 
-            this._error = null
+            this._fetcher.emit('feed', null, { source_id: this._source_id, msg: "[OK]" })
+            this._lastGuid = res.items[0].guid
 
-            if (res.items.length)
-                this._last = res.items[0].guid
-
-            return sol
-
-        } catch (e) {
-            this._error = e
-            debug(e)
+            debug(`${this._source_id} DONE`)
         }
-
-        return sol
-    }
-}
-
-class Fetcher {
-    constructor(opts) {
-        _.defaults(opts, defaults)
-
-        this._parser = new Parser({
-            timeout: opts.timeout,
-            headers: {
-                'User-Agent': opts.agent
-            }
-        })
-
-        this._interval = opts.interval
-        this._timer = null
-        this._working = false
-        this._again = false
-        this._feeds = []
-    }
-
-    add(id, url) {
-        this._feeds.push(new Feed(id, url))
-    }
-
-    del(id) {
-        _.pull(this._feeds, url)
-    }
-
-    async parse() {
-        debug('Parsing...')
-
-        if (this._working) {
-            this._again = true
-            return
+        catch (e) {
+            debug(`${this._source_id} ${e}`)
+            this._fetcher.emit('feed', null, { source_id: this._source_id, msg: e.message })
         }
+    }
 
+    kill() {
         clearTimeout(this._timer)
-
-        this._working = true
-        await async.eachLimit(this._feeds, 10, async feed => {
-            try {
-                let res = await feed.fetch()
-                res.forEach(e => process(e))
-            } catch (e) {
-                debug(e)
-            }
-        })
-        this._working = false
-
-        if (this._again) {
-            this._again = false
-            await this.parse()
-        }
-
-        this._timer = setTimeout(() => this.parse(), this._interval)
     }
 }
 
-module.exports = (opts) => new Fetcher(opts)
+class Fetcher extends EventEmitter {
+    constructor(procesor) {
+        super()
+        this.procesor = procesor
+        this.interval = configs.fetcher.interval
+        this._sources = []
+    }
+
+    addSource(source_id, url, source) {
+        this._sources.push(new Feed(this, source_id, url, source))
+    }
+    delSource(source_id) {
+        for (let i in this._sources)
+            if (this._sources[i]._id == source_id) {
+                this._sources.splice(i, 1)
+                return
+            }
+    }
+}
+
+function init(procesor) {
+    return new Fetcher(procesor)
+}
+
+module.exports = init

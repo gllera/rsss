@@ -1,22 +1,28 @@
 {
-  "name": "rsss",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "start": "nodemon ./bin/www"
-  },
-  "dependencies": {
-    "async": "^3.1.0",
-    "cookie-parser": "~1.4.4",
-    "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "express-graphql": "^0.9.0",
-    "graphql": "^14.5.8",
-    "graphql-import": "^0.7.1",
-    "graphql-tools": "^4.0.5",
-    "loadsh": "0.0.4",
-    "morgan": "~1.9.1",
-    "rss-parser": "^3.7.2",
-    "sqlite3": "^4.1.0"
-  }
+    "name": "rsss",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node ./bin/www",
+        "dev": "cross-env DEBUG=rsss:* NODE_TLS_REJECT_UNAUTHORIZED=0 nodemon -e js,json,sql,graphql --use_strict ./bin/www"
+    },
+    "dependencies": {
+        "async": "^3.1.0",
+        "cors": "^2.8.5",
+        "debug": "~2.6.9",
+        "express": "~4.16.1",
+        "express-graphql": "^0.9.0",
+        "graphql": "^14.5.8",
+        "graphql-import": "^0.7.1",
+        "graphql-tools": "^4.0.5",
+        "html-minifier": "^4.0.0",
+        "loadsh": "0.0.4",
+        "morgan": "~1.9.1",
+        "rss-parser": "^3.7.2",
+        "sanitize-html": "^1.20.1",
+        "sqlite": "^3.0.3"
+    },
+    "devDependencies": {
+        "cross-env": "^6.0.3"
+    }
 }

@@ -1,15 +1,26 @@
 const express = require('express')
 const logger = require('morgan')
+const cors = require('cors')
 const graphqlHTTP = require('express-graphql')
-const fetcher = require('./core/fetcher')({ interval: 5000 })
-const schema = require('./core/graphql-schema')(fetcher)
+const { importSchema } = require('graphql-import')
+const { makeExecutableSchema } = require('graphql-tools')
+const { resolvers, fetcher, db, procesor } = require('./core')
+const { configs } = require('./utils')
 
-let app = express()
+async function appPromise() {
+    let app = express()
+    app.use(logger('dev'))
+    app.use(cors())
 
-app.use(logger('dev'))
-app.use('/', graphqlHTTP({
-    schema: schema,
-    graphiql: true,
-}))
+    app.use('/', graphqlHTTP({
+        schema: makeExecutableSchema({
+            typeDefs: importSchema('schema.graphql'),
+            resolvers: await resolvers(await db(), fetcher(procesor))
+        }),
+        graphiql: configs.graphql.gui,
+    }))
 
-module.exports = app
+    return app
+}
+
+module.exports = appPromise
