@@ -4,4 +4,5 @@ WORKDIR /app
 ADD . .
 RUN npm ci
 
-ENTRYPOINT node app.js
+ENV NODE_ENV=production
+ENTRYPOINT node bin/www
