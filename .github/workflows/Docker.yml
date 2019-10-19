@@ -10,6 +10,9 @@ jobs:
     - name: Build the Docker image
       run: |
         IMAGE=docker.pkg.github.com/gllera/rsss/${GITHUB_REF##*/}:latest
+        IMAGE2=gllera/rsss:${GITHUB_REF##*/}
         echo ${{ secrets.TOKEN }} | docker login docker.pkg.github.com --username gllera --password-stdin
-        docker build . --tag $IMAGE
+        echo ${{ secrets.TOKEN_DOCKER }} | docker login --username gllera --password-stdin
+        docker build . --tag $IMAGE --tag $IMAGE2
         docker push $IMAGE
+        docker push $IMAGE2
