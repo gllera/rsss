@@ -11,7 +11,7 @@
         "ext": "js,sql,graphql,yaml",
         "ignore": [
             "dist/*",
-            "src/ui/*",
+            "src_ui/*",
             "gulpfile.js"
         ]
     },

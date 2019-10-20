@@ -12,7 +12,7 @@ const browserSync = require('browser-sync').create()
 let S = gulp.series
 let P = gulp.parallel
 
-let root = 'src/ui'
+let root = 'src_ui'
 
 const re_copy = [`${root}/**/*`, `!${root}/**/*.pug`, `!${root}/**/*.js`, `!${root}/**/*.sass`]
 const re_js = [`${root}/**/*.js`]

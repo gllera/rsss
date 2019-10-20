@@ -1,7 +1,7 @@
 PORT: 3000
 
-USER_GUI: true
-GRAPHQL_GUI: false
+GUI_USER: true
+GUI_GRAPHQL: false
 
 DB_NAME: 'sqlite.db'
 DB_FORCE: ''

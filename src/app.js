@@ -12,7 +12,7 @@ async function appPromise() {
     app.use(logger('dev'))
     app.use(cors())
 
-    if (configs.USER_GUI)
+    if (configs.GUI_USER)
         app.use(express.static('dist'))
 
     app.use('/gql', graphqlHTTP({
@@ -20,7 +20,7 @@ async function appPromise() {
             typeDefs: importSchema('schema.graphql'),
             resolvers: await resolvers(await db(), fetcher(procesor))
         }),
-        graphiql: configs.GRAPHQL_GUI,
+        graphiql: configs.GUI_GRAPHQL,
     }))
 
     return app
