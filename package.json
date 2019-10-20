@@ -4,7 +4,8 @@
     "private": true,
     "scripts": {
         "start": "node ./src/bin/www",
-        "dev": "cross-env DEBUG=rsss:* NODE_TLS_REJECT_UNAUTHORIZED=0 nodemon --use_strict ./src/bin/www",
+        "dev": "concurrently -p \"{name}\" -n \"RSSS,GULP\" -c \"bgRed,bgBlue\" -k \"npm run gql\" \"gulp\"",
+        "gql": "cross-env DEBUG=rsss:* NODE_TLS_REJECT_UNAUTHORIZED=0 nodemon --use_strict ./src/bin/www",
         "clean": "gulp clean"
     },
     "nodemonConfig": {
@@ -33,22 +34,23 @@
         "sqlite": "^3.0.3"
     },
     "devDependencies": {
-        "cross-env": "^6.0.3",
+        "bootstrap": "^4.3.1",
         "browser-sync": "^2.26.7",
         "browserify": "^16.5.0",
+        "concurrently": "^5.0.0",
+        "cross-env": "^6.0.3",
+        "graphql.js": "^0.6.5",
         "gulp": "^4.0.2",
         "gulp-clean": "^0.4.0",
         "gulp-pug": "^4.0.1",
         "gulp-sass": "^4.0.2",
         "gulp-sourcemaps": "^2.6.5",
         "gulplog": "^1.0.0",
+        "hotkeys-js": "^3.7.2",
         "node-sass": "^4.12.0",
         "sass": "^1.23.0",
+        "umbrellajs": "^3.1.0",
         "vinyl-buffer": "^1.0.1",
-        "vinyl-source-stream": "^2.0.0",
-        "bootstrap": "^4.3.1",
-        "graphql.js": "^0.6.5",
-        "hotkeys-js": "^3.7.2",
-        "umbrellajs": "^3.1.0"
+        "vinyl-source-stream": "^2.0.0"
     }
 }
