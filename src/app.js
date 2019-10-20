@@ -12,12 +12,15 @@ async function appPromise() {
     app.use(logger('dev'))
     app.use(cors())
 
-    app.use('/', graphqlHTTP({
+    if (configs.USER_GUI)
+        app.use(express.static('dist'))
+
+    app.use('/gql', graphqlHTTP({
         schema: makeExecutableSchema({
             typeDefs: importSchema('schema.graphql'),
             resolvers: await resolvers(await db(), fetcher(procesor))
         }),
-        graphiql: configs.graphql.gui,
+        graphiql: configs.GRAPHQL_GUI,
     }))
 
     return app

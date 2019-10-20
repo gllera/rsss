@@ -1,5 +1,4 @@
 const EventEmitter = require('events')
-const async = require('async')
 const debug = require('debug')('rsss:fetcher')
 const _ = require('loadsh')
 const { Parse, configs } = require('../utils')
@@ -65,7 +64,7 @@ class Fetcher extends EventEmitter {
     constructor(procesor) {
         super()
         this.procesor = procesor
-        this.interval = configs.fetcher.interval
+        this.interval = configs.FETCHER_INTERVAL
         this._sources = []
     }
 

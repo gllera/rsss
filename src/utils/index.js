@@ -1,15 +1,14 @@
 const Parser = require('rss-parser')
-const _ = require('loadsh')
-const configs = require('../configs')
+const configs = require('./configs')
 
 let _parser = new Parser({
-    headers: { 'User-Agent': configs.fetcher.agent },
+    headers: { 'User-Agent': configs.FETCHER_AGENT },
     customFields: {
         item: [
             ['content:encoded', 'content'],
         ]
     },
-    timeout: configs.fetcher.timeout,
+    timeout: configs.FETCHER_TIMEOUT,
     defaultRSS: 2.0,
 })
 

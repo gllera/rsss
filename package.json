@@ -3,8 +3,17 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "start": "node ./bin/www",
-        "dev": "cross-env DEBUG=rsss:* NODE_TLS_REJECT_UNAUTHORIZED=0 nodemon -e js,json,sql,graphql --use_strict ./bin/www"
+        "start": "node ./src/bin/www",
+        "dev": "cross-env DEBUG=rsss:* NODE_TLS_REJECT_UNAUTHORIZED=0 nodemon --use_strict ./src/bin/www",
+        "clean": "gulp clean"
+    },
+    "nodemonConfig": {
+        "ext": "js,sql,graphql,yaml",
+        "ignore": [
+            "dist/*",
+            "src/ui/*",
+            "gulpfile.js"
+        ]
     },
     "dependencies": {
         "async": "^3.1.0",
@@ -16,6 +25,7 @@
         "graphql-import": "^0.7.1",
         "graphql-tools": "^4.0.5",
         "html-minifier": "^4.0.0",
+        "js-yaml": "^3.13.1",
         "loadsh": "0.0.4",
         "morgan": "~1.9.1",
         "rss-parser": "^3.7.2",
@@ -23,6 +33,22 @@
         "sqlite": "^3.0.3"
     },
     "devDependencies": {
-        "cross-env": "^6.0.3"
+        "cross-env": "^6.0.3",
+        "browser-sync": "^2.26.7",
+        "browserify": "^16.5.0",
+        "gulp": "^4.0.2",
+        "gulp-clean": "^0.4.0",
+        "gulp-pug": "^4.0.1",
+        "gulp-sass": "^4.0.2",
+        "gulp-sourcemaps": "^2.6.5",
+        "gulplog": "^1.0.0",
+        "node-sass": "^4.12.0",
+        "sass": "^1.23.0",
+        "vinyl-buffer": "^1.0.1",
+        "vinyl-source-stream": "^2.0.0",
+        "bootstrap": "^4.3.1",
+        "graphql.js": "^0.6.5",
+        "hotkeys-js": "^3.7.2",
+        "umbrellajs": "^3.1.0"
     }
 }

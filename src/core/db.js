@@ -5,8 +5,8 @@ const { configs } = require('../utils')
 let db
 
 async function init(opts) {
-    db = await sqlite.open(configs.db.path, { cached: configs.db.cached })
-    await db.migrate({ force: configs.db.force })
+    db = await sqlite.open('data/' + configs.DB_NAME, { cached: configs.DB_CACHED })
+    await db.migrate({ force: configs.DB_FORCE })
     await db.get("PRAGMA foreign_keys = ON")
 
     return db

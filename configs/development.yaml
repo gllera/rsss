@@ -1,0 +1,4 @@
+GRAPHQL_GUI: true
+
+DB_NAME: 'sqlite.devel.db'
+DB_FORCE: 'last'

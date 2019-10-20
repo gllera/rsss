@@ -13,7 +13,7 @@ const { configs } = require('../utils')
 async function start() {
     let app = await appPromise()
 
-    port = configs.graphql.port
+    port = configs.PORT
     app.set('port', port)
 
     server = http.createServer(app)
