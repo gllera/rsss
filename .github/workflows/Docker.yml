@@ -9,10 +9,15 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build the Docker image
       run: |
-        IMAGE=docker.pkg.github.com/gllera/rsss/${GITHUB_REF##*/}:latest
-        IMAGE2=gllera/rsss:${GITHUB_REF##*/}
+        BRANCH=${GITHUB_REF##*/}
+        IMAGE=docker.pkg.github.com/gllera/rsss/$BRANCH:latest
+        IMAGE2=gllera/rsss:$BRANCH
         echo ${{ secrets.TOKEN }} | docker login docker.pkg.github.com --username gllera --password-stdin
         echo ${{ secrets.TOKEN_DOCKER }} | docker login --username gllera --password-stdin
         docker build . --tag $IMAGE --tag $IMAGE2
         docker push $IMAGE
         docker push $IMAGE2
+        if [[ "$BRANCH" == "master" ]]; then
+          docker tag $IMAGE gllera/rsss
+          docker push gllera/rsss
+        fi
