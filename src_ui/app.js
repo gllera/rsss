@@ -2,7 +2,7 @@ let hotkeys = require('hotkeys-js')
 
 let feedView = require('./js/feedView')()
 let panelView = require('./js/panelView')()
-let graphql = require('./js/graphql')('http://localhost:3000')
+let graphql = require('./js/graphql')('gql')
 let ctrl = require('./js/controller')
 
 ctrl.config({ feedView, panelView, graphql })
