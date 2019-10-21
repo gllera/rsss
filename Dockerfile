@@ -2,7 +2,9 @@ FROM node:12-alpine
 
 WORKDIR /app
 ADD . .
-RUN npm ci
+RUN    npm i \
+    && npm run build \
+    && npm prune --production
 
 ENV NODE_ENV=production
-ENTRYPOINT node bin/www
+ENTRYPOINT node src/bin/www
