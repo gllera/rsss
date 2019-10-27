@@ -38,7 +38,7 @@ class TagView {
 class PanelView {
     constructor() {
         this._sources = []
-        this._view = u('#panel')
+        this._view = u('#sources')
         this._sync = u('#sync-btn')
         this._load = u('#load-btn')
         this._save = u('#save-btn')

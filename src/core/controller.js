@@ -13,42 +13,45 @@ let fetcher
 let status = {}
 
 async function addSource(url) {
-    let source = await Parse(url)
+    // let source = await Parse(url)
     let values = []
 
     values.push(url)
-    values.push(source.title)
-    values.push(source.description)
-    values.push(source.link)
-    values.push(source.language)
+    values.push('') //source.title)
+    values.push('') //source.description)
+    values.push('') //source.link)
+    values.push('') //source.language)
 
     let stmt = await db.run(
         'INSERT INTO source ( url, title, description, siteUrl, lang ) VALUES( ?, ?, ?, ?, ? )',
         values
     )
 
-    fetcher.addSource(stmt.lastID, url, source)
+    fetcher.addSource(stmt.lastID, url)
+
     return stmt.lastID
 }
 
 const resolvers = {
     Query: {
-        Feeds: async (root, { seen, star, source_id }) => {
+        Feeds: async (root, { o }) => {
             let sets = [], values = [], where = ''
 
-            if (seen !== undefined) {
-                sets.push('seen = ?')
-                values.push(seen)
-            }
-
-            if (star !== undefined) {
-                sets.push('star = ?')
-                values.push(star)
-            }
-
-            if (source_id !== undefined) {
-                sets.push('source_id = ?')
-                values.push(source_id)
+            if (o) {
+                if (o.seen !== undefined) {
+                    sets.push('seen = ?')
+                    values.push(o.seen)
+                }
+    
+                if (o.star !== undefined) {
+                    sets.push('star = ?')
+                    values.push(o.star)
+                }
+    
+                if (o.source_id !== undefined) {
+                    sets.push('source_id = ?')
+                    values.push(o.source_id)
+                }
             }
 
             if (sets.length)
@@ -80,23 +83,23 @@ const resolvers = {
         Test: async (root, { url }) => JSON.stringify(await Parse(url)),
     },
     Mutation: {
-        modFeed: async (root, { feed_id, seen, star }) => {
+        modFeed: async (root, { o }) => {
             let sets = [], values = []
 
-            if (seen !== undefined) {
+            if (o.seen !== undefined) {
                 sets.push('seen = ?')
-                values.push(seen)
+                values.push(o.seen)
             }
 
-            if (star !== undefined) {
+            if (o.star !== undefined) {
                 sets.push('star = ?')
-                values.push(star)
+                values.push(o.star)
             }
 
             if (!sets.length)
                 return 0
 
-            values.push(feed_id)
+            values.push(o.feed_id)
 
             let stmt = await db.run(
                 `UPDATE feed SET ${sets.join(',')} WHERE feed_id = ?`,
@@ -105,7 +108,7 @@ const resolvers = {
 
             return stmt.changes
         },
-        addSource: async (root, { url }) => await addSource(url),
+        addSource: async (root, { o }) => await addSource(url),
         addSourceBulk: async (root, { urls }) => {
             let values = {}
 
@@ -164,10 +167,8 @@ async function init(_db, _fetcher) {
     fetcher.on('feed', newFeed)
 
     let sources = await db.all('SELECT * FROM source')
-    async.eachSeries(sources, async e => {
-        fetcher.addSource(e.source_id, e.url)
-        await sleep(500)
-    })
+
+    sources.forEach(e => fetcher.addSource(e.source_id, e.url))
 
     return resolvers
 }

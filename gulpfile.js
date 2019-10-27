@@ -25,8 +25,8 @@ sass.compiler = require('sass')
 async function serve() {
     browserSync.init({
         server: { baseDir: './dist' },
-        ui: { port: 8080 },
-        port: 80,
+        ui: { port: 8081 },
+        port: 8080,
         notify: false,
         open: false
     })

@@ -1,0 +1,29 @@
+type Source {
+    source_id: Int!
+    url: String!
+    title: String!
+    description: String
+    siteUrl: String
+    lang: String
+    err: String
+    count: Int!
+    unseen: Int!
+    stars: Int!
+}
+
+input AddSource {
+    url: String!
+    title: String
+    description: String
+    siteUrl: String
+    lang: String
+}
+
+input ModSource {
+    source_id: Int!
+    url: String
+    title: String
+    description: String
+    siteUrl: String
+    lang: String
+}

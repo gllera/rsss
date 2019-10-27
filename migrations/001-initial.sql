@@ -16,10 +16,10 @@ CREATE TABLE feed
 CREATE TABLE source
 (
     source_id   INTEGER PRIMARY KEY AUTOINCREMENT,
-    url         VARCHAR NOT NULL UNIQUE,
+    url        VARCHAR NOT NULL UNIQUE,
     title       VARCHAR,
     description VARCHAR,
-    siteUrl     VARCHAR,
+    siteUrl    VARCHAR,
     lang        VARCHAR
 );
 

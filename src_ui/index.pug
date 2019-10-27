@@ -11,9 +11,9 @@ html
         title RSSS
     body
         main
+            #sources.text-center
+                #cards.justify-content-center.d-flex.flex-wrap
             .container
-                #panel.text-center
-                    #cards.justify-content-center.d-flex.flex-column
                 #feed.d-none
                     .row
                         a#url.col-12
@@ -25,7 +25,7 @@ html
                         #content.col-12 contenido
 
             .d-none
-                #card-template.p-2.m-1(style="background-color: coral")
+                #card-template.fcard
                     span.src-source_id [source_id]
                     span  @ 
                     span.src-count [count]

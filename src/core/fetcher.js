@@ -1,30 +1,30 @@
 const EventEmitter = require('events')
 const debug = require('debug')('rsss:fetcher')
 const _ = require('loadsh')
+const async = require('async')
 const { Parse, configs } = require('../utils')
+const { db } = require('./db')
+const procesor = require('./procesor')
+const fields = ['title', 'content', 'url', 'date', 'guid', 'source_id']
 
-const fields = ['title', 'content', 'link', 'date', 'guid', 'source_id']
-
-/** @typedef {Fetcher} Fetcher */
+let sources = []
+const timer = setInterval(() => fetch(), configs.FETCHER_SLEEP)
+const emitter = new EventEmitter()
 
 class Feed {
-    constructor(fetcher, source_id, url, source) {
-        this._fetcher = fetcher
+    constructor(fetcher, source_id, url) {
         this._lastGuid = null
         this._source_id = source_id
         this._url = url
-
-        setImmediate(() => {
-            this._timer = setInterval(() => this.fetch(), fetcher.interval)
-            this.fetch(source)
-        }, this)
+        this._lastFetch = 0
+        this._err = null
     }
 
-    async fetch(source) {
+    async fetch() {
         debug(`${this._source_id} PARSING`)
 
         try {
-            let res = source ? source : await Parse(this._url)
+            let res = await Parse(this._url)
 
             if (!Array.isArray(res.items))
                 throw new Error('Invalid feed')
@@ -32,56 +32,66 @@ class Feed {
                 return
 
             let passed
+            const lastGuid = res.items[0].guid
 
-            res.items
-                .filter(e => {
-                    e.guid = e.guid || e.link
-                    return !(passed = passed || e.guid == this._lastGuid)
-                })
-                .forEach(e => {
+            res = res.items.filter(e => {
+                e.guid = e.guid || e.url
+                return !(passed = passed || e.guid == this._lastGuid)
+            })
+
+            await async.eachSeries(res, async e => {
+                if (!await db.feedExists(e.guid)) {
                     e.source_id = this._source_id
-                    e.date = new Date(e.isoDate).getTime()
-                    this._fetcher.emit('feed', this._fetcher.procesor(_.pick(e, fields)))
-                })
+                    e.date = new Date(e.isoDate).getTime() || Date.now()
+                    e.url = e.link
+                    e = _.pick(e, fields)
+                    
+                    e = await procesor(e)
+                    await db.feedAdd(e)
+                }
+            })
 
-            this._fetcher.emit('feed', null, { source_id: this._source_id, msg: "[OK]" })
-            this._lastGuid = res.items[0].guid
+            this._err = null
+            this._lastGuid = lastGuid
 
             debug(`${this._source_id} DONE`)
         }
         catch (e) {
             debug(`${this._source_id} ${e}`)
-            this._fetcher.emit('feed', null, { source_id: this._source_id, msg: e.message })
+            this._err = e.message
         }
     }
+}
 
-    kill() {
-        clearTimeout(this._timer)
+function fetch() {
+    for (let i = sources.length - 1; i >= 0; i--) {
+        let src = sources[i]
+
+        if (src._lastFetch < Date.now() - configs.FETCHER_INTERVAL) {
+            src._lastFetch = Date.now()
+            src.fetch()
+            return
+        }
     }
 }
 
-class Fetcher extends EventEmitter {
-    constructor(procesor) {
-        super()
-        this.procesor = procesor
-        this.interval = configs.FETCHER_INTERVAL
-        this._sources = []
-    }
-
-    addSource(source_id, url, source) {
-        this._sources.push(new Feed(this, source_id, url, source))
-    }
-    delSource(source_id) {
-        for (let i in this._sources)
-            if (this._sources[i]._id == source_id) {
-                this._sources.splice(i, 1)
-                return
-            }
-    }
+async function initFetcher() {
+    let sources = await db.sources()
+    sources.forEach(e => addSource(e.source_id, e.url))
 }
 
-function init(procesor) {
-    return new Fetcher(procesor)
+function addSource(source_id, url) {
+    sources.push(new Feed(this, source_id, url))
 }
 
-module.exports = init
+function delSource(source_id) {
+    sources = sources.filter(e => e._id != source_id)
+}
+
+module.exports = {
+    initFetcher,
+    fetcher: {
+        addSource,
+        delSource
+    },
+}

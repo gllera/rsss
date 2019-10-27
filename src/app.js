@@ -4,10 +4,13 @@ const cors = require('cors')
 const graphqlHTTP = require('express-graphql')
 const { importSchema } = require('graphql-import')
 const { makeExecutableSchema } = require('graphql-tools')
-const { resolvers, fetcher, db, procesor } = require('./core')
+const resolvers = require('./resolvers')
+const { db, init, fetcher, procesor } = require('./core')
 const { configs } = require('./utils')
 
 async function appPromise() {
+    await init()
+
     let app = express()
     app.use(logger('dev'))
     app.use(cors())
@@ -17,8 +20,8 @@ async function appPromise() {
 
     app.use('/gql', graphqlHTTP({
         schema: makeExecutableSchema({
-            typeDefs: importSchema('schema.graphql'),
-            resolvers: await resolvers(await db(), fetcher(procesor))
+            typeDefs: importSchema('shemas_gql/schema.graphql'),
+            resolvers
         }),
         graphiql: configs.GUI_GRAPHQL,
     }))
