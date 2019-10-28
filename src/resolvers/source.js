@@ -1,4 +1,4 @@
-const { db } = require('../core')
+const { fetcher } = require('../core')
 
 async function addSource(url) {
     // let source = await Parse(url)
@@ -20,7 +20,7 @@ async function addSource(url) {
     return stmt.lastID
 }
 
-async function Sources () {
+async function Sources() {
     let res = await db.all(`
         SELECT 
             s.*,
@@ -43,33 +43,28 @@ async function Sources () {
 }
 
 async function addSource(root, { o }) {
-    addSource(url)
-}
-
-async function addSourceBulk(root, { urls }) {
-    let values = {}
-
-    await async.eachSeries(urls, async url => {
-        try {
-            let id = await addSource(url)
-            values[url] = id
-        } catch (e) {
-            debug(e)
-            values[url] = -1
-        }
-    })
-
-    return urls.map(e => values[e])
+    o.source_id = await db.sourcesAdd(o)
+    fetcher.addSource(o)
+    return o.source_id
 }
 
 async function delSource(root, { source_id }) {
-    let stmt = await db.run(
-        'DELETE from source WHERE source_id = ?',
-        [source_id]
-    )
+    return await fetcher.delSource(source_id)
+}
 
-    fetcher.delSource(source_id)
-    return stmt.changes
+async function addSourceBulk(root, { o }) {
+    let values = []
+
+    await async.eachSeries(o, async url => {
+        try {
+            values.push(fetcher.addSource(o))
+        } catch (e) {
+            debug(e)
+            values.push(-1)
+        }
+    })
+
+    return values
 }
 
 module.exports = {
