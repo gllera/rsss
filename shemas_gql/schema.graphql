@@ -2,13 +2,13 @@
 # import * from 'feed.graphql'
 
 type Query {
-    feeds(o: QueFeed!): [Feed]!
+    feeds(o: QueFeed): [Feed]!
     sources: [Source]!
     Test(url: String!): String!
 }
 
 type Mutation {
-    modFeed(o: ModFeed!): Int!
+    feedMod(o: ModFeed!): Int!
 
     sourceAddBulk(o: [AddSource]!): [Int]!
     sourceAdd(o: AddSource!): Int!

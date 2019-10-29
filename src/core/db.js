@@ -27,34 +27,72 @@ FROM
 GROUP BY s.source_id
 `
 
-async function sourcesMod(e) {
-    let query = []
-    let values = []
+async function sourceMod(o) {
+    let query = [], values = []
     const keys = ['url', 'title', 'description', 'siteUrl', 'lang']
 
     keys.forEach(i => {
-        if (e[i] !== undefined) {
+        if (o[i] !== undefined) {
             query.push(`${i} = ?`)
-            values.push(e[i])
+            values.push(o[i])
         }
     })
 
     if (!query.length)
         return 0
 
-    values.push(e.source_id)
+    values.push(o.source_id)
 
     return (await DB.run(`UPDATE source SET ${query.join(',')} WHERE source_id = ?`, values)).changes
+}
+
+async function feedMod(o) {
+    let query = [], values = []
+    const keys = ['seen', 'star']
+
+    keys.forEach(i => {
+        if (o[i] !== undefined) {
+            query.push(`${i} = ?`)
+            values.push(o[i])
+        }
+    })
+
+    if (!query.length)
+        return 0
+
+    values.push(o.feed_id)
+
+    return (await DB.run(`UPDATE feed SET ${query.join(',')} WHERE feed_id = ?`, values)).changes
+}
+
+async function feeds(o) {
+    let query = [], values = [], where = ''
+    const keys = ['feed_id', 'source_id', 'seen', 'star']
+
+    if (o)
+        keys.forEach(i => {
+            if (o[i] !== undefined) {
+                query.push(`${i} = ?`)
+                values.push(o[i])
+            }
+        })
+
+    if (query.length)
+        where = `WHERE ${query.join(' AND ')}`
+
+    return await DB.all(`SELECT * FROM feed ${where}`, values)
 }
 
 module.exports = {
     db: {
         sources: async () => await DB.all(sourcesQuery),
-        sourcesAdd: async (e) => (await DB.run('INSERT INTO source ( url, title, description, siteUrl, lang ) VALUES( ?, ?, ?, ?, ? )', [e.url, e.title, e.description, e.siteUrl, e.lang])).lastID,
+        sourcesAdd: async (o) => (await DB.run('INSERT INTO source ( url, title, description, siteUrl, lang ) VALUES( ?, ?, ?, ?, ? )', [o.url, o.title, o.description, o.siteUrl, o.lang])).lastID,
         sourcesDel: async (source_id) => (await DB.run('DELETE FROM source WHERE source_id = ?', [source_id])).changes,
-        sourcesMod,
+        sourceMod,
 
-        feedAdd: async (e) => await DB.run('INSERT INTO feed ( guid, url, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [e.guid, e.url, e.title, e.content, e.date, e.source_id]),
+        feeds,
+        feedAdd: async (o) => await DB.run('INSERT INTO feed ( guid, url, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.url, o.title, o.content, o.date, o.source_id]),
+        feedMod,
         feedExists: async (guid) => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
     },
     initDB: async () => {

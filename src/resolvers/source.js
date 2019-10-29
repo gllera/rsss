@@ -23,7 +23,7 @@ async function sourceDel(root, { source_id }) {
 }
 
 async function sourceMod(root, { o }) {
-    return await db.sourcesMod(o)
+    return await db.sourceMod(o)
 }
 
 async function sourceAddBulk(root, { o }) {
