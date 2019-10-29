@@ -8,8 +8,7 @@ const procesor = require('./procesor')
 const fields = ['title', 'content', 'url', 'date', 'guid', 'source_id']
 
 let sources = []
-const timer = setInterval(() => fetch(), configs.FETCHER_SLEEP)
-const emitter = new EventEmitter()
+setInterval(() => fetch(), configs.FETCHER_SLEEP)
 
 class Feed {
     constructor(source_id, url) {
@@ -77,16 +76,18 @@ async function initFetcher() {
     res.forEach(e => sources.push(new Feed(e.source_id, e.url)))
 }
 
-async function delSource(source_id) {
-    let id = await db.sourcesDel(source_id)
-    sources = sources.filter(e => e._source_id != source_id)
-    return id
+
+function status() {
+    let res = {}
+    sources.forEach(e => res[e._source_id] = e._err)
+    return res
 }
 
 module.exports = {
     initFetcher,
     fetcher: {
-        addSource: (e) => sources.push(new Feed(e.source_id, e.url)),
-        delSource
+        sourceAdd: (e) => sources.push(new Feed(e.source_id, e.url)),
+        sourceDel: (source_id) => sources = sources.filter(e => e._source_id != source_id),
+        status,
     },
 }

@@ -18,7 +18,7 @@ SELECT
     COUNT(f3.source_id) AS 'stars'
 FROM 
     source AS s
-        JOIN feed AS f1
+        LEFT JOIN feed AS f1
             ON s.source_id = f1.source_id
         LEFT JOIN feed AS f2
             ON f1.feed_id = f2.feed_id AND f2.seen = 0
@@ -27,11 +27,32 @@ FROM
 GROUP BY s.source_id
 `
 
+async function sourcesMod(e) {
+    let query = []
+    let values = []
+    const keys = ['url', 'title', 'description', 'siteUrl', 'lang']
+
+    keys.forEach(i => {
+        if (e[i] !== undefined) {
+            query.push(`${i} = ?`)
+            values.push(e[i])
+        }
+    })
+
+    if (!query.length)
+        return 0
+
+    values.push(e.source_id)
+
+    return (await DB.run(`UPDATE source SET ${query.join(',')} WHERE source_id = ?`, values)).changes
+}
+
 module.exports = {
     db: {
         sources: async () => await DB.all(sourcesQuery),
-        sourcesAdd: async (e) => await DB.run('INSERT INTO source ( url, title, description, siteUrl, lang ) VALUES( ?, ?, ?, ?, ? )', [e.url, e.title, e.description, e.siteUrl, e.lang]),
-        sourcesDel: async (source_id) => await DB.run('DELETE FROM source WHERE source_id = ?', [source_id]),
+        sourcesAdd: async (e) => (await DB.run('INSERT INTO source ( url, title, description, siteUrl, lang ) VALUES( ?, ?, ?, ?, ? )', [e.url, e.title, e.description, e.siteUrl, e.lang])).lastID,
+        sourcesDel: async (source_id) => (await DB.run('DELETE FROM source WHERE source_id = ?', [source_id])).changes,
+        sourcesMod,
 
         feedAdd: async (e) => await DB.run('INSERT INTO feed ( guid, url, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [e.guid, e.url, e.title, e.content, e.date, e.source_id]),
         feedExists: async (guid) => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,

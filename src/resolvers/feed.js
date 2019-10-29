@@ -1,6 +1,6 @@
 const { db } = require('../core')
 
-async function Feeds(root, { o }) {
+async function feeds(root, { o }) {
     let sets = [], values = [], where = ''
 
     if (o) {
@@ -54,7 +54,7 @@ async function modFeed (root, { o }) {
 
 module.exports = {
     Query: {
-        Feeds
+        feeds
     },
     Mutation: {
         modFeed

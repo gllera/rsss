@@ -1,63 +1,39 @@
-const { fetcher } = require('../core')
+const async = require('async')
+const { fetcher, db } = require('../core')
+const debug = require('debug')('rsss:source')
 
-async function addSource(url) {
-    // let source = await Parse(url)
-    let values = []
+async function sources() {
+    let srcs = await db.sources()
+    let status = fetcher.status()
 
-    values.push(url)
-    values.push('') //source.title)
-    values.push('') //source.description)
-    values.push('') //source.link)
-    values.push('') //source.language)
+    srcs.forEach(e => e.err = status[e.source_id])
 
-    let stmt = await db.run(
-        'INSERT INTO source ( url, title, description, siteUrl, lang ) VALUES( ?, ?, ?, ?, ? )',
-        values
-    )
-
-    fetcher.addSource(stmt.lastID, url)
-
-    return stmt.lastID
+    return srcs
 }
 
-async function Sources() {
-    let res = await db.all(`
-        SELECT 
-            s.*,
-            COUNT(f1.source_id) AS 'count',
-            COUNT(f2.source_id) AS 'unseen',
-            COUNT(f3.source_id) AS 'stars'
-        FROM 
-            source AS s
-                JOIN feed AS f1
-                    ON s.source_id = f1.source_id
-                LEFT JOIN feed AS f2
-                    ON f1.feed_id = f2.feed_id AND f2.seen = 0
-                LEFT JOIN feed AS f3
-                    ON f1.feed_id = f3.feed_id AND f3.star = 1
-        GROUP BY s.source_id
-    `)
-
-    res.forEach(e => e.err = status[e.source_id])
-    return res
-}
-
-async function addSource(root, { o }) {
+async function sourceAdd(root, { o }) {
     o.source_id = await db.sourcesAdd(o)
-    fetcher.addSource(o)
+    fetcher.sourceAdd(o)
     return o.source_id
 }
 
-async function delSource(root, { source_id }) {
-    return await fetcher.delSource(source_id)
+async function sourceDel(root, { source_id }) {
+    fetcher.sourceDel(source_id)
+    return await db.sourcesDel(source_id)
 }
 
-async function addSourceBulk(root, { o }) {
+async function sourceMod(root, { o }) {
+    return await db.sourcesMod(o)
+}
+
+async function sourceAddBulk(root, { o }) {
     let values = []
 
-    await async.eachSeries(o, async url => {
+    await async.eachSeries(o, async i => {
         try {
-            values.push(fetcher.addSource(o))
+            i.source_id = await db.sourcesAdd(i)
+            fetcher.sourceAdd(i)
+            values.push(i.source_id)
         } catch (e) {
             debug(e)
             values.push(-1)
@@ -69,11 +45,12 @@ async function addSourceBulk(root, { o }) {
 
 module.exports = {
     Query: {
-        Sources,
+        sources,
     },
     Mutation: {
-        addSource,
-        addSourceBulk,
-        delSource,
+        sourceAdd,
+        sourceDel,
+        sourceMod,
+        sourceAddBulk,
     }
 }

@@ -5,7 +5,7 @@ const graphqlHTTP = require('express-graphql')
 const { importSchema } = require('graphql-import')
 const { makeExecutableSchema } = require('graphql-tools')
 const resolvers = require('./resolvers')
-const { db, init, fetcher, procesor } = require('./core')
+const { init } = require('./core')
 const { configs } = require('./utils')
 
 async function appPromise() {
