@@ -39,4 +39,9 @@ html
                     .src-title [title]
                     .src-description [description]
                     .src-siteUrl [siteUrl]
+
+        script(type='text/javascript').
+            config = {
+                GRAPHQL_URL: 'http://localhost:3000/gql'
+            }
         script(src="app.js")

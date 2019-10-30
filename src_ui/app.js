@@ -1,11 +1,7 @@
 let hotkeys = require('hotkeys-js')
-
-let feedView = require('./js/feedView')()
-let panelView = require('./js/panelView')()
-let graphql = require('./js/graphql')('gql')
 let ctrl = require('./js/controller')
 
-ctrl.config({ feedView, panelView, graphql })
+ctrl.config()
 
 hotkeys('j', () => {
     window.scrollTo(0, 0)
