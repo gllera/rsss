@@ -1,7 +1,7 @@
 const db = require('./db')
 
 function visibility(state, view) {
-    const on = db.currentView() == state.me
+    const on = db.getView() == state.me
 
     if (on != state.on) {
         if (on)

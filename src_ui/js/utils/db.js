@@ -33,7 +33,7 @@ function currentFeed() {
 }
 
 function currentSources() {
-    return state
+    return sources
 }
 
 let db = {
@@ -45,7 +45,8 @@ module.exports = {
     fetch,
     feedMod,
 
-    currentView: () => state.view,
+    getView: () => state.view,
+    setView: (o) => state.view = o,
     currentFeed,
     currentSources,
 }

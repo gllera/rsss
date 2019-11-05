@@ -17,12 +17,12 @@ module.exports = {
     unsetSeen: () => db.modFeed({ feed_id: feed.currentFeedId(), seen: 0 }),
     unsetStar: () => db.modFeed({ feed_id: feed.currentFeedId(), star: 0 }),
     showFeeds: () => {
-        feed.show()
-        sources.hide()
+        db.setView('FEED')
+        update()
     },
-    showPanel: () => {
-        feed.hide()
-        sources.show()
+    showSources: () => {
+        db.setView('SOURCES')
+        update()
     },
     fetch: () => {
         db.fetch()

@@ -13,8 +13,7 @@ hotkeys('k', () => {
 })
 hotkeys('1', () => {
     window.scrollTo(0, 0)
-    ctrl.showPanel()
-    ctrl.setSeen()
+    ctrl.showSources()
 })
 hotkeys('2', () => {
     window.scrollTo(0, 0)
