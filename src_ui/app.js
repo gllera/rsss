@@ -1,8 +1,6 @@
 let hotkeys = require('hotkeys-js')
 let ctrl = require('./js/controller')
 
-ctrl.config()
-
 hotkeys('j', () => {
     window.scrollTo(0, 0)
     ctrl.prev()

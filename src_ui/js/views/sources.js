@@ -1,43 +1,32 @@
-let u = require('umbrellajs')
+const u = require('umbrellajs')
 
-view = u('#_views')
-view_cards = u('#cards')
-view_template = u('#card-template')
-view_sync_btn = u('#sync-btn')
-view_load_btn = u('#load-btn')
-view_save_btn = u('#save-btn')
+const view = u('#_views')
+const view_cards = u('#cards')
+const view_template = u('#card-template')
+const view_sync_btn = u('#sync-btn')
+const view_load_btn = u('#load-btn')
+const view_save_btn = u('#save-btn')
 
-view_template.first().removeAttribute('id')
-
-const _me = 'PANEL'
-let _on = true
-let _views = []
-
-function visibility() {
-    const on = db.currentView() == _me
-
-    if (on != _on) {
-        if (on)
-            view.removeClass('d-none')
-        else
-            view.addClass('d-none')
-    }
-
-    return _on = on
+const state = {
+    me: 'SOURCES',
+    on: true,
 }
 
+let views = []
+view_template.first().removeAttribute('id')
+
 function update() {
-    if (!visibility())
+    if (!visibility(state, view))
         return
 
-    _views.forEach(e => e.remove())
-    _views = []
+    views.forEach(e => e.remove())
+    views = []
 
     const sources = db.currentSources()
 
     sources.forEach(e => {
         const card = view_template.clone()
-        _views.push(card)
+        views.push(card)
 
         view_cards.append(card)
         card.removeClass('d-none')

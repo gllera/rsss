@@ -80,7 +80,10 @@ async function feeds(o) {
     if (query.length)
         where = `WHERE ${query.join(' AND ')}`
 
-    return await DB.all(`SELECT * FROM feed ${where}`, values)
+    const order = (o && o.asc) ? 'ASC' : 'DESC'
+    values.push((o && o.limit) ? o.limit : 50)
+
+    return await DB.all(`SELECT * FROM feed ${where} ORDER BY date ${order} LIMIT ?`, values)
 }
 
 module.exports = {

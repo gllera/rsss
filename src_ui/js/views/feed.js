@@ -1,30 +1,20 @@
 const u = require('umbrellajs')
-const db = require('../db')
+const { db, visibility } = require('../utils')
 
 const view = u('#feed')
 const view_title = u('#title')
 const view_content = u('#content')
 const view_url = u('#url')
 
-const _me = 'FEED'
-let _on = false
-let _feed_id = null
-
-function visibility() {
-    const on = db.currentView() == _me
-
-    if (on != _on) {
-        if (on)
-            view.removeClass('d-none')
-        else
-            view.addClass('d-none')
-    }
-
-    return _on = on
+const state = {
+    me: 'FEED',
+    on: false,
 }
 
+let _feed_id = null
+
 function update() {
-    if (!visibility())
+    if (!visibility(state, view))
         return
 
     const feed = db.currentFeed()

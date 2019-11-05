@@ -7,7 +7,8 @@
         "dev": "concurrently -p \"{name}\" -n \"RSSS,GULP\" -c \"bgRed,bgBlue\" -k \"npm run gql\" \"gulp serve\"",
         "gql": "cross-env DEBUG=rsss:* NODE_TLS_REJECT_UNAUTHORIZED=0 nodemon --use_strict ./src/bin/www",
         "build": "gulp build",
-        "clean": "gulp clean"
+        "clean": "gulp clean",
+        "gserve": "gulp serve"
     },
     "nodemonConfig": {
         "ext": "js,sql,graphql,yaml",

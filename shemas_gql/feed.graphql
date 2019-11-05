@@ -15,6 +15,9 @@ input QueFeed {
     source_id: Int
     seen: Int
     star: Int
+    limit: Int
+    asc: Int
+    exclude: [Int]
 }
 
 input ModFeed {

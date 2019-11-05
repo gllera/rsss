@@ -1,24 +1,31 @@
 const gql = require('graphql.js')(config.GRAPHQL_URL)
 
 const gSources = gql('query { sources { source_id url title description siteUrl lang count unseen stars } }')
-const gFeeds = gql('query { feeds(o: $o) { date feed_id source_id url title content } }')
+const gFeeds = gql('query ($o: QueFeed!) { feeds(o: $o) { date feed_id source_id url title content } }')
 const gFeedMod = gql('mutation { feedMod(o: $o) }')
 
-let state = {
-    view: 'PANEL',
+const state = {
+    view: 'SOURCES',
     idx: -1,
+    filter: {
+        order: 0,
+        hidden: 0,
+    },
 }
 
-function sourcesFetch() {
-    return gSources().then(res => resolve(res))
+let sources = []
+let feeds = []
+
+function fetch(o) {
+    switch (state.view) {
+        case 'SOURCES': return gSources().then(e => sources = e.sources)
+        case 'FEED': return gFeeds({ o }).then(e => feeds.concat(e.feeds))
+        default: return new Promise()
+    }
 }
 
 function feedMod(o) {
-    return gFeedMod(o)
-}
-
-function feedsFetch(o) {
-    return gFeeds({ o })
+    return gFeedMod({ o })
 }
 
 function currentFeed() {
@@ -35,8 +42,7 @@ let db = {
 }
 
 module.exports = {
-    sourcesFetch,
-    feedsFetch,
+    fetch,
     feedMod,
 
     currentView: () => state.view,
