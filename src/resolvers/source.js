@@ -1,5 +1,6 @@
 const async = require('async')
 const { fetcher, db } = require('../core')
+const { xmlStreamToJs } = require('../utils')
 const debug = require('debug')('rsss:source')
 
 async function sources() {
@@ -14,7 +15,7 @@ async function sources() {
 async function sourceAdd(root, { o }) {
     o.source_id = await db.sourcesAdd(o)
     fetcher.sourceAdd(o)
-    return o.source_id
+    return o
 }
 
 async function sourceDel(root, { source_id }) {
@@ -33,14 +34,43 @@ async function sourceAddBulk(root, { o }) {
         try {
             i.source_id = await db.sourcesAdd(i)
             fetcher.sourceAdd(i)
-            values.push(i.source_id)
+            values.push(i)
         } catch (e) {
-            debug(e)
-            values.push(-1)
+            i.err = e.message
+            values.push(i)
         }
     })
 
     return values
+}
+
+function parseJsImport(o, res) {
+    if (o.$ && o.$.type == 'rss')
+        if (res[o.$.xmlUrl] === undefined)
+            res[o.$.xmlUrl] = {
+                title: o.$.title,
+                url: o.$.xmlUrl,
+                siteUrl: o.$.htmlUrl,
+            }
+
+    if (Array.isArray(o.outline))
+        o.outline.forEach(e => parseJsImport(e, res))
+}
+
+async function sourcesImport(root, { file }) {
+    const { filename, mimetype, createReadStream } = await file
+    const txt = await xmlStreamToJs(createReadStream())
+
+    const RSSs = {}
+    const res = []
+
+    if (txt && txt.opml && Array.isArray(txt.opml.body))
+        txt.opml.body.forEach(e => parseJsImport(e, RSSs))
+
+    for (let e in RSSs)
+        res.push(RSSs[e])
+
+    return sourceAddBulk(root, { o: res })
 }
 
 module.exports = {
@@ -52,5 +82,6 @@ module.exports = {
         sourceDel,
         sourceMod,
         sourceAddBulk,
+        sourcesImport,
     }
 }
