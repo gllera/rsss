@@ -1,5 +1,6 @@
 const u = require('umbrellajs')
 const { db, visibility } = require('../utils')
+const ctrl = require('../controller')
 
 const view = u('#feed')
 const view_title = u('#title')
@@ -20,6 +21,8 @@ function update() {
     const feed = db.currentFeed()
 
     if (feed) {
+        db.feedMod('seen', 1)
+
         if (_feed_id != feed.feed_id) {
             view_title.html(feed.title)
             view_content.html(feed.content)
@@ -38,5 +41,6 @@ function update() {
 }
 
 module.exports = {
-    update
+    update,
+    me: () => state.me,
 }

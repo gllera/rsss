@@ -54,5 +54,6 @@ function update() {
 }
 
 module.exports = {
-    update
+    update,
+    me: () => state.me,
 }

@@ -8,12 +8,10 @@ ctrl.init(feed, sources, db)
 hotkeys('j', () => {
     window.scrollTo(0, 0)
     ctrl.prev()
-    ctrl.setSeen()
 })
 hotkeys('k', () => {
     window.scrollTo(0, 0)
     ctrl.next()
-    ctrl.setSeen()
 })
 hotkeys('1', () => {
     window.scrollTo(0, 0)
@@ -25,5 +23,6 @@ hotkeys('2', () => {
 })
 hotkeys('f', () => ctrl.fetch())
 
-hotkeys('z', () => ctrl.setSeen())
-hotkeys('x', () => ctrl.setStar())
+hotkeys('s', () => ctrl.sync())
+hotkeys('z', () => ctrl.toggleFeedVal('seen'))
+hotkeys('x', () => ctrl.toggleFeedVal('star'))

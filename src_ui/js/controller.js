@@ -11,15 +11,28 @@ module.exports = {
         sources = _sources
         db = _db
     },
-    next: () => feed.next(),
-    prev: () => feed.prev(),
+    next: () => {
+        db.nextFeed()
+        update()
+    },
+    prev: () => {
+        db.prevFeed()
+        update()
+    },
     updateSources: (data, err) => sources.update(data, err),
     updateFeeds: (data, err) => feed.update(data, err),
     filterFeeds: (opts) => feed.filter(opts),
-    setSeen: () => db.modFeed({ feed_id: feed.currentFeedId(), seen: 1 }),
-    setStar: () => db.modFeed({ feed_id: feed.currentFeedId(), star: 1 }),
-    unsetSeen: () => db.modFeed({ feed_id: feed.currentFeedId(), seen: 0 }),
-    unsetStar: () => db.modFeed({ feed_id: feed.currentFeedId(), star: 0 }),
+    sync: () => {
+        db.sync()
+            .then(() => update())
+            .catch(e => alert(JSON.stringify(e)))
+    },
+    toggleFeedVal: k => {
+        const currFeed = db.currentFeed()
+
+        if (currFeed && db.getView() == feed.me())
+            db.feedMod(k, currFeed[k] ? 0 : 1)
+    },
     showFeeds: () => {
         db.setView('FEED')
         update()

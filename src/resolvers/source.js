@@ -23,6 +23,38 @@ async function sourceDel(root, { source_id }) {
     return await db.sourcesDel(source_id)
 }
 
+async function sync(root, { o }) {
+    if (o) {
+        const upd = {
+            seen: [],
+            unseen: [],
+            star: [],
+            unstar: []
+        }
+
+        if (o.seen)
+            o.seen.forEach(e => {
+                if (e > 0)
+                    upd.seen.push(e)
+                else
+                    upd.unseen.push(-e)
+            })
+
+        if (o.star)
+            o.star.forEach(e => {
+                if (e > 0)
+                    upd.star.push(e)
+                else
+                    upd.unstar.push(-e)
+            })
+
+        await db.feedModBulk(upd)
+    }
+    return await sources()
+}
+
+
+
 async function sourceMod(root, { o }) {
     return await db.sourceMod(o)
 }
@@ -83,5 +115,6 @@ module.exports = {
         sourceMod,
         sourceAddBulk,
         sourcesImport,
+        sync,
     }
 }

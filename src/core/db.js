@@ -65,6 +65,20 @@ async function feedMod(o) {
     return (await DB.run(`UPDATE feed SET ${query.join(',')} WHERE feed_id = ?`, values)).changes
 }
 
+async function feedModBulk(o) {
+    const rk = ['seen', 'unseen', 'star', 'unstar']
+    const colum = ['seen', 'star']
+
+    for (let i = 0; i < rk.length; i++) {
+        const arr = o[rk[i]]
+        const k = colum[parseInt(i / 2)]
+        const v = (i + 1) % 2
+
+        if (arr.length)
+            await DB.run(`UPDATE feed SET ${k} = ${v} WHERE feed_id in (${arr.join(',')})`)
+    }
+}
+
 async function feeds(o) {
     let query = [], values = [], where = ''
     const keys = ['feed_id', 'source_id', 'seen', 'star']
@@ -96,6 +110,7 @@ module.exports = {
         feeds,
         feedAdd: async (o) => await DB.run('INSERT INTO feed ( guid, url, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.url, o.title, o.content, o.date, o.source_id]),
         feedMod,
+        feedModBulk,
         feedExists: async (guid) => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
     },
     initDB: async () => {
