@@ -51,7 +51,7 @@ class Feed {
                 }
             })
 
-            this._err = '[OK]'
+            this._err = null
             this._lastGuid = lastGuid
 
             debug(`${this._source_id} DONE`)
@@ -79,7 +79,10 @@ async function initFetcher() {
 
 function status() {
     let res = {}
-    sources.forEach(e => res[e._source_id] = e._err)
+    sources.forEach(e => {
+        if (e._err !== null)
+            res[e._source_id] = e._err
+    })
     return res
 }
 

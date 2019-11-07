@@ -1,5 +1,9 @@
 let hotkeys = require('hotkeys-js')
 let ctrl = require('./js/controller')
+let { feed, sources } = require('./js/views')
+let { db } = require('./js/utils')
+
+ctrl.init(feed, sources, db)
 
 hotkeys('j', () => {
     window.scrollTo(0, 0)

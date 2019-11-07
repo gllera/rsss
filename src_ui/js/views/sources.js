@@ -1,12 +1,10 @@
 const u = require('umbrellajs')
 const { db, visibility } = require('../utils')
+const ctrl = require('../controller')
 
-const view = u('#_views')
+const view = u('#sources')
 const view_cards = u('#cards')
-const view_template = u('#card-template')
-const view_sync_btn = u('#sync-btn')
-const view_load_btn = u('#load-btn')
-const view_save_btn = u('#save-btn')
+const view_template = u('.scard')
 
 const state = {
     me: 'SOURCES',
@@ -14,7 +12,6 @@ const state = {
 }
 
 let views = []
-view_template.first().removeAttribute('id')
 
 function update() {
     if (!visibility(state, view))
@@ -32,27 +29,25 @@ function update() {
         view_cards.append(card)
         card.removeClass('d-none')
 
-        if (e.source_id)
-            card.find('.src-source_id').html(e.source_id)
-        if (e.url !== undefined)
-            card.find('.src-url').html(e.url)
         if (e.title !== undefined)
-            card.find('.src-title').html(e.title)
-        if (e.description !== undefined)
-            card.find('.src-description').html(e.description)
-        if (e.siteUrl !== undefined)
-            card.find('.src-siteUrl').html(e.siteUrl)
-        if (e.lang !== undefined)
-            card.find('.src-lang').html(e.lang)
-        if (e.count !== undefined)
-            card.find('.src-count').html(e.count)
+            card.find('.stitle').html(e.title)
         if (e.unseen !== undefined)
-            card.find('.src-unseen').html(e.unseen)
+            card.find('.sunseen').html(e.unseen)
         if (e.stars !== undefined)
-            card.find('.src-stars').html(e.stars)
+            card.find('.sstars').html(e.stars)
+
+        const sinfo = card.find('.sinfo')
+
+        if (e.err)
+            sinfo.addClass('serror')
+
+        sinfo.on('click', (o) => {
+            alert(JSON.stringify(e, null, 2))
+            o.stopPropagation()
+        })
 
         card.on('click', () => {
-            ctrl.filterFeeds({ source_id: e.source_id })
+            db.filter({ source_id: e.source_id })
             ctrl.showFeeds()
         })
     })

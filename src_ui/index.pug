@@ -25,20 +25,11 @@ html
                         #content.col-12 contenido
 
             .d-none
-                #card-template.fcard
-                    span.src-source_id [source_id]
-                    span  @ 
-                    span.src-count [count]
-                    span  - 
-                    span.src-unseen [unseen]
-                    span  - 
-                    span.src-stars [stars]
-                    span  @ 
-                    span.src-lang [lang]
-                    .src-url [url]
-                    .src-title [title]
-                    .src-description [description]
-                    .src-siteUrl [siteUrl]
+                .scard.justify-content-center.d-flex.flex-wrap.align-items-center
+                    .stitle [title]
+                    .sunseen [unseen]
+                    .sstars [stars]
+                    .sinfo
 
         script(type='text/javascript').
             config = {

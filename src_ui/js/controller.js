@@ -1,5 +1,4 @@
-const { feed, sources } = require('./views')
-const { db } = require('./utils')
+let feed, sources, db
 
 function update() {
     feed.update()
@@ -7,6 +6,11 @@ function update() {
 }
 
 module.exports = {
+    init: (_feed, _sources, _db) => {
+        feed = _feed
+        sources = _sources
+        db = _db
+    },
     next: () => feed.next(),
     prev: () => feed.prev(),
     updateSources: (data, err) => sources.update(data, err),
