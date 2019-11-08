@@ -5,11 +5,11 @@ let { db } = require('./js/utils')
 
 ctrl.init(feed, sources, db)
 
-hotkeys('j', () => {
+hotkeys('k', () => {
     window.scrollTo(0, 0)
     ctrl.prev()
 })
-hotkeys('k', () => {
+hotkeys('j', () => {
     window.scrollTo(0, 0)
     ctrl.next()
 })
@@ -21,8 +21,7 @@ hotkeys('2', () => {
     window.scrollTo(0, 0)
     ctrl.showFeeds()
 })
-hotkeys('f', () => ctrl.fetch())
 
-hotkeys('s', () => ctrl.sync())
-hotkeys('z', () => ctrl.toggleFeedVal('seen'))
-hotkeys('x', () => ctrl.toggleFeedVal('star'))
+hotkeys('f', () => ctrl.fetch())
+hotkeys('z', () => ctrl.toggleVal('seen'))
+hotkeys('x', () => ctrl.toggleVal('star'))

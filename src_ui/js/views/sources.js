@@ -13,6 +13,35 @@ const state = {
 
 let views = []
 
+function addCard(e) {
+    const card = view_template.clone()
+    views.push(card)
+
+    view_cards.append(card)
+    card.removeClass('d-none')
+
+    card.find('.stitle').html(e.title)
+    card.find('.sunseen').html(e.unseen)
+
+    const star = card.find('.sstars')
+    const sinfo = card.find('.sinfo')
+
+    star.html(e.stars)
+
+    if (e.err)
+        sinfo.addClass('serror')
+
+    sinfo.on('click', (o) => {
+        alert(JSON.stringify(e, null, 2))
+        o.stopPropagation()
+    })
+
+    card.on('click', () => {
+        db.filter({ source_id: e.source_id })
+        ctrl.showFeeds()
+    })
+}
+
 function update() {
     if (!visibility(state, view))
         return
@@ -20,37 +49,24 @@ function update() {
     views.forEach(e => e.remove())
     views = []
 
-    const sources = db.currentSources()
+    const k = ['count', 'unseen', 'stars']
+    const sources = db.getSources()
+    const all = {
+        title: 'ALL',
+        count: 0,
+        unseen: 0,
+        stars: 0,
+    }
 
-    sources.forEach(e => {
-        const card = view_template.clone()
-        views.push(card)
-
-        view_cards.append(card)
-        card.removeClass('d-none')
-
-        if (e.title !== undefined)
-            card.find('.stitle').html(e.title)
-        if (e.unseen !== undefined)
-            card.find('.sunseen').html(e.unseen)
-        if (e.stars !== undefined)
-            card.find('.sstars').html(e.stars)
-
-        const sinfo = card.find('.sinfo')
-
-        if (e.err)
-            sinfo.addClass('serror')
-
-        sinfo.on('click', (o) => {
-            alert(JSON.stringify(e, null, 2))
-            o.stopPropagation()
+    k.forEach(i =>
+        sources.forEach(e => {
+            if (e[i])
+                all[i] += e[i]
         })
+    )
 
-        card.on('click', () => {
-            db.filter({ source_id: e.source_id })
-            ctrl.showFeeds()
-        })
-    })
+    addCard(all)
+    sources.forEach(e => addCard(e))
 }
 
 module.exports = {

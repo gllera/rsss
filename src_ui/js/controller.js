@@ -27,11 +27,15 @@ module.exports = {
             .then(() => update())
             .catch(e => alert(JSON.stringify(e)))
     },
-    toggleFeedVal: k => {
-        const currFeed = db.currentFeed()
-
-        if (currFeed && db.getView() == feed.me())
-            db.feedMod(k, currFeed[k] ? 0 : 1)
+    toggleVal: k => {
+        if (db.getView() == feed.me()) {
+            const currFeed = db.getFeed()
+            if (currFeed)
+                db.feedMod(k, currFeed[k] ? 0 : 1)
+        } else {
+            db.filterToggle(k)
+            sources.update()
+        }
     },
     showFeeds: () => {
         db.setView('FEED')
@@ -42,7 +46,7 @@ module.exports = {
         update()
     },
     fetch: () => {
-        db.fetch()
+        (db.getView() == feed.me() ? db.fetch() : db.sync())
             .then(() => update())
             .catch(e => alert(JSON.stringify(e)))
     },

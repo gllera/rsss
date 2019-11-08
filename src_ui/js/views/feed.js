@@ -18,7 +18,7 @@ function update() {
     if (!visibility(state, view))
         return
 
-    const feed = db.currentFeed()
+    const feed = db.getFeed()
 
     if (feed) {
         db.feedMod('seen', 1)
