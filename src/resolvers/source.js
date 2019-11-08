@@ -76,21 +76,24 @@ async function sourceAddBulk(root, { o }) {
     return values
 }
 
-function parseJsImport(o, res) {
+function parseJsImport(o, res, tag) {
     if (o.$ && o.$.type == 'rss')
         if (res[o.$.xmlUrl] === undefined)
             res[o.$.xmlUrl] = {
                 title: o.$.title,
                 url: o.$.xmlUrl,
                 siteUrl: o.$.htmlUrl,
+                tag
             }
 
+    tag = o.$ && o.$.title ? o.$.title : tag
+
     if (Array.isArray(o.outline))
-        o.outline.forEach(e => parseJsImport(e, res))
+        o.outline.forEach(e => parseJsImport(e, res, tag))
 }
 
 async function sourcesImport(root, { file }) {
-    const { filename, mimetype, createReadStream } = await file
+    const { createReadStream } = await file
     const txt = await xmlStreamToJs(createReadStream())
 
     const RSSs = {}

@@ -2,9 +2,9 @@ const u = require('umbrellajs')
 const { db, visibility } = require('../utils')
 const ctrl = require('../controller')
 
-const view = u('#sources')
-const view_cards = u('#cards')
-const view_template = u('.scard')
+const view = u('.rs-sources')
+const view_cards = u('.rs-cards')
+const view_template = u('.rs-card')
 
 const state = {
     me: 'SOURCES',
@@ -37,7 +37,7 @@ function addCard(e) {
     })
 
     card.on('click', () => {
-        db.filter({ source_id: e.source_id })
+        db.filter({ source_id: e.source_id, tag: e.tag_filter })
         ctrl.showFeeds()
     })
 }
@@ -58,14 +58,28 @@ function update() {
         stars: 0,
     }
 
-    k.forEach(i =>
-        sources.forEach(e => {
-            if (e[i])
-                all[i] += e[i]
+    const tags = {}
+
+    sources.forEach(e => {
+        if (e.tag && !tags[e.tag])
+            tags[e.tag] = {
+                title: e.tag,
+                count: 0,
+                unseen: 0,
+                stars: 0,
+                tag_filter: e.tag,
+            }
+
+        k.forEach(i => {
+            all[i] += e[i]
+
+            if (e.tag)
+                tags[e.tag][i] += e[i]
         })
-    )
+    })
 
     addCard(all)
+    Object.keys(tags).forEach(e => addCard(tags[e]))
     sources.forEach(e => addCard(e))
 }
 

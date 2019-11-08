@@ -29,7 +29,7 @@ GROUP BY s.source_id
 
 async function sourceMod(o) {
     let query = [], values = []
-    const keys = ['url', 'title', 'description', 'siteUrl', 'lang']
+    const keys = ['url', 'title', 'description', 'siteUrl', 'lang', 'tag']
 
     keys.forEach(i => {
         if (o[i] !== undefined) {
@@ -103,7 +103,7 @@ async function feeds(o) {
 module.exports = {
     db: {
         sources: async () => await DB.all(sourcesQuery),
-        sourcesAdd: async (o) => (await DB.run('INSERT INTO source ( url, title, description, siteUrl, lang ) VALUES( ?, ?, ?, ?, ? )', [o.url, o.title, o.description, o.siteUrl, o.lang])).lastID,
+        sourcesAdd: async (o) => (await DB.run('INSERT INTO source ( url, title, description, siteUrl, lang, tag ) VALUES( ?, ?, ?, ?, ?, ? )', [o.url, o.title, o.description, o.siteUrl, o.lang, o.tag])).lastID,
         sourcesDel: async (source_id) => (await DB.run('DELETE FROM source WHERE source_id = ?', [source_id])).changes,
         sourceMod,
 

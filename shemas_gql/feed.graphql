@@ -13,6 +13,7 @@ type Feed {
 input QueFeed {
     feed_id: Int
     source_id: Int
+    tag: String
     seen: Int
     star: Int
     limit: Int

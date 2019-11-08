@@ -5,6 +5,7 @@ type Source {
     description: String
     siteUrl: String
     lang: String
+    tag: String
     err: String
     count: Int!
     unseen: Int!
@@ -23,6 +24,7 @@ input AddSource {
     description: String
     siteUrl: String
     lang: String
+    tag: String
 }
 
 input ModSource {
@@ -32,4 +34,5 @@ input ModSource {
     description: String
     siteUrl: String
     lang: String
+    tag: String
 }

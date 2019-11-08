@@ -1,9 +1,9 @@
 const gql = require('graphql.js')(config.GRAPHQL_URL)
 
 const gFeeds = gql('query ($o: QueFeed!) { feeds(o: $o) { feed_id source_id url title content date seen star } }')
-const gSync = gql('mutation ($o: SyncData) { sync(o: $o) { source_id url title description siteUrl lang count unseen stars err } }')
+const gSync = gql('mutation ($o: SyncData) { sync(o: $o) { source_id url title description siteUrl lang tag count unseen stars err } }')
 
-const filter_keys = ['source_id', 'seen', 'star']
+const filter_keys = ['source_id', 'seen', 'star', 'tag']
 const filter_values = {
     seen: [0, undefined],
     star: [1, undefined],
@@ -16,6 +16,7 @@ const state = {
         seen: 0,
         star: undefined,
         source_id: undefined,
+        tag: undefined,
     },
     seen: new Set(),
     star: new Set(),

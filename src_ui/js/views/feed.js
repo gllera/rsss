@@ -2,10 +2,10 @@ const u = require('umbrellajs')
 const { db, visibility } = require('../utils')
 const ctrl = require('../controller')
 
-const view = u('#feed')
-const view_title = u('#title')
-const view_content = u('#content')
-const view_url = u('#url')
+const view = u('.rs-feed')
+const view_title = u('.rs-title')
+const view_content = u('.rs-content')
+const view_url = u('.rs-url')
 
 const state = {
     me: 'FEED',
