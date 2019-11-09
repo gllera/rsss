@@ -1,7 +1,7 @@
 const gql = require('graphql.js')(config.GRAPHQL_URL)
 
 const gFeeds = gql('query ($o: QueFeed!) { feeds(o: $o) { feed_id source_id url title content date seen star } }')
-const gSync = gql('mutation ($o: SyncData) { sync(o: $o) { source_id url title description siteUrl lang tag count unseen stars err } }')
+const gSources = gql('mutation ($o: SyncData) { sources(o: $o) { source_id url title description siteUrl lang tag count unseen stars err } }')
 
 const filter_keys = ['source_id', 'seen', 'star', 'tag']
 const filter_values = {
@@ -26,19 +26,26 @@ let sources = [], feeds = []
 let sourcesFiltered = [], feedsFiltered = [], tagsFiltered = []
 let recieved = new Set()
 
-function fetch() {
-    return gFeeds({ o: state.filter })
+function fetchFeeds() {
+    const filter = {}, exclude = []
+
+    Object.keys(state.filter).forEach(e => filter[e] = state.filter[e])
+
+    filter['exclude'] = exclude
+    feedsFiltered.forEach(e => exclude.push(e.feed_id))
+
+    return gFeeds({ o: filter })
         .then(e => updFeeds(e.feeds))
 }
 
-function sync() {
-    return gSync({
+function fetchSources() {
+    return gSources({
         o: {
             seen: Array.from(state.seen),
             star: Array.from(state.star),
         }
     }).then(e => {
-        sources = e.sync
+        sources = e.sources
         state.seen.clear()
         state.star.clear()
         updSources()
@@ -118,9 +125,15 @@ function updFeeds(newFeeds) {
     }
 
     const filter = state.filter
-    console.log(filter)
 
-    feedsFiltered = feeds.filter(e => filter_keys.every(i => filter[i] === undefined || filter[i] === e[i]))
+    const tags = {}
+    sources.forEach(e => tags[e.source_id] = e.tag)
+
+    feedsFiltered = feeds.filter(e => {
+        e.tag = tags[e.source_id]
+        return filter_keys.every(i => filter[i] === undefined || filter[i] === e[i])
+    })
+
     feedsFiltered.sort((a, b) => filter.asc ? (a.date < b.date) : (a.date > b.date))
     state.idx = feedsFiltered.length ? 0 : -1
 }
@@ -142,8 +155,8 @@ function filter(o) {
         o.star = undefined
 
     Object.keys(o).forEach(e => state.filter[e] = o[e])
-    updFeeds()
     updSources()
+    updFeeds()
 }
 
 let db = {
@@ -176,10 +189,11 @@ function feedMod(k, v) {
 }
 
 module.exports = {
-    sync,
+    sources,
     filter,
     filterToggle,
-    fetch,
+    fetchFeeds,
+    fetchSources,
     feedMod,
     getFeed,
     getSources,

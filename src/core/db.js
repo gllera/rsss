@@ -81,12 +81,12 @@ async function feedModBulk(o) {
 
 async function feeds(o) {
     let query = [], values = [], where = ''
-    const keys = ['feed_id', 'source_id', 'seen', 'star']
+    const keys = ['feed_id', 'source_id', 'seen', 'star', 'tag']
 
     if (o)
         keys.forEach(i => {
             if (o[i] !== undefined) {
-                query.push(`${i} = ?`)
+                query.push(`${i == 'tag' ? 's' : 'f'}.${i} = ?`)
                 values.push(o[i])
             }
         })
@@ -97,7 +97,7 @@ async function feeds(o) {
     const order = (o && o.asc) ? 'ASC' : 'DESC'
     values.push((o && o.limit) ? o.limit : 50)
 
-    return await DB.all(`SELECT * FROM feed ${where} ORDER BY date ${order} LIMIT ?`, values)
+    return await DB.all(`SELECT f.* FROM feed as f LEFT JOIN source AS s ON f.source_id = s.source_id ${where} ORDER BY f.date ${order} LIMIT ?`, values)
 }
 
 module.exports = {

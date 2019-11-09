@@ -23,7 +23,7 @@ async function sourceDel(root, { source_id }) {
     return await db.sourcesDel(source_id)
 }
 
-async function sync(root, { o }) {
+async function mutSources(root, { o }) {
     if (o) {
         const upd = {
             seen: [],
@@ -118,6 +118,6 @@ module.exports = {
         sourceMod,
         sourceAddBulk,
         sourcesImport,
-        sync,
+        sources: mutSources,
     }
 }

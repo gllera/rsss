@@ -22,8 +22,8 @@ module.exports = {
     updateSources: (data, err) => sources.update(data, err),
     updateFeeds: (data, err) => feed.update(data, err),
     filterFeeds: (opts) => feed.filter(opts),
-    sync: () => {
-        db.sync()
+    sources: () => {
+        db.sources()
             .then(() => update())
             .catch(e => alert(JSON.stringify(e)))
     },
@@ -46,7 +46,7 @@ module.exports = {
         update()
     },
     fetch: () => {
-        (db.getView() == feed.me() ? db.fetch() : db.sync())
+        (db.getView() == feed.me() ? db.fetchFeeds() : db.fetchSources())
             .then(() => update())
             .catch(e => alert(JSON.stringify(e)))
     },

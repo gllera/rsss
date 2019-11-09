@@ -16,7 +16,7 @@ type Mutation {
     sourceMod(o: ModSource!): Int!
     sourceDel(source_id: Int!): Int!
     sourcesImport(file: Upload!): [SourceRes]!
-    sync(o: SyncData): [Source]!
+    sources(o: SyncData): [Source]!
 }
 
 input SyncData {
