@@ -23,7 +23,7 @@ const state = {
 }
 
 let sources = [], feeds = []
-let sourcesFiltered = [], feedsFiltered = []
+let sourcesFiltered = [], feedsFiltered = [], tagsFiltered = []
 let recieved = new Set()
 
 function fetch() {
@@ -56,16 +56,50 @@ function getSources() {
     return sourcesFiltered
 }
 
-function updSources() {
-    sourcesFiltered = sources.filter(e => filter_keys.every(i => {
+function getTags() {
+    return tagsFiltered
+}
+
+function sourcesFilter(e, ignoreTag) {
+    return filter_keys.every(i => {
         if (i == 'source_id' || state.filter[i] == undefined)
             return true
 
-        if (i == 'seen')
-            return e.unseen > 0
-        else
-            return e.stars > 0
-    }))
+        switch (i) {
+            case 'seen': return e.unseen > 0
+            case 'star': return e.stars > 0
+            case 'tag': return ignoreTag || e.tag == state.filter[i]
+        }
+    })
+}
+
+function updSources() {
+    sourcesFiltered = sources.filter(e => sourcesFilter(e, false))
+    const srcTagFiltered = sources.filter(e => sourcesFilter(e, true))
+
+    const k = ['count', 'unseen', 'stars']
+    const tags = {}, all = { title: 'ALL', count: 0, unseen: 0, stars: 0, }
+
+    srcTagFiltered.forEach(e => {
+        if (e.tag && !tags[e.tag])
+            tags[e.tag] = {
+                title: e.tag,
+                count: 0,
+                unseen: 0,
+                stars: 0,
+                tag_filter: e.tag,
+            }
+
+        k.forEach(i => {
+            all[i] += e[i]
+
+            if (e.tag)
+                tags[e.tag][i] += e[i]
+        })
+    })
+
+    tagsFiltered = [all]
+    Object.keys(tags).forEach(e => tagsFiltered.push(tags[e]))
 }
 
 function updFeeds(newFeeds) {
@@ -149,6 +183,7 @@ module.exports = {
     feedMod,
     getFeed,
     getSources,
+    getTags,
     getView: () => state.view,
     setView: (o) => state.view = o,
     nextFeed: () => changeFeed(1),

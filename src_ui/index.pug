@@ -12,6 +12,7 @@ html
     body
         main
             .rs-sources.text-center
+                .rs-tags.justify-content-center.d-flex.flex-wrap
                 .rs-cards.justify-content-center.d-flex.flex-wrap
             .container
                 .rs-feed.d-none
@@ -25,10 +26,14 @@ html
                         .rs-content.col-12 contenido
 
             .d-none
+                .rs-tag.d-flex.flex-wrap
+                    span.stitle
+                    span.sstars
+                    span.sunseen
                 .rs-card.justify-content-center.d-flex.flex-wrap.align-items-center
-                    .stitle [title]
-                    .sunseen [unseen]
-                    .sstars [stars]
+                    .stitle
+                    .sunseen
+                    .sstars
                     .sinfo
 
         script(type='text/javascript').

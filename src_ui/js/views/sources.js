@@ -2,22 +2,29 @@ const u = require('umbrellajs')
 const { db, visibility } = require('../utils')
 const ctrl = require('../controller')
 
+const views = []
 const view = u('.rs-sources')
-const view_cards = u('.rs-cards')
-const view_template = u('.rs-card')
+const html = {
+    src: {
+        dest: u('.rs-cards'),
+        tmpl: u('.rs-card'),
+    },
+    tag: {
+        dest: u('.rs-tags'),
+        tmpl: u('.rs-tag'),
+    }
+}
 
 const state = {
     me: 'SOURCES',
     on: true,
 }
 
-let views = []
-
-function addCard(e) {
-    const card = view_template.clone()
+function addCard(e, v) {
+    const card = v.tmpl.clone()
     views.push(card)
 
-    view_cards.append(card)
+    v.dest.append(card)
     card.removeClass('d-none')
 
     card.find('.stitle').html(e.title)
@@ -31,14 +38,23 @@ function addCard(e) {
     if (e.err)
         sinfo.addClass('serror')
 
+    if (!e.source_id && db.filter().tag == e.tag_filter)
+        card.addClass('sselected')
+
     sinfo.on('click', (o) => {
         alert(JSON.stringify(e, null, 2))
         o.stopPropagation()
     })
 
     card.on('click', () => {
+        const tag = db.filter().tag
+
         db.filter({ source_id: e.source_id, tag: e.tag_filter })
-        ctrl.showFeeds()
+
+        if (e.source_id || tag == e.tag_filter)
+            ctrl.showFeeds()
+        else
+            update()
     })
 }
 
@@ -47,40 +63,13 @@ function update() {
         return
 
     views.forEach(e => e.remove())
-    views = []
+    views.length = 0
 
-    const k = ['count', 'unseen', 'stars']
     const sources = db.getSources()
-    const all = {
-        title: 'ALL',
-        count: 0,
-        unseen: 0,
-        stars: 0,
-    }
+    const tags = db.getTags()
 
-    const tags = {}
-
-    sources.forEach(e => {
-        if (e.tag && !tags[e.tag])
-            tags[e.tag] = {
-                title: e.tag,
-                count: 0,
-                unseen: 0,
-                stars: 0,
-                tag_filter: e.tag,
-            }
-
-        k.forEach(i => {
-            all[i] += e[i]
-
-            if (e.tag)
-                tags[e.tag][i] += e[i]
-        })
-    })
-
-    addCard(all)
-    Object.keys(tags).forEach(e => addCard(tags[e]))
-    sources.forEach(e => addCard(e))
+    tags.forEach(e => addCard(e, html.tag))
+    sources.forEach(e => addCard(e, html.src))
 }
 
 module.exports = {
