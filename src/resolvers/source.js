@@ -1,6 +1,6 @@
 const async = require('async')
 const { fetcher, db } = require('../core')
-const { xmlStreamToJs } = require('../utils')
+const { xmlStreamToJs, getSyncInfo } = require('../utils')
 const debug = require('debug')('rsss:source')
 
 async function sources() {
@@ -23,33 +23,8 @@ async function sourceDel(root, { source_id }) {
     return await db.sourcesDel(source_id)
 }
 
-async function mutSources(root, { o }) {
-    if (o) {
-        const upd = {
-            seen: [],
-            unseen: [],
-            star: [],
-            unstar: []
-        }
-
-        if (o.seen)
-            o.seen.forEach(e => {
-                if (e > 0)
-                    upd.seen.push(e)
-                else
-                    upd.unseen.push(-e)
-            })
-
-        if (o.star)
-            o.star.forEach(e => {
-                if (e > 0)
-                    upd.star.push(e)
-                else
-                    upd.unstar.push(-e)
-            })
-
-        await db.feedModBulk(upd)
-    }
+async function mutSources(root, { s }) {
+    await db.feedModBulk(getSyncInfo(s))
     return await sources()
 }
 

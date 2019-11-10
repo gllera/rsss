@@ -83,13 +83,17 @@ async function feeds(o) {
     let query = [], values = [], where = ''
     const keys = ['feed_id', 'source_id', 'seen', 'star', 'tag']
 
-    if (o)
+    if (o) {
         keys.forEach(i => {
             if (o[i] !== undefined) {
                 query.push(`${i == 'tag' ? 's' : 'f'}.${i} = ?`)
                 values.push(o[i])
             }
         })
+
+        if (o['exclude'] !== undefined && o['exclude'].length)
+            query.push(`f.feed_id NOT IN (${o['exclude'].join(',')})`)
+    }
 
     if (query.length)
         where = `WHERE ${query.join(' AND ')}`

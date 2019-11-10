@@ -1,7 +1,7 @@
 const gql = require('graphql.js')(config.GRAPHQL_URL)
 
-const gFeeds = gql('query ($o: QueFeed!) { feeds(o: $o) { feed_id source_id url title content date seen star } }')
-const gSources = gql('mutation ($o: SyncData) { sources(o: $o) { source_id url title description siteUrl lang tag count unseen stars err } }')
+const gFeeds = gql('mutation ($o: QueFeed!, $s: SyncData) { feeds(o: $o, s: $s) { feed_id source_id url title content date seen star } }')
+const gSources = gql('mutation ($s: SyncData) { sources(s: $s) { source_id url title description siteUrl lang tag count unseen stars err } }')
 
 const filter_keys = ['source_id', 'seen', 'star', 'tag']
 const filter_values = {
@@ -34,13 +34,22 @@ function fetchFeeds() {
     filter['exclude'] = exclude
     feedsFiltered.forEach(e => exclude.push(e.feed_id))
 
-    return gFeeds({ o: filter })
-        .then(e => updFeeds(e.feeds))
+    return gFeeds({
+        o: filter,
+        s: {
+            seen: Array.from(state.seen),
+            star: Array.from(state.star),
+        }
+    }).then(e => {
+        state.seen.clear()
+        state.star.clear()
+        updFeeds(e.feeds)
+    })
 }
 
 function fetchSources() {
     return gSources({
-        o: {
+        s: {
             seen: Array.from(state.seen),
             star: Array.from(state.star),
         }
