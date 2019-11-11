@@ -24,6 +24,7 @@ const state = {
 
 let sources = [], feeds = []
 let sourcesFiltered = [], feedsFiltered = [], tagsFiltered = []
+let sourcesTags = {}
 let recieved = new Set()
 
 function fetchFeeds() {
@@ -116,35 +117,37 @@ function updSources() {
 
     tagsFiltered = [all]
     Object.keys(tags).forEach(e => tagsFiltered.push(tags[e]))
+
+    sources.forEach(e => sourcesTags[e.source_id] = e.tag)
+}
+
+function filterFeeds(f) {
+    const res = f.filter(e => {
+        e.tag = sourcesTags[e.source_id]
+        return filter_keys.every(i => state.filter[i] === undefined || state.filter[i] === e[i])
+    })
+
+    res.sort((a, b) => state.filter.asc ? (a.date < b.date) : (a.date > b.date))
+
+    return res
 }
 
 function updFeeds(newFeeds) {
     if (Array.isArray(newFeeds)) {
-        if (newFeeds.length)
-            feeds = feeds.concat(newFeeds.filter(e => {
-                if (recieved.has(e.feed_id))
-                    return false
-                else
-                    recieved.add(e.feed_id)
+        newFeeds = newFeeds.filter(e => {
+            if (recieved.has(e.feed_id))
+                return false
 
-                return true
-            }))
-        else
-            return
+            recieved.add(e.feed_id)
+            return true
+        })
+
+        feeds = feeds.concat(newFeeds)
+        feedsFiltered = feedsFiltered.concat(filterFeeds(newFeeds))
+    } else {
+        feedsFiltered = filterFeeds(feeds)
+        state.idx = feedsFiltered.length ? 0 : -1
     }
-
-    const filter = state.filter
-
-    const tags = {}
-    sources.forEach(e => tags[e.source_id] = e.tag)
-
-    feedsFiltered = feeds.filter(e => {
-        e.tag = tags[e.source_id]
-        return filter_keys.every(i => filter[i] === undefined || filter[i] === e[i])
-    })
-
-    feedsFiltered.sort((a, b) => filter.asc ? (a.date < b.date) : (a.date > b.date))
-    state.idx = feedsFiltered.length ? 0 : -1
 }
 
 function filterToggle(k) {
