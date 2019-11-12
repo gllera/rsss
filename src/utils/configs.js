@@ -5,10 +5,7 @@ let configs = {}
 
 let _conf_loader = (path) => configs = _.defaultsDeep(yaml.safeLoad(fs.readFileSync(path, 'utf8')), configs)
 
-_conf_loader('configs/production.yaml')
-
-if (process.env.NODE_ENV != 'production')
-    _conf_loader('configs/development.yaml')
+_conf_loader('config.yaml')
 
 if (fs.existsSync('data/config.yaml'))
     _conf_loader('data/config.yaml')
