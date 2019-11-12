@@ -11,8 +11,6 @@ const state = {
     on: false,
 }
 
-let _feed_id = null
-
 function update() {
     if (!visibility(state, view))
         return
@@ -22,20 +20,14 @@ function update() {
     if (feed) {
         model.modFeed(feed, 'seen', 1)
 
-        if (_feed_id != feed.feed_id) {
-            view_title.html(feed.title)
-            view_content.html(feed.content)
-            view_url.attr({ href: feed.url })
-
-            _feed_id = feed.feed_id
-        }
+        view_title.html(feed.title)
+        view_content.html(feed.content)
+        view_url.attr({ href: feed.url })
     }
-    else if (_feed_id) {
-        view_title.html('Not good..')
-        view_content.html('Not good..')
+    else {
+        view_title.html('')
+        view_content.html('(no feed to show, try to fetch them)')
         view_url.attr({ href: '' })
-
-        _feed_id = null
     }
 }
 
