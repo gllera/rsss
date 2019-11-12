@@ -1,10 +1,9 @@
-const EventEmitter = require('events')
 const debug = require('debug')('rsss:fetcher')
 const _ = require('loadsh')
 const async = require('async')
 const { Parse, configs } = require('../utils')
 const { db } = require('./db')
-const procesor = require('./procesor')
+const processor = require('./processor')
 const fields = ['title', 'content', 'url', 'date', 'guid', 'source_id']
 
 let sources = []
@@ -46,7 +45,7 @@ class Feed {
                     e.url = e.link
                     e = _.pick(e, fields)
 
-                    e = await procesor(e)
+                    e = await processor(e)
                     await db.feedAdd(e)
                 }
             })

@@ -38,7 +38,7 @@ function addCard(e, v) {
     if (e.err)
         sinfo.addClass('serror')
 
-    if (!e.source_id && model.filter().tag == e.tag)
+    if (!e.source_id && model.filter().tag == e.tag_filter)
         card.addClass('sselected')
 
     sinfo.on('click', (o) => {
@@ -49,9 +49,12 @@ function addCard(e, v) {
     card.on('click', () => {
         const tag = model.filter().tag
 
-        model.filter({ source_id: e.source_id, tag: e.tag })
+        model.filter({
+            source_id: e.source_id,
+            tag: e.hasOwnProperty('tag_filter') ? e.tag_filter : tag
+        })
 
-        if (e.source_id || tag == e.tag)
+        if (e.source_id || tag == e.tag_filter)
             ctrl.show('FEED')
         else
             update()

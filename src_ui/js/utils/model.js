@@ -25,7 +25,7 @@ function updSources(s) {
     sourcesFiltered = srcsTmp.filter(e => i.tag || e.tag == f.tag)
 
     const srcsTagged = srcsTmp.filter(e => e.tag)
-    const ts = {}, all = { title: 'ALL', count: 0, unseen: 0, stars: 0, }
+    const ts = {}, all = { title: 'ALL', count: 0, unseen: 0, stars: 0, tag_filter: undefined, }
 
     srcsTagged.forEach(e => !ts[e.tag] && (
         ts[e.tag] = {
@@ -33,7 +33,7 @@ function updSources(s) {
             count: 0,
             unseen: 0,
             stars: 0,
-            tag: e.tag,
+            tag_filter: e.tag,
         }
     ))
 
