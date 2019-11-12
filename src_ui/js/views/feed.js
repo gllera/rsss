@@ -1,6 +1,5 @@
 const u = require('umbrellajs')
-const { db, visibility } = require('../utils')
-const ctrl = require('../controller')
+const { model, visibility } = require('../utils')
 
 const view = u('.rs-feed')
 const view_title = u('.rs-title')
@@ -18,10 +17,10 @@ function update() {
     if (!visibility(state, view))
         return
 
-    const feed = db.getFeed()
+    const feed = model.feed()
 
     if (feed) {
-        db.feedMod('seen', 1)
+        model.modFeed(feed, 'seen', 1)
 
         if (_feed_id != feed.feed_id) {
             view_title.html(feed.title)

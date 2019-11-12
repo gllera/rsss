@@ -1,9 +1,9 @@
 let hotkeys = require('hotkeys-js')
 let ctrl = require('./js/controller')
 let { feed, sources } = require('./js/views')
-let { db } = require('./js/utils')
+let { model } = require('./js/utils')
 
-ctrl.init(feed, sources, db)
+ctrl.init(feed, sources, model)
 
 hotkeys('k', () => {
     window.scrollTo(0, 0)
@@ -13,15 +13,16 @@ hotkeys('j', () => {
     window.scrollTo(0, 0)
     ctrl.next()
 })
+
 hotkeys('1', () => {
     window.scrollTo(0, 0)
-    ctrl.showSources()
+    ctrl.show('SOURCES')
 })
 hotkeys('2', () => {
     window.scrollTo(0, 0)
-    ctrl.showFeeds()
+    ctrl.showFeeds('FEED')
 })
 
 hotkeys('f', () => ctrl.fetch())
-hotkeys('z', () => ctrl.toggleVal('seen'))
-hotkeys('x', () => ctrl.toggleVal('star'))
+hotkeys('z', () => ctrl.toggle('seen'))
+hotkeys('x', () => ctrl.toggle('star'))

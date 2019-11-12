@@ -1,5 +1,5 @@
 const u = require('umbrellajs')
-const { db, visibility } = require('../utils')
+const { model, visibility } = require('../utils')
 const ctrl = require('../controller')
 
 const views = []
@@ -38,7 +38,7 @@ function addCard(e, v) {
     if (e.err)
         sinfo.addClass('serror')
 
-    if (!e.source_id && db.filter().tag == e.tag_filter)
+    if (!e.source_id && model.filter().tag == e.tag)
         card.addClass('sselected')
 
     sinfo.on('click', (o) => {
@@ -47,12 +47,12 @@ function addCard(e, v) {
     })
 
     card.on('click', () => {
-        const tag = db.filter().tag
+        const tag = model.filter().tag
 
-        db.filter({ source_id: e.source_id, tag: e.tag_filter })
+        model.filter({ source_id: e.source_id, tag: e.tag })
 
-        if (e.source_id || tag == e.tag_filter)
-            ctrl.showFeeds()
+        if (e.source_id || tag == e.tag)
+            ctrl.show('FEED')
         else
             update()
     })
@@ -65,8 +65,8 @@ function update() {
     views.forEach(e => e.remove())
     views.length = 0
 
-    const sources = db.getSources()
-    const tags = db.getTags()
+    const sources = model.sources()
+    const tags = model.tags()
 
     tags.forEach(e => addCard(e, html.tag))
     sources.forEach(e => addCard(e, html.src))

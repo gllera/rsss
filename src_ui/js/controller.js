@@ -1,53 +1,52 @@
-let feed, sources, db
+let feed, sources, model
+
+const filter_values = {
+    seen: [0, undefined],
+    star: [1, undefined],
+}
 
 function update() {
-    feed.update()
     sources.update()
+    feed.update()
+}
+
+function fetch() {
+    const _fetch = model.view() == feed.me() ? model.fetchFeeds : model.fetchSources
+    return _fetch()
+        .then(() => update())
+        .catch(e => alert(JSON.stringify(e)))
+}
+
+function toggle(k) {
+    if (model.view() != feed.me()) {
+        const v = model.filter()[k]
+        const idx = (filter_values[k].indexOf(v) + 1) % filter_values[k].length
+
+        model.filter({ [k]: filter_values[k][idx] })
+        sources.update()
+    } else
+        model.modFeed(model.feed(), k)
+}
+
+function nextFeed(amt) {
+    if (model.view() == feed.me()) {
+        model.nextFeed(amt)
+        update()
+    }
 }
 
 module.exports = {
-    init: (_feed, _sources, _db) => {
+    init: (_feed, _sources, _model) => {
         feed = _feed
         sources = _sources
-        db = _db
+        model = _model
     },
-    next: () => {
-        db.nextFeed()
+    show: (v) => {
+        model.view(v)
         update()
     },
-    prev: () => {
-        db.prevFeed()
-        update()
-    },
-    updateSources: (data, err) => sources.update(data, err),
-    updateFeeds: (data, err) => feed.update(data, err),
-    filterFeeds: (opts) => feed.filter(opts),
-    sources: () => {
-        db.sources()
-            .then(() => update())
-            .catch(e => alert(JSON.stringify(e)))
-    },
-    toggleVal: k => {
-        if (db.getView() == feed.me()) {
-            const currFeed = db.getFeed()
-            if (currFeed)
-                db.feedMod(k, currFeed[k] ? 0 : 1)
-        } else {
-            db.filterToggle(k)
-            sources.update()
-        }
-    },
-    showFeeds: () => {
-        db.setView('FEED')
-        update()
-    },
-    showSources: () => {
-        db.setView('SOURCES')
-        update()
-    },
-    fetch: () => {
-        (db.getView() == feed.me() ? db.fetchFeeds() : db.fetchSources())
-            .then(() => update())
-            .catch(e => alert(JSON.stringify(e)))
-    },
+    next: () => nextFeed(1),
+    prev: () => nextFeed(-1),
+    fetch,
+    toggle,
 }

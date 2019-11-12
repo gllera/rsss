@@ -1,7 +1,7 @@
-const db = require('./db')
+const model = require('./model')
 
 function visibility(state, view) {
-    const on = db.getView() == state.me
+    const on = model.view() == state.me
 
     if (on != state.on) {
         if (on)
@@ -14,6 +14,6 @@ function visibility(state, view) {
 }
 
 module.exports = {
-    db,
+    model,
     visibility
 }
