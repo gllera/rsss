@@ -8,11 +8,13 @@ const bIni = Buffer.from('<?xml '), bEnd = Buffer.from('?>')
 const regEncRes = /(encoding|charset)\s*=\s*(\S+)/
 const regEnc = /encoding\s*=\s*"(\S+)"/
 
+const toParse = ['description', 'content:encoded', 'content', 'title', 'summary']
 const opts_parser = {
-    tagValueProcessor: (val, _) => he.decode(val),
+    tagValueProcessor: (val, tag) => toParse.includes(tag) ? he.decode(val) : val,
     ignoreAttributes: false,
-    attributeNamePrefix: '',
-    attrNodeName: '$',
+    attributeNamePrefix: '$',
+    textNodeName: '$$',
+    arrayMode: true,
 }
 
 const opts_iconv = {
@@ -23,8 +25,12 @@ const opts_iconv = {
     headers: { 'User-Agent': configs.FETCHER_AGENT },
 }
 
+const extVal = e => e == null ? '' : Array.isArray(e) ? extVal(e[0]) : typeof e == 'object' ? e.$$ : e
+
 module.exports = (url) => new Promise((resolve, reject) =>
     request.get(url, opts_iconv, (err, res, body) => {
+        let enc, items
+
         if (err)
             return reject(err.message)
 
@@ -34,8 +40,6 @@ module.exports = (url) => new Promise((resolve, reject) =>
         const ini = body.indexOf(bIni)
         const end = ini == 0 ? body.indexOf(bEnd) : -1
         const type = res.headers['content-type']
-
-        let enc
 
         if (end != -1) {
             const reg = body.toString('binary', bIni.length, end).match(regEnc)
@@ -49,21 +53,37 @@ module.exports = (url) => new Promise((resolve, reject) =>
 
         const js = parser.parse(iconv.decode(body, enc || 'UTF-8'), opts_parser)
 
-        if (!js.feed && !js.rss)
+        if (js.feed)
+            items = js.feed[0].entry
+        else if (js.rss)
+            items = js.rss[0].channel[0].item
+        else if (js['rdf:RDF'])
+            items = js['rdf:RDF'][0].item
+        else
             return reject(`Invalid RSS format`)
 
-        const items = js.feed ? js.feed.entry : js.rss.channel.item
+        items = items
+            .filter(e => {
+                if (!e.link)
+                    return false
 
-        resolve(items.map(e => {
-            const link = (e.link && e.link.$) ? e.link.$.href : e.link
+                if (!Array.isArray(e.link))
+                    return true
 
-            return {
-                guid: e.guid || e.id || link || '',
-                link: link || '',
-                title: e.title || '',
-                content: e['content:encoded'] || e.description || '',
-                date: e.published || e.pubDate || '',
-            }
-        }))
+                e.link = e.link
+                    .filter(i => typeof i != 'object' || i.$rel == "alternate")
+                    .map(i => typeof i != 'object' ? i : i.$href)
+
+                return e.link.length
+            })
+            .map(e => ({
+                guid: extVal(e.guid || e.id || e.link),
+                url: extVal(e.link),
+                title: extVal(e.title),
+                content: extVal(e['content:encoded'] || e.content || e.description || e.summary),
+                date: extVal(e.published || e.pubDate || e.updated || e['dc:date']),
+            }))
+
+        resolve(items)
     })
 )

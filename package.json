@@ -3,9 +3,9 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "start": "node ./src/bin/www",
+        "start": "node --http-parser=legacy ./src/bin/www",
         "dev": "concurrently -p \"{name}\" -n \"RSSS,GULP\" -c \"bgRed,bgBlue\" -k \"npm run gql\" \"gulp serve\"",
-        "gql": "cross-env DEBUG=rsss:* nodemon --use_strict ./src/bin/www",
+        "gql": "cross-env DEBUG=rsss:* nodemon --use_strict --http-parser=legacy ./src/bin/www",
         "build": "gulp build",
         "clean": "gulp clean",
         "gserve": "gulp serve"

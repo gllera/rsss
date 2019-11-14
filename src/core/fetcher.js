@@ -4,7 +4,6 @@ const async = require('async')
 const { parseRSS, configs } = require('../utils')
 const { db } = require('./db')
 const processor = require('./processor')
-const fields = ['title', 'content', 'url', 'date', 'guid', 'source_id']
 
 let sources = []
 setInterval(() => fetch(), configs.FETCHER_SLEEP)
@@ -38,9 +37,7 @@ class Feed {
             await async.eachSeries(res, async e => {
                 if (!await db.feedExists(e.guid)) {
                     e.source_id = this._source_id
-                    e.date = new Date(e.isoDate).getTime() || Date.now()
-                    e.url = e.link
-                    e = _.pick(e, fields)
+                    e.date = new Date(e.date).getTime() || Date.now()
 
                     e = await processor(e)
                     await db.feedAdd(e)
@@ -54,7 +51,7 @@ class Feed {
         }
         catch (e) {
             debug(`${this._source_id} ${e}`)
-            this._err = e.message
+            this._err = e.message || e
         }
     }
 }

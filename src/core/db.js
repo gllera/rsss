@@ -107,15 +107,15 @@ async function feeds(o) {
 module.exports = {
     db: {
         sources: async () => await DB.all(sourcesQuery),
-        sourcesAdd: async (o) => (await DB.run('INSERT INTO source ( url, title, description, siteUrl, lang, tag ) VALUES( ?, ?, ?, ?, ?, ? )', [o.url, o.title, o.description, o.siteUrl, o.lang, o.tag])).lastID,
-        sourcesDel: async (source_id) => (await DB.run('DELETE FROM source WHERE source_id = ?', [source_id])).changes,
+        sourcesAdd: async o => (await DB.run('INSERT INTO source ( url, title, description, siteUrl, lang, tag ) VALUES( ?, ?, ?, ?, ?, ? )', [o.url, o.title, o.description, o.siteUrl, o.lang, o.tag])).lastID,
+        sourcesDel: async source_id => (await DB.run('DELETE FROM source WHERE source_id = ?', [source_id])).changes,
         sourceMod,
 
         feeds,
-        feedAdd: async (o) => await DB.run('INSERT INTO feed ( guid, url, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.url, o.title, o.content, o.date, o.source_id]),
+        feedAdd: async o => await DB.run('INSERT INTO feed ( guid, url, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.url, o.title, o.content, o.date, o.source_id]),
         feedMod,
         feedModBulk,
-        feedExists: async (guid) => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
+        feedExists: async guid => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
     },
     initDB: async () => {
         DB = await sqlite.open('data/' + configs.DB_NAME, { cached: configs.DB_CACHED })
