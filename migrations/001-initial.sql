@@ -5,7 +5,7 @@ CREATE TABLE feed
     feed_id     INTEGER PRIMARY KEY AUTOINCREMENT,
     source_id   INTEGER REFERENCES source ON DELETE CASCADE,
     guid        VARCHAR NOT NULL UNIQUE,
-    url         VARCHAR NOT NULL,
+    link        VARCHAR NOT NULL,
     title       VARCHAR NOT NULL,
     content     TEXT NOT NULL,
     date        DATETIME NOT NULL,
@@ -16,8 +16,8 @@ CREATE TABLE feed
 CREATE TABLE source
 (
     source_id   INTEGER PRIMARY KEY AUTOINCREMENT,
-    url         VARCHAR NOT NULL UNIQUE,
-    siteUrl     VARCHAR,
+    xml_url     VARCHAR NOT NULL UNIQUE,
+    html_url    VARCHAR,
     title       VARCHAR,
     tag         VARCHAR,
     lang        VARCHAR,

@@ -4,7 +4,7 @@ const { model, visibility } = require('../utils')
 const view = u('.rs-feed')
 const view_title = u('.rs-title')
 const view_content = u('.rs-content')
-const view_url = u('.rs-url')
+const view_link = u('.rs-link')
 
 const state = {
     me: 'FEED',
@@ -22,12 +22,12 @@ function update() {
 
         view_title.html(feed.title)
         view_content.html(feed.content)
-        view_url.attr({ href: feed.url })
+        view_link.attr({ href: feed.link })
     }
     else {
         view_title.html('')
         view_content.html('(no feed to show, try to fetch them)')
-        view_url.attr({ href: '' })
+        view_link.attr({ href: '' })
     }
 }
 

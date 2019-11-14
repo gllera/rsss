@@ -5,7 +5,6 @@ scalar Upload
 type Query {
     feeds(o: QueFeed): [Feed]!
     sources: [Source]!
-    Test(url: String!): String!
 }
 
 type Mutation {

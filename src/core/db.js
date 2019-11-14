@@ -29,7 +29,7 @@ GROUP BY s.source_id
 
 async function sourceMod(o) {
     let query = [], values = []
-    const keys = ['url', 'title', 'description', 'siteUrl', 'lang', 'tag']
+    const keys = ['xml_url', 'title', 'description', 'html_url', 'lang', 'tag']
 
     keys.forEach(i => {
         if (o[i] !== undefined) {
@@ -107,12 +107,12 @@ async function feeds(o) {
 module.exports = {
     db: {
         sources: async () => await DB.all(sourcesQuery),
-        sourcesAdd: async o => (await DB.run('INSERT INTO source ( url, title, description, siteUrl, lang, tag ) VALUES( ?, ?, ?, ?, ?, ? )', [o.url, o.title, o.description, o.siteUrl, o.lang, o.tag])).lastID,
+        sourcesAdd: async o => (await DB.run('INSERT INTO source ( xml_url, title, description, html_url, lang, tag ) VALUES( ?, ?, ?, ?, ?, ? )', [o.xml_url, o.title, o.description, o.html_url, o.lang, o.tag])).lastID,
         sourcesDel: async source_id => (await DB.run('DELETE FROM source WHERE source_id = ?', [source_id])).changes,
         sourceMod,
 
         feeds,
-        feedAdd: async o => await DB.run('INSERT INTO feed ( guid, url, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.url, o.title, o.content, o.date, o.source_id]),
+        feedAdd: async o => await DB.run('INSERT INTO feed ( guid, link, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.link, o.title, o.content, o.date, o.source_id]),
         feedMod,
         feedModBulk,
         feedExists: async guid => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,

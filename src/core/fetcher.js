@@ -9,10 +9,10 @@ let sources = []
 setInterval(() => fetch(), configs.FETCHER_SLEEP)
 
 class Feed {
-    constructor(source_id, url) {
+    constructor(source_id, xml_url) {
         this._lastGuid = null
         this._source_id = source_id
-        this._url = url
+        this._xml_url = xml_url
         this._lastFetch = 0
         this._err = null
     }
@@ -22,7 +22,7 @@ class Feed {
 
         try {
             this._lastFetch = Date.now()
-            let res = await parseRSS(this._url)
+            let res = await parseRSS(this._xml_url)
 
             if (!Array.isArray(res))
                 throw new Error('Invalid feed')
@@ -66,7 +66,7 @@ function fetch() {
 
 async function initFetcher() {
     let res = await db.sources()
-    res.forEach(e => sources.push(new Feed(e.source_id, e.url)))
+    res.forEach(e => sources.push(new Feed(e.source_id, e.xml_url)))
 }
 
 
@@ -82,7 +82,7 @@ function status() {
 module.exports = {
     initFetcher,
     fetcher: {
-        sourceAdd: (e) => sources.push(new Feed(e.source_id, e.url)),
+        sourceAdd: (e) => sources.push(new Feed(e.source_id, e.xml_url)),
         sourceDel: (source_id) => sources = sources.filter(e => e._source_id != source_id),
         status,
     },

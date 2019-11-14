@@ -2,7 +2,7 @@ type Feed {
     feed_id: Int!
     source_id: Int!
     guid: String!
-    url: String!
+    link: String!
     title: String!
     content: String!
     date: Float

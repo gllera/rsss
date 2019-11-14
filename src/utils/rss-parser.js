@@ -27,8 +27,8 @@ const opts_iconv = {
 
 const extVal = e => e == null ? '' : Array.isArray(e) ? extVal(e[0]) : typeof e == 'object' ? e.$$ : e
 
-module.exports = (url) => new Promise((resolve, reject) =>
-    request.get(url, opts_iconv, (err, res, body) => {
+module.exports = (xml_url) => new Promise((resolve, reject) =>
+    request.get(xml_url, opts_iconv, (err, res, body) => {
         let enc, items
 
         if (err)
@@ -78,7 +78,7 @@ module.exports = (url) => new Promise((resolve, reject) =>
             })
             .map(e => ({
                 guid: extVal(e.guid || e.id || e.link),
-                url: extVal(e.link),
+                link: extVal(e.link),
                 title: extVal(e.title),
                 content: extVal(e['content:encoded'] || e.content || e.description || e.summary),
                 date: extVal(e.published || e.pubDate || e.updated || e['dc:date']),

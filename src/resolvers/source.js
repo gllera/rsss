@@ -56,8 +56,8 @@ function parseJsImport(o, res, tag) {
         if (res[o.$.xmlUrl] === undefined)
             res[o.$.xmlUrl] = {
                 title: o.$.title,
-                url: o.$.xmlUrl,
-                siteUrl: o.$.htmlUrl,
+                xml_url: o.$.xmlUrl,
+                html_url: o.$.htmlUrl,
                 tag
             }
 
