@@ -1,7 +1,7 @@
 const debug = require('debug')('rsss:fetcher')
 const _ = require('loadsh')
 const async = require('async')
-const { Parse, configs } = require('../utils')
+const { parseRSS, configs } = require('../utils')
 const { db } = require('./db')
 const processor = require('./processor')
 const fields = ['title', 'content', 'url', 'date', 'guid', 'source_id']
@@ -23,20 +23,17 @@ class Feed {
 
         try {
             this._lastFetch = Date.now()
-            let res = await Parse(this._url)
+            let res = await parseRSS(this._url)
 
-            if (!Array.isArray(res.items))
+            if (!Array.isArray(res))
                 throw new Error('Invalid feed')
-            if (!res.items.length)
+            if (!res.length)
                 return
 
             let passed
-            const lastGuid = res.items[0].guid
+            const lastGuid = res[0].guid
 
-            res = res.items.filter(e => {
-                e.guid = e.guid || e.url
-                return !(passed = passed || e.guid == this._lastGuid)
-            })
+            res = res.filter(e => !(passed = passed || e.guid == this._lastGuid))
 
             await async.eachSeries(res, async e => {
                 if (!await db.feedExists(e.guid)) {

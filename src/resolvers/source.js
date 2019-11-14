@@ -74,8 +74,8 @@ async function sourcesImport(root, { file }) {
     const RSSs = {}
     const res = []
 
-    if (txt && txt.opml && Array.isArray(txt.opml.body))
-        txt.opml.body.forEach(e => parseJsImport(e, RSSs))
+    if (txt && txt.opml && txt.opml.body && Array.isArray(txt.opml.body.outline))
+        txt.opml.body.outline.forEach(e => parseJsImport(e, RSSs))
 
     for (let e in RSSs)
         res.push(RSSs[e])

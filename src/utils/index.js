@@ -1,30 +1,11 @@
-const Parser = require('rss-parser')
-const { parseStringPromise } = require('xml2js')
+const parseXML = require('fast-xml-parser').parse
+const parseRSS = require('./rss-parser')
 const configs = require('./configs')
 
-let _parser = new Parser({
-    headers: { 'User-Agent': configs.FETCHER_AGENT },
-    customFields: {
-        item: [
-            ['content:encoded', 'content'],
-        ]
-    },
-    timeout: configs.FETCHER_TIMEOUT,
-    defaultRSS: 2.0,
-})
-
-async function xmlStreamToJs(stream) {
-    const txt = await streamToRAM(stream)
-    return await parseStringPromise(txt)
-}
-
-async function streamToRAM(stream) {
-    return await new Promise((res, rej) => {
-        let txt = ''
-        stream.on('data', e => txt += e)
-        stream.on('end', e => res(txt))
-        stream.on('error', e => rej(e))
-    })
+const opts_parser = {
+    ignoreAttributes: false,
+    attributeNamePrefix: '',
+    attrNodeName: '$',
 }
 
 function getSyncInfo(s) {
@@ -56,13 +37,13 @@ function getSyncInfo(s) {
 
 module.exports = {
     configs,
-    sleep(ms) {
-        return new Promise(resolve => {
-            setTimeout(resolve, ms)
-        })
-    },
-    xmlStreamToJs,
-    streamToRAM,
     getSyncInfo,
-    Parse: (url) => _parser.parseURL(url),
+    parseRSS,
+    sleep: ms => new Promise(resolve => setTimeout(resolve, ms)),
+    xmlStreamToJs: s => new Promise((res, rej) => {
+        let xml = ''
+        s.on('data', e => xml += e)
+        s.on('end', e => res(xml))
+        s.on('error', e => rej(e))
+    }).then(e => parseXML(e, opts_parser)),
 }
