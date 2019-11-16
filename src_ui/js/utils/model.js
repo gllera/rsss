@@ -64,7 +64,7 @@ function updFeeds(feeds) {
 }
 
 function filter(o) {
-    if (o == undefined)
+    if (!o)
         return state.filter
 
     if (o.star != undefined)
@@ -80,28 +80,39 @@ function filter(o) {
     state.idx = feedsFiltered.length ? 0 : -1
 }
 
-function hash(h) {
-    if (!h) {
-        return `${[
+function hashVars(o) {
+    if (!o)
+        return [
             state.filter.seen,
             state.filter.star,
             state.filter.asc,
             state.view,
             state.filter.tag,
             state.filter.source_id,
-        ].join(';')}`
-    } else {
-        const arr = h.substring(1).split(';')
+        ]
 
-        state.filter.seen = arr[0] == '' ? undefined : parseInt(arr[0])
-        state.filter.star = arr[1] == '' ? undefined : parseInt(arr[1])
-        state.filter.asc = arr[2] == '' ? undefined : parseInt(arr[2])
-        state.view = arr[3]
-        state.filter.tag = arr[4] == '' ? undefined : arr[4]
-        state.filter.source_id = arr[5] == '' ? undefined : arr[5]
+    state.filter.seen = o[0]
+    state.filter.star = o[1]
+    state.filter.asc = o[2]
+    state.view = o[3]
+    state.filter.tag = o[4]
+    state.filter.source_id = o[5]
+}
 
-        filter({})
-    }
+function hash(h) {
+    if (!h)
+        return hashVars().join(';')
+
+    const arr = h.substring(1).split(';')
+
+    state.filter.seen = arr[0] == '' ? undefined : parseInt(arr[0])
+    state.filter.star = arr[1] == '' ? undefined : parseInt(arr[1])
+    state.filter.asc = arr[2] == '' ? undefined : parseInt(arr[2])
+    state.view = arr[3]
+    state.filter.tag = arr[4] == '' ? undefined : arr[4]
+    state.filter.source_id = arr[5] == '' ? undefined : arr[5]
+
+    filter({})
 }
 
 module.exports = {
