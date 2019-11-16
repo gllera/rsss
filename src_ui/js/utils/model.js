@@ -3,7 +3,7 @@ const graphql = require('./graphql')
 let sourcesFiltered = [], feedsFiltered = [], tagsFiltered = []
 const filter_keys = ['source_id', 'seen', 'star', 'tag']
 const sourcesTags = {}, state = {
-    view: 'SOURCES',
+    view: 0,
     idx: -1,
     filter: {
         source_id: undefined,

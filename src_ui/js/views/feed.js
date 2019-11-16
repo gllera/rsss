@@ -7,7 +7,7 @@ const view_content = u('.rs-content')
 const view_link = u('.rs-link')
 
 const state = {
-    me: 'FEED',
+    me: 1,
     on: false,
 }
 

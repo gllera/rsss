@@ -16,7 +16,7 @@ const html = {
 }
 
 const state = {
-    me: 'SOURCES',
+    me: 0,
     on: true,
 }
 
@@ -54,7 +54,7 @@ function addCard(e, v) {
         })
 
         if (e.source_id || tag == e.tag_filter)
-            ctrl.show('FEED')
+            ctrl.show(1)
         else
             ctrl.update()
     })

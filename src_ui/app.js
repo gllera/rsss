@@ -12,8 +12,8 @@ u('.rs-next').on('click', () => ctrl.next())
 hotkeys('k', () => ctrl.prev())
 hotkeys('j', () => ctrl.next())
 
-hotkeys('1', () => ctrl.show('SOURCES'))
-hotkeys('2', () => ctrl.show('FEED'))
+hotkeys('1', () => ctrl.show(0))
+hotkeys('2', () => ctrl.show(1))
 
 hotkeys('f', () => ctrl.fetch())
 hotkeys('z', () => ctrl.toggle('seen'))
@@ -34,5 +34,5 @@ window.onhashchange = () => {
 }
 
 if (model.feed() == null)
-    ctrl.show('SOURCES')
+    ctrl.show(0)
 
