@@ -58,6 +58,9 @@ function updFeeds(feeds) {
     )
 
     filter.exclude = feedsFiltered.map(e => e.feed_id)
+
+    if (state.idx == -1 && feedsFiltered.length)
+        state.idx = 0
 }
 
 function filter(o) {
@@ -77,13 +80,37 @@ function filter(o) {
     state.idx = feedsFiltered.length ? 0 : -1
 }
 
+function hash(h) {
+    if (!h) {
+        return `${[
+            state.filter.seen,
+            state.filter.star,
+            state.filter.asc,
+            state.view,
+            state.filter.tag,
+            state.filter.source_id,
+        ].join(';')}`
+    } else {
+        const arr = h.substring(1).split(';')
+
+        state.filter.seen = arr[0] == '' ? undefined : parseInt(arr[0])
+        state.filter.star = arr[1] == '' ? undefined : parseInt(arr[1])
+        state.filter.asc = arr[2] == '' ? undefined : parseInt(arr[2])
+        state.view = arr[3]
+        state.filter.tag = arr[4] == '' ? undefined : arr[4]
+        state.filter.source_id = arr[5] == '' ? undefined : arr[5]
+
+        filter({})
+    }
+}
+
 module.exports = {
+    hash,
     filter,
     view: (o) => o != undefined ? state.view = o : state.view,
     feed: () => state.idx != -1 ? feedsFiltered[state.idx] : null,
     sources: () => sourcesFiltered,
     tags: () => tagsFiltered,
-
 
     fetchFeeds: () => graphql.fetchFeeds(state.filter).then(updFeeds),
     fetchSources: () => graphql.fetchSources().then(updSources),

@@ -5,9 +5,9 @@ function visibility(state, view) {
 
     if (on != state.on) {
         if (on)
-            view.removeClass('d-none')
+            view.each(i => i.removeAttribute('style'))
         else
-            view.addClass('d-none')
+            view.attr('style', 'display: none')
     }
 
     return state.on = on

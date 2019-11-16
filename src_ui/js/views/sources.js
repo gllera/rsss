@@ -25,7 +25,6 @@ function addCard(e, v) {
     views.push(card)
 
     v.dest.append(card)
-    card.removeClass('d-none')
 
     card.find('.stitle').html(e.title)
     card.find('.sunseen').html(e.unseen)
@@ -57,7 +56,7 @@ function addCard(e, v) {
         if (e.source_id || tag == e.tag_filter)
             ctrl.show('FEED')
         else
-            update()
+            ctrl.update()
     })
 }
 

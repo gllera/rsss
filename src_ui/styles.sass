@@ -1,7 +1,87 @@
+@import 'bootstrap/scss/bootstrap-reboot.scss'
+
+$feed-max-width: 978px
+$header-max-width: $feed-max-width * 1.5
+$touch-height: 30vh
+$touch-mid-max-width: $feed-max-width * 0.2
+
 html
     overflow-y: scroll
 
+img
+    @include img-fluid
+
+.rs-controls
+    color: #000a
+
+.rs-hint-bot
+    box-shadow: 0 -1.2rem 1rem -.5rem
+    position: fixed
+    height: 10rem
+    margin: auto
+    bottom: -10rem
+    right: 0
+    left: 0
+    width: 40vw
+    max-width: $touch-mid-max-width
+
+.rs-next, .rs-prev, .rs-star
+    position: fixed
+    height: $touch-height
+    bottom: 0
+    cursor: pointer
+
+.rs-star
+    width: 40vw
+    max-width: $touch-mid-max-width
+    right: 0
+    left: 0
+    margin: auto
+    &:hover ~ .rs-hint-bot 
+        color: #ff0 !important
+
+.rs-next
+    right: 0
+    width: 50%
+    &:hover ~ .rs-hint-bot 
+        color: #0ff !important
+
+.rs-prev
+    left: 0
+    width: 50%
+    &:hover ~ .rs-hint-bot 
+        color: #0ff !important
+
+.rs-feed
+    .rs-link
+        color: inherit
+        text-decoration: none
+.rs-header
+    padding: .5rem 0
+    margin-bottom: 1rem
+    //background-color: #ffb
+    box-shadow: 0 0 .2rem 0 #000
+    .rs-in
+        max-width: $header-max-width
+        margin: 0 auto
+
+.rs-title
+    margin: 0
+
+.rs-content
+    max-width: $feed-max-width
+    margin: 0 auto
+
+.rs-sources
+    text-align: center
+
+.rs-tags, .rs-card, .rs-cards
+    justify-content: center
+    display: flex
+    flex-wrap: wrap
+
 .rs-card
+    align-items: center
     margin: .3rem
     width: 10rem
     height: 10rem
@@ -47,6 +127,9 @@ html
     background-color: rgba(0,255,0,0.2) !important
 
 .rs-tag
+    display: flex
+    flex-wrap: wrap
+
     margin: .3rem
     padding: .5rem .75rem
     border: .1rem solid rgba(0,0,0,0.2)

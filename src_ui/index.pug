@@ -4,33 +4,33 @@ html
         meta(charset='utf-8')
         meta(name='viewport' content='width=device-width,initial-scale=1.0')
         link(rel='icon' href='favicon.png')
-        link(rel='stylesheet' href='bootstrap.css')
         link(rel='stylesheet' href='styles.css')
         base(target='_blank')
 
         title RSSS
     body
         main
-            .rs-sources.text-center
-                .rs-tags.justify-content-center.d-flex.flex-wrap
-                .rs-cards.justify-content-center.d-flex.flex-wrap
-            .container
-                .rs-feed.d-none
-                    .row
-                        a.rs-link.col-12
+            .rs-sources
+                .rs-tags
+                .rs-cards
+            .rs-feed(style='display: none')
+                a.rs-link
+                    .rs-header
+                        .rs-in
                             h2.rs-title
-                    .row.justify-content-left
-                        .col-8
-                            hr
-                    .row
-                        .rs-content.col-12
+                .rs-content
+                .rs-controls
+                    .rs-prev
+                    .rs-next
+                    .rs-star
+                    .rs-hint-bot
 
-            .d-none
-                .rs-tag.d-flex.flex-wrap
+            div(style='display: none')
+                .rs-tag
                     span.stitle
                     span.sstars
                     span.sunseen
-                .rs-card.justify-content-center.d-flex.flex-wrap.align-items-center
+                .rs-card
                     .stitle
                     .sunseen
                     .sstars
@@ -40,4 +40,4 @@ html
             config = {
                 GRAPHQL_URL: 'http://localhost:3000/gql'
             }
-        script(src="app.js")
+        script(src='app.js')
