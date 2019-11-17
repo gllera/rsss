@@ -26,10 +26,10 @@ if (window.location.hash.length == 0) {
     window.location.replace(baseUrl + '#' + model.hash())
 }
 else
-    model.hash(window.location.hash)
+    model.hash(window.location.hash.substring(1))
 
 window.onhashchange = () => {
-    model.hash(window.location.hash)
+    model.hash(window.location.hash.substring(1))
     ctrl.update()
 }
 

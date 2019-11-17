@@ -77,17 +77,17 @@ function hash(h) {
         return parseInt(bin, 2).toString(16) + '~' + ($.tag || '')
     }
 
-    const arr = h.substring(1).split('~')
+    const arr = h.split('~')
     const v = parseInt(arr[0], 16).toString(2)
 
-    $.seen = parseInt(v[1])
-    $.star = parseInt(v[2])
-    $.asc = parseInt(v[3])
-    $.view = parseInt(v[4])
-    $.source_id = v.length == 5 ? 0 : parseInt(v.substring(5), 2)
-    $.tag = arr[1] ? arr[1] : undefined
-
-    filter({})
+    filter({
+        seen: parseInt(v[1]),
+        star: parseInt(v[2]),
+        asc: parseInt(v[3]),
+        view: parseInt(v[4]),
+        source_id: v.length == 5 ? 0 : parseInt(v.substring(5), 2),
+        tag: arr[1] ? arr[1] : undefined,
+    })
 }
 
 module.exports = {
