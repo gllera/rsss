@@ -5,6 +5,7 @@ let { feed, sources } = require('./js/views')
 let { model } = require('./js/utils')
 
 ctrl.init(feed, sources, model)
+const hash = () => window.location.hash.substring(1)
 
 u('.rs-prev').on('click', () => ctrl.prev())
 u('.rs-next').on('click', () => ctrl.next())
@@ -24,14 +25,11 @@ hotkeys('x', () => ctrl.toggle('star'))
 if (window.location.hash.length == 0) {
     const baseUrl = window.location.href.split('#')[0]
     window.location.replace(baseUrl + '#' + model.hash())
-}
-else
-    model.hash(window.location.hash.substring(1))
+} else
+    ctrl.update(hash())
 
-window.onhashchange = () => {
-    model.hash(window.location.hash.substring(1))
-    ctrl.update()
-}
+window.onhashchange = () => ctrl.update(hash())
 
-if (!model.feed())
-    ctrl.fetch()
+if (!model.sources().length)
+    ctrl.fetch(0)
+        .then(e => ctrl.fetch(1))

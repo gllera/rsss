@@ -1,13 +1,18 @@
 let feed, sources, model
 
-function update() {
+function update(h) {
+    if (h)
+        model.hash(h)
+    else
+        window.location.hash = model.hash()
+
     sources.update()
     feed.update()
-    window.location.hash = model.hash()
 }
 
-function fetch() {
-    const _fetch = model.view() == feed.me() ? model.fetchFeeds : model.fetchSources
+function fetch(v = model.view()) {
+    const _fetch = v ? model.fetchFeeds : model.fetchSources
+
     return _fetch()
         .then(() => update())
         .catch(e => alert(JSON.stringify(e)))
