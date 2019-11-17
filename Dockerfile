@@ -7,4 +7,4 @@ RUN    npm i \
     && npm prune --production
 
 ENV NODE_ENV=production
-ENTRYPOINT node src/bin/www
+ENTRYPOINT node --http-parser=legacy src/bin/www
