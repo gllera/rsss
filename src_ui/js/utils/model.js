@@ -11,7 +11,7 @@ const sourcesTags = {}, state = {
         seen: 0,
         star: undefined,
         asc: 0,
-        exclude: []
+        exclude: [],
     },
 }
 
@@ -87,30 +87,50 @@ function hashVars(o) {
             state.filter.star,
             state.filter.asc,
             state.view,
-            state.filter.tag,
             state.filter.source_id,
+            state.filter.tag,
         ]
 
     state.filter.seen = o[0]
     state.filter.star = o[1]
     state.filter.asc = o[2]
     state.view = o[3]
-    state.filter.tag = o[4]
-    state.filter.source_id = o[5]
+    state.filter.source_id = o[4]
+    state.filter.tag = o[5]
 }
 
 function hash(h) {
-    if (!h)
-        return hashVars().join(';')
+    const values = [
+        [undefined, 0],
+        [undefined, 1],
+        [0, 1],
+        [0, 1],
+    ]
 
-    const arr = h.substring(1).split(';')
+    if (!h) {
+        const vars = hashVars()
 
-    state.filter.seen = arr[0] == '' ? undefined : parseInt(arr[0])
-    state.filter.star = arr[1] == '' ? undefined : parseInt(arr[1])
-    state.filter.asc = arr[2] == '' ? undefined : parseInt(arr[2])
-    state.view = arr[3]
-    state.filter.tag = arr[4] == '' ? undefined : arr[4]
-    state.filter.source_id = arr[5] == '' ? undefined : arr[5]
+        const bin = '1' +
+            (vars[0] == values[0][0] ? '0' : '1') +
+            (vars[1] == values[1][0] ? '0' : '1') +
+            (vars[2] == values[2][0] ? '0' : '1') +
+            (vars[3] == values[3][0] ? '0' : '1') +
+            (vars[4] == undefined ? '' : vars[4].toString(2))
+
+        return parseInt(bin, 2).toString(16) + '~' + (vars[5] || '')
+    }
+
+    const arr = h.substring(1).split('~')
+    const v = parseInt(arr[0], 16).toString(2)
+
+    hashVars([
+        v[1] == '0' ? values[0][0] : values[0][1],
+        v[2] == '0' ? values[1][0] : values[1][1],
+        v[3] == '0' ? values[2][0] : values[2][1],
+        v[4] == '0' ? values[3][0] : values[3][1],
+        v.length == 5 ? undefined : parseInt(v.substring(5), 2),
+        arr[1] ? arr[1] : undefined
+    ])
 
     filter({})
 }

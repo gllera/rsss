@@ -33,6 +33,5 @@ window.onhashchange = () => {
     ctrl.update()
 }
 
-if (model.feed() == null)
-    ctrl.show(0)
-
+if (!model.feed())
+    ctrl.fetch()
