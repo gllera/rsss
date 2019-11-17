@@ -1,9 +1,10 @@
-const db = require('./db')
-const fetcher = require('./fetcher')
-const procesor = require('./procesor')
-const resolvers = require('./resolvers')
+const { db, initDB } = require('./db')
+const { fetcher, initFetcher} = require('./fetcher')
+const processor = require('./processor')
 
-/** @typedef {db.Database} Database */
-/** @typedef {fetcher.Fetcher} Fetcher */
+async function init() {
+    await initDB()
+    await initFetcher()
+}
 
-module.exports = { db, fetcher, procesor, resolvers }
+module.exports = { db, init, fetcher, processor }

@@ -4,39 +4,40 @@ html
         meta(charset='utf-8')
         meta(name='viewport' content='width=device-width,initial-scale=1.0')
         link(rel='icon' href='favicon.png')
-        link(rel='stylesheet' href='bootstrap.css')
         link(rel='stylesheet' href='styles.css')
         base(target='_blank')
 
         title RSSS
     body
         main
-            .container
-                #panel.text-center
-                    #cards.justify-content-center.d-flex.flex-column
-                #feed.d-none
-                    .row
-                        a#url.col-12
-                            h2#title titulo
-                    .row.justify-content-left
-                        .col-8
-                            hr
-                    .row
-                        #content.col-12 contenido
+            .rs-sources
+                .rs-tags
+                .rs-cards
+            .rs-feed(style='display: none')
+                a.rs-link
+                    .rs-header
+                        .rs-in
+                            h2.rs-title
+                .rs-content
+                .rs-controls
+                    .rs-prev
+                    .rs-next
+                    .rs-star
+                    .rs-hint-bot
 
-            .d-none
-                #card-template.p-2.m-1(style="background-color: coral")
-                    span.src-source_id [source_id]
-                    span  @ 
-                    span.src-count [count]
-                    span  - 
-                    span.src-unseen [unseen]
-                    span  - 
-                    span.src-stars [stars]
-                    span  @ 
-                    span.src-lang [lang]
-                    .src-url [url]
-                    .src-title [title]
-                    .src-description [description]
-                    .src-siteUrl [siteUrl]
-        script(src="app.js")
+            div(style='display: none')
+                .rs-tag
+                    span.stitle
+                    span.sstars
+                    span.sunseen
+                .rs-card
+                    .stitle
+                    .sunseen
+                    .sstars
+                    .sinfo
+
+        script(type='text/javascript').
+            config = {
+                GRAPHQL_URL: 'http://localhost:3000/gql'
+            }
+        script(src='app.js')

@@ -1,25 +1,4 @@
-const EventEmitter = require('events')
-const debug = require('debug')('rsss:procesor')
-const _ = require('loadsh')
-const { minify } = require('html-minifier')
 const sanitizer = require('sanitize-html')
-
-const minify_opts = {
-    collapseWhitespace: true,
-    minifyCSS: true,
-    minifyJS: true,
-    removeAttributeQuotes: true,
-    removeComments: true,
-    removeEmptyAttributes: true,
-    removeEmptyElements: true,
-    //removeOptionalTags: true,
-    removeRedundantAttributes: true,
-    removeScriptTypeAttributes: true,
-    removeStyleLinkTypeAttributes: true,
-    trimCustomFragments: true,
-    useShortDoctype: true,
-    html5: true
-}
 
 const sanitize_opts = {
     allowedTags: [
@@ -39,11 +18,11 @@ const sanitize_opts = {
     allowProtocolRelative: false
 }
 
-module.exports = (e) => {
-    debug(`${e.source_id} PROCESSING`)
-
-    e.content = sanitizer(e.content, sanitize_opts)
-    e.content = minify(e.content, minify_opts)
-
-    return e
+module.exports = {
+    name: 'Sanitizer',
+    order: 200,
+    process: (e) => {
+        e.content = sanitizer(e.content, sanitize_opts)
+        return e
+    }
 }

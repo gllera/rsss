@@ -1,30 +1,56 @@
-let feed, panel, graphql
+let feed, sources, model
+
+function update(h) {
+    if (h)
+        model.hash(h)
+    else
+        window.location.hash = model.hash()
+
+    sources.update()
+    feed.update()
+}
+
+function fetch(v = model.view()) {
+    const _fetch = v ? model.fetchFeeds : model.fetchSources
+
+    return _fetch()
+        .then(() => update())
+        .catch(e => alert(JSON.stringify(e)))
+}
+
+function toggle(k) {
+    if (model.view() != feed.me()) {
+        model.filter({ [k]: model.filter()[k] ? 0 : 1 })
+        update()
+    } else
+        model.modFeed(model.feed(), k)
+}
+
+function nextFeed(amt) {
+    if (model.view() == feed.me()) {
+        window.scrollTo(0, 0)
+        model.nextFeed(amt)
+        update()
+    }
+}
 
 module.exports = {
-    config: (opts) => {
-        feed = opts.feedView
-        panel = opts.panelView
-        graphql = opts.graphql
+    init: (_feed, _sources, _model) => {
+        feed = _feed
+        sources = _sources
+        model = _model
     },
-    next: () => feed.next(),
-    prev: () => feed.prev(),
-    updateSources: (data, err) => panel.update(data, err),
-    updateFeeds: (data, err) => feed.update(data, err),
-    filterFeeds: (opts) => feed.filter(opts),
-    setSeen: () => graphql.modFeed({ feed_id: feed.currentFeedId(), seen: 1 }),
-    setStar: () => graphql.modFeed({ feed_id: feed.currentFeedId(), star: 1 }),
-    unsetSeen: () => graphql.modFeed({ feed_id: feed.currentFeedId(), seen: 0 }),
-    unsetStar: () => graphql.modFeed({ feed_id: feed.currentFeedId(), star: 0 }),
-    showFeeds: () => {
-        feed.show()
-        panel.hide()
+    show: (v) => {
+        window.scrollTo(0, 0)
+        model.view(v)
+        update()
+
+        if (!model.feed())
+            fetch()
     },
-    showPanel: () => {
-        feed.hide()
-        panel.show()
-    },
-    fetch: () => {
-        graphql.fetchFeeds({ seen: 0 })
-        graphql.fetchSources()
-    },
+    next: () => nextFeed(1),
+    prev: () => nextFeed(-1),
+    fetch,
+    toggle,
+    update,
 }

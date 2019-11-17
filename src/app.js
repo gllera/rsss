@@ -4,10 +4,15 @@ const cors = require('cors')
 const graphqlHTTP = require('express-graphql')
 const { importSchema } = require('graphql-import')
 const { makeExecutableSchema } = require('graphql-tools')
-const { resolvers, fetcher, db, procesor } = require('./core')
+const { GraphQLUpload, graphqlUploadExpress } = require('graphql-upload')
+
+const resolvers = require('./resolvers')
+const { init } = require('./core')
 const { configs } = require('./utils')
 
 async function appPromise() {
+    await init()
+
     let app = express()
     app.use(logger('dev'))
     app.use(cors())
@@ -15,13 +20,20 @@ async function appPromise() {
     if (configs.GUI_USER)
         app.use(express.static('dist'))
 
-    app.use('/gql', graphqlHTTP({
-        schema: makeExecutableSchema({
-            typeDefs: importSchema('schema.graphql'),
-            resolvers: await resolvers(await db(), fetcher(procesor))
-        }),
-        graphiql: configs.GUI_GRAPHQL,
-    }))
+    const schema = makeExecutableSchema({
+        typeDefs: importSchema('shemas_gql/schema.graphql'),
+        resolvers
+    })
+
+    app.use('/gql',
+        graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
+        graphqlHTTP({
+            rootValue: {
+                Upload: GraphQLUpload
+            },
+            graphiql: configs.GUI_GRAPHQL,
+            schema,
+        }))
 
     return app
 }

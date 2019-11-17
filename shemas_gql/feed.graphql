@@ -1,0 +1,28 @@
+type Feed {
+    feed_id: Int!
+    source_id: Int!
+    guid: String!
+    link: String!
+    title: String!
+    content: String!
+    date: Float
+    seen: Int
+    star: Int
+}
+
+input QueFeed {
+    feed_id: Int
+    source_id: Int
+    tag: String
+    seen: Int
+    star: Int
+    limit: Int
+    asc: Int
+    exclude: [Int]
+}
+
+input ModFeed {
+    feed_id: Int!
+    seen: Int
+    star: Int
+}

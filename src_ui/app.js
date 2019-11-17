@@ -1,32 +1,35 @@
+const u = require('umbrellajs')
 let hotkeys = require('hotkeys-js')
-
-let feedView = require('./js/feedView')()
-let panelView = require('./js/panelView')()
-let graphql = require('./js/graphql')('gql')
 let ctrl = require('./js/controller')
+let { feed, sources } = require('./js/views')
+let { model } = require('./js/utils')
 
-ctrl.config({ feedView, panelView, graphql })
+ctrl.init(feed, sources, model)
+const hash = () => window.location.hash.substring(1)
 
-hotkeys('j', () => {
-    window.scrollTo(0, 0)
-    ctrl.prev()
-    ctrl.setSeen()
-})
-hotkeys('k', () => {
-    window.scrollTo(0, 0)
-    ctrl.next()
-    ctrl.setSeen()
-})
-hotkeys('1', () => {
-    window.scrollTo(0, 0)
-    ctrl.showPanel()
-    ctrl.setSeen()
-})
-hotkeys('2', () => {
-    window.scrollTo(0, 0)
-    ctrl.showFeeds()
-})
+u('.rs-prev').on('click', () => ctrl.prev())
+u('.rs-next').on('click', () => ctrl.next())
+
+hotkeys('k', () => ctrl.prev())
+hotkeys('j', () => ctrl.next())
+
+hotkeys('1', () => ctrl.show(0))
+hotkeys('2', () => ctrl.show(1))
+
 hotkeys('f', () => ctrl.fetch())
+hotkeys('z', () => ctrl.toggle('seen'))
 
-hotkeys('z', () => ctrl.setSeen())
-hotkeys('x', () => ctrl.setStar())
+u('.rs-star').on('click', () => ctrl.toggle('star'))
+hotkeys('x', () => ctrl.toggle('star'))
+
+if (window.location.hash.length == 0) {
+    const baseUrl = window.location.href.split('#')[0]
+    window.location.replace(baseUrl + '#' + model.hash())
+} else
+    ctrl.update(hash())
+
+window.onhashchange = () => ctrl.update(hash())
+
+if (!model.sources().length)
+    ctrl.fetch(0)
+        .then(e => ctrl.fetch(1))
