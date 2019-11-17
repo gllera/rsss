@@ -15,7 +15,7 @@ const html = {
     }
 }
 
-const state = {
+const $ = {
     me: 0,
     on: true,
 }
@@ -61,7 +61,7 @@ function addCard(e, v) {
 }
 
 function update() {
-    if (!visibility(state, view))
+    if (!visibility($, view))
         return
 
     views.forEach(e => e.remove())
@@ -76,5 +76,5 @@ function update() {
 
 module.exports = {
     update,
-    me: () => state.me,
+    me: () => $.me,
 }

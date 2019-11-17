@@ -6,13 +6,13 @@ const view_title = u('.rs-title')
 const view_content = u('.rs-content')
 const view_link = u('.rs-link')
 
-const state = {
+const $ = {
     me: 1,
     on: false,
 }
 
 function update() {
-    if (!visibility(state, view))
+    if (!visibility($, view))
         return
 
     const feed = model.feed()
@@ -33,5 +33,5 @@ function update() {
 
 module.exports = {
     update,
-    me: () => state.me,
+    me: () => $.me,
 }

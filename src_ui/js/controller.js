@@ -1,10 +1,5 @@
 let feed, sources, model
 
-const filter_values = {
-    seen: [0, undefined],
-    star: [1, undefined],
-}
-
 function update() {
     sources.update()
     feed.update()
@@ -20,10 +15,7 @@ function fetch() {
 
 function toggle(k) {
     if (model.view() != feed.me()) {
-        const v = model.filter()[k]
-        const idx = (filter_values[k].indexOf(v) + 1) % filter_values[k].length
-
-        model.filter({ [k]: filter_values[k][idx] })
+        model.filter({ [k]: model.filter()[k] ? 0 : 1 })
         update()
     } else
         model.modFeed(model.feed(), k)
