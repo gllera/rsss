@@ -25,7 +25,7 @@ async function appPromise() {
         resolvers
     })
 
-    app.use('/gql',
+    app.use('/rsss',
         graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
         graphqlHTTP({
             rootValue: {
