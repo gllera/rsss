@@ -1,0 +1,15 @@
+@import 'bootstrap/scss/bootstrap-reboot'
+
+$feed-max-width: 978px
+$header-max-width: $feed-max-width * 1.5
+$touch-height: 30vh
+$touch-width: $feed-max-width * 0.1
+
+@import 'feed'
+@import 'sources'
+
+html
+    overflow-y: scroll
+
+img
+    @include img-fluid

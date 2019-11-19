@@ -18,7 +18,7 @@ let root = 'src_ui'
 const re_copy = [`${root}/**/*`, `!${root}/**/*.pug`, `!${root}/**/*.js`, `!${root}/**/*.sass`]
 const re_js = [`${root}/**/*.js`]
 const re_views = [`${root}/**/*.pug`]
-const re_css = [`${root}/**/*.sass`]
+const re_css = [`${root}/sass/*.sass`]
 const br_app = `${root}/app.js`
 
 sass.compiler = require('sass')
