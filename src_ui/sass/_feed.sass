@@ -1,22 +1,27 @@
 $hw: $touch-width
-$hh: $touch-height
+$hh: $touch-height*.9
 $sw: $touch-width*.3
-$sh: $touch-height
+$sh: $touch-height*.9
+
+@mixin tout()
+    transition: all .3s ease-out
+    box-shadow: 0 -1.2rem 1rem -.5rem
+@mixin tin()
+    transition: all .15s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+    box-shadow: 0 (-$sh) $sw (-$sw/2)
 
 .rs-controls
     color: #000a
 
 .rs-hint-bot
+    @include tout()
     width: $hw
     height: $hh
-    box-shadow: 0 -1.2rem 1rem -.5rem
     position: fixed
     margin: auto
     bottom: (-$hh)
     right: 0
     left: 0
-    transition-property: box-shadow, color
-    transition-duration:  0.1s
 
 .rs-next, .rs-prev, .rs-star
     position: fixed
@@ -30,21 +35,21 @@ $sh: $touch-height
     left: 0
     margin: auto
     &:hover ~ .rs-hint-bot 
-        box-shadow: 0 (-$sh) $sw (-$sw/2)
+        @include tin()
         color: #ff0b !important
 
 .rs-next
     right: 0
     width: 50%
     &:hover ~ .rs-hint-bot 
-        box-shadow: 0 (-$sh) $sw (-$sw/2)
+        @include tin()
         color: #0ffb !important
 
 .rs-prev
     left: 0
     width: 50%
     &:hover ~ .rs-hint-bot 
-        box-shadow: 0 (-$sh) $sw (-$sw/2)
+        @include tin()
         color: #0ffb !important
 
 .rs-feed
