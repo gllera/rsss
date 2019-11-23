@@ -2,13 +2,13 @@ const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
 const graphqlHTTP = require('express-graphql')
+const fileUpload = require('express-fileupload')
 const { importSchema } = require('graphql-import')
 const { makeExecutableSchema } = require('graphql-tools')
-const { GraphQLUpload, graphqlUploadExpress } = require('graphql-upload')
 
 const resolvers = require('./resolvers')
 const { init } = require('./core')
-const { configs } = require('./utils')
+const { configs, importer } = require('./utils')
 
 async function appPromise() {
     await init()
@@ -16,6 +16,7 @@ async function appPromise() {
     let app = express()
     app.use(logger('dev'))
     app.use(cors())
+    app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024, files: 1, fields: 0 } }))
 
     if (configs.GUI_USER)
         app.use(express.static('dist'))
@@ -25,12 +26,15 @@ async function appPromise() {
         resolvers
     })
 
+    app.post('/rsss/import', async (req, res) => {
+        if (!req.files || !req.files.file)
+            return res.status(400).json({ err: "File not found at field: file" })
+
+        res.json(await resolvers.Mutation.sourceAddBulk(null, { o: importer(req.files.file) }))
+    })
+
     app.use('/rsss',
-        graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
         graphqlHTTP({
-            rootValue: {
-                Upload: GraphQLUpload
-            },
             graphiql: configs.GUI_GRAPHQL,
             schema,
         }))
