@@ -5,7 +5,7 @@ function visibility(state, view) {
 
     if (on != state.on) {
         if (on)
-            view.each(i => i.removeAttribute('style'))
+            view.removeAttr('style')
         else
             view.attr('style', 'display: none')
     }

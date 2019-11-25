@@ -1,21 +1,21 @@
-const u = require('umbrellajs')
+const $ = require('cash-dom')
 const { model, visibility } = require('../utils')
 const ctrl = require('../controller')
 
 const views = []
-const view = u('.rs-sources')
+const view = $('.rs-sources')
 const html = {
     src: {
-        dest: u('.rs-cards'),
-        tmpl: u('.rs-card'),
+        dest: $('.rs-cards'),
+        tmpl: $('.rs-card'),
     },
     tag: {
-        dest: u('.rs-tags'),
-        tmpl: u('.rs-tag'),
+        dest: $('.rs-tags'),
+        tmpl: $('.rs-tag'),
     }
 }
 
-const $ = {
+const S = {
     me: 0,
     on: true,
 }
@@ -61,7 +61,7 @@ function addCard(e, v) {
 }
 
 function update() {
-    if (!visibility($, view))
+    if (!visibility(S, view))
         return
 
     views.forEach(e => e.remove())
@@ -76,5 +76,5 @@ function update() {
 
 module.exports = {
     update,
-    me: () => $.me,
+    me: () => S.me,
 }

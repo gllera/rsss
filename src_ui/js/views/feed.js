@@ -1,18 +1,18 @@
-const u = require('umbrellajs')
+const $ = require('cash-dom')
 const { model, visibility } = require('../utils')
 
-const view = u('.rs-feed')
-const view_title = u('.rs-title')
-const view_content = u('.rs-content')
-const view_link = u('.rs-link')
+const view = $('.rs-feed')
+const view_title = $('.rs-title')
+const view_content = $('.rs-content')
+const view_link = $('.rs-link')
 
-const $ = {
+const S = {
     me: 1,
     on: false,
 }
 
 function update() {
-    if (!visibility($, view))
+    if (!visibility(S, view))
         return
 
     const feed = model.feed()
@@ -33,5 +33,5 @@ function update() {
 
 module.exports = {
     update,
-    me: () => $.me,
+    me: () => S.me,
 }
