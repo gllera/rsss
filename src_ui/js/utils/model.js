@@ -1,9 +1,8 @@
 const graphql = require('./graphql')
 
-let sourcesFiltered = [], feedsFiltered = [], tagsFiltered = []
-const sourcesTags = {}, $ = {
+const $ = {
     view: 0,
-    idx: -1,
+    idx: 0,
     seen: 1,
     star: 0,
     source_id: 0,
@@ -11,6 +10,19 @@ const sourcesTags = {}, $ = {
     asc: 0,
     exclude: [],
 }
+
+const LAST = {
+    title: '...',
+    content: '[go next to fetch more]',
+    link: '',
+    feed_id: -1,
+    seen: 0,
+    star: 0,
+    source_id: -1,
+}
+
+const sourcesTags = {}
+let sourcesFiltered = [LAST], feedsFiltered = [], tagsFiltered = []
 
 function updSources(s) {
     s.forEach(e => sourcesTags[e.source_id] = e.tag)
@@ -41,6 +53,7 @@ function updSources(s) {
 }
 
 function updFeeds(feeds) {
+    feedsFiltered.pop()
     feedsFiltered = feedsFiltered.concat(feeds
         .filter(e =>
             (!$.seen || !e.seen) &&
@@ -52,9 +65,7 @@ function updFeeds(feeds) {
     )
 
     $.exclude = feedsFiltered.map(e => e.feed_id)
-
-    if ($.idx == -1 && feedsFiltered.length)
-        $.idx = 0
+    feedsFiltered.push(LAST)
 }
 
 function filter(o) {
@@ -64,8 +75,8 @@ function filter(o) {
 
     Object.keys(o).forEach(e => $[e] = o[e])
 
-    feedsFiltered = []
-    $.idx = -1
+    feedsFiltered = [LAST]
+    $.idx = 0
 
     updSources(graphql.sources())
     updFeeds(graphql.feeds())
@@ -94,7 +105,7 @@ module.exports = {
     hash,
     filter,
     view: (o) => o != undefined ? $.view = o : $.view,
-    feed: () => $.idx != -1 ? feedsFiltered[$.idx] : null,
+    feed: () => feedsFiltered[$.idx],
     sources: () => sourcesFiltered,
     tags: () => tagsFiltered,
 
@@ -116,6 +127,6 @@ module.exports = {
             $.idx = feedsFiltered.length - 1
 
         if ($.idx < 0)
-            $.idx = feedsFiltered.length ? 0 : -1
+            $.idx = 0
     },
 }

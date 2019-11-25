@@ -2,6 +2,7 @@ const $ = require('cash-dom')
 const { model, visibility } = require('../utils')
 
 const view = $('.rs-feed')
+const view_header = $('.rs-header')
 const view_title = $('.rs-title')
 const view_content = $('.rs-content')
 const view_link = $('.rs-link')
@@ -9,6 +10,7 @@ const view_link = $('.rs-link')
 const S = {
     me: 1,
     on: false,
+    feed_id: null,
 }
 
 function update() {
@@ -17,17 +19,18 @@ function update() {
 
     const feed = model.feed()
 
-    if (feed) {
-        model.modFeed(feed, 'seen', 1)
+    model.modFeed(feed, 'seen', 1)
 
+    if (feed.star)
+        view_header.addClass('rs-stared')
+    else
+        view_header.removeClass('rs-stared')
+
+    if (S.feed_id != feed.feed_id) {
         view_title.html(feed.title)
         view_content.html(feed.content)
         view_link.attr({ href: feed.link })
-    }
-    else {
-        view_title.html('')
-        view_content.html('(no feed to show, try to fetch them)')
-        view_link.attr({ href: '' })
+        S.feed_id = feed.feed_id
     }
 }
 
