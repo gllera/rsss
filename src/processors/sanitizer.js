@@ -21,8 +21,7 @@ const sanitize_opts = {
 module.exports = {
     name: 'Sanitizer',
     order: 200,
-    process: (e) => {
+    process: e => {
         e.content = sanitizer(e.content, sanitize_opts)
-        return e
     }
 }

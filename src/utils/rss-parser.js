@@ -19,7 +19,6 @@ const opts_parser = {
 
 const opts_iconv = {
     encoding: null,
-    gzip: true,
     strictSSL: false,
     timeout: configs.FETCHER_TIMEOUT,
     headers: { 'User-Agent': configs.FETCHER_AGENT },
