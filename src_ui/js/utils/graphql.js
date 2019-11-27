@@ -1,4 +1,4 @@
-const gql = require('graphql.js')(config.GRAPHQL_URL)
+const gql = require('graphql.js')(config.RSSS_URL)
 
 const gFeeds = gql('mutation ($o: QueFeed!, $s: SyncData) { feeds(o: $o, s: $s) { feed_id source_id link title content date seen star } }')
 const gSources = gql('mutation ($s: SyncData) { sources(s: $s) { source_id xml_url title description html_url lang tag count unseen stars err } }')

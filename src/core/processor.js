@@ -1,6 +1,7 @@
 const debug = require('debug')('rsss:processor')
 const fs = require('fs')
 const path = require('path')
+const async = require('async')
 const procs = {}
 
 function includePath(p) {
@@ -28,13 +29,14 @@ console.log('PROCESSING PATHS:')
 for (let i in procs)
     console.log(`${i} -> ${procs[i].map(o => o.name)}`)
 
-module.exports = (e) => {
-    for (let i in procs)
-        procs[i].forEach(j => {
+module.exports = async e => {
+    await async.eachSeries(procs, async i => {
+        await async.eachSeries(i, async j => {
             debug(`${e.source_id} USING "${j.name}"`)
-            e = j.process(e)
-            debug(`${e.source_id} DONE`)
+            await j.process(e)
         })
+    })
+
 
     return e
 }

@@ -6,18 +6,19 @@ const buffer = require('vinyl-buffer')
 const sourcemaps = require('gulp-sourcemaps')
 const sass = require('gulp-sass')
 const clean = require('gulp-clean')
-const log = require('gulplog')
+const replace = require('gulp-replace')
 const browserSync = require('browser-sync').create()
 
 let S = gulp.series
 let P = gulp.parallel
+let rsss_url = (process.env['BASE_URL'] || '') + '/rsss'
 
 let root = 'src_ui'
 
 const re_copy = [`${root}/**/*`, `!${root}/**/*.pug`, `!${root}/**/*.js`, `!${root}/**/*.sass`]
 const re_js = [`${root}/**/*.js`]
 const re_views = [`${root}/**/*.pug`]
-const re_css = [`${root}/**/*.sass`]
+const re_css = [`${root}/sass/*.sass`]
 const br_app = `${root}/app.js`
 
 sass.compiler = require('sass')
@@ -55,6 +56,7 @@ gulp.task('js', (cb) =>
 gulp.task('views', (cb) =>
     gulp.src(re_views)
         .pipe(pug({ pretty: true }))
+        .pipe(replace('\$RSSS_URL', rsss_url))
         .pipe(gulp.dest('dist/'))
         .on('end', cb)
 )

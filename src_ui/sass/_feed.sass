@@ -1,0 +1,77 @@
+$hw: $touch-width
+$hh: $touch-height*.9
+$sw: $touch-width*.3
+$sh: $touch-height*.9
+
+@mixin tout()
+    transition: all .3s ease-out
+    box-shadow: 0 -1.2rem 1rem -.5rem
+@mixin tin()
+    transition: all .15s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+    box-shadow: 0 (-$sh) $sw (-$sw/2)
+
+.rs-controls
+    color: #000a
+
+.rs-hint-bot
+    @include tout()
+    width: $hw
+    height: $hh
+    position: fixed
+    margin: auto
+    bottom: (-$hh)
+    right: 0
+    left: 0
+
+.rs-next, .rs-prev, .rs-star
+    position: fixed
+    height: $touch-height
+    bottom: 0
+    cursor: pointer
+
+.rs-star
+    width: $touch-width
+    right: 0
+    left: 0
+    margin: auto
+    &:hover ~ .rs-hint-bot
+        @include tin()
+        color: #ff0b !important
+
+.rs-next
+    right: 0
+    width: 50%
+    &:hover ~ .rs-hint-bot
+        @include tin()
+        color: #0ffb !important
+
+.rs-prev
+    left: 0
+    width: 50%
+    &:hover ~ .rs-hint-bot
+        @include tin()
+        color: #0ffb !important
+
+.rs-feed
+    .rs-link
+        color: inherit
+        text-decoration: none
+.rs-header
+    margin: -.5rem
+    padding: .5rem
+    margin-bottom: 1rem
+    //background-color: #ffb
+    box-shadow: 0 0 .3rem 0 #0008
+    .rs-in
+        max-width: $header-max-width
+        margin: 0 auto
+
+.rs-stared
+    background-color: #FF08
+
+.rs-title
+    margin: 0
+
+.rs-content
+    max-width: $feed-max-width
+    margin: 0 auto

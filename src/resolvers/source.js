@@ -1,6 +1,6 @@
 const async = require('async')
 const { fetcher, db } = require('../core')
-const { xmlStreamToJs, getSyncInfo } = require('../utils')
+const { getSyncInfo } = require('../utils')
 const debug = require('debug')('rsss:source')
 
 async function sources() {
@@ -28,8 +28,6 @@ async function mutSources(root, { s }) {
     return await sources()
 }
 
-
-
 async function sourceMod(root, { o }) {
     return await db.sourceMod(o)
 }
@@ -51,38 +49,6 @@ async function sourceAddBulk(root, { o }) {
     return values
 }
 
-function parseJsImport(o, res, tag) {
-    if (o.$ && o.$.type == 'rss')
-        if (res[o.$.xmlUrl] === undefined)
-            res[o.$.xmlUrl] = {
-                title: o.$.title,
-                xml_url: o.$.xmlUrl,
-                html_url: o.$.htmlUrl,
-                tag
-            }
-
-    tag = o.$ && o.$.title ? o.$.title : tag
-
-    if (Array.isArray(o.outline))
-        o.outline.forEach(e => parseJsImport(e, res, tag))
-}
-
-async function sourcesImport(root, { file }) {
-    const { createReadStream } = await file
-    const txt = await xmlStreamToJs(createReadStream())
-
-    const RSSs = {}
-    const res = []
-
-    if (txt && txt.opml && txt.opml.body && Array.isArray(txt.opml.body.outline))
-        txt.opml.body.outline.forEach(e => parseJsImport(e, RSSs))
-
-    for (let e in RSSs)
-        res.push(RSSs[e])
-
-    return sourceAddBulk(root, { o: res })
-}
-
 module.exports = {
     Query: {
         sources,
@@ -92,7 +58,6 @@ module.exports = {
         sourceDel,
         sourceMod,
         sourceAddBulk,
-        sourcesImport,
         sources: mutSources,
     }
 }

@@ -1,12 +1,6 @@
-const parseXML = require('fast-xml-parser').parse
 const parseRSS = require('./rss-parser')
 const configs = require('./configs')
-
-const opts_parser = {
-    ignoreAttributes: false,
-    attributeNamePrefix: '',
-    attrNodeName: '$',
-}
+const importer = require('./importer')
 
 function getSyncInfo(s) {
     const upd = {
@@ -36,14 +30,9 @@ function getSyncInfo(s) {
 }
 
 module.exports = {
+    importer,
     configs,
     getSyncInfo,
     parseRSS,
     sleep: ms => new Promise(resolve => setTimeout(resolve, ms)),
-    xmlStreamToJs: s => new Promise((res, rej) => {
-        let xml = ''
-        s.on('data', e => xml += e)
-        s.on('end', e => res(xml))
-        s.on('error', e => rej(e))
-    }).then(e => parseXML(e, opts_parser)),
 }

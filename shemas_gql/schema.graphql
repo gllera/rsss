@@ -1,6 +1,5 @@
 # import * from 'source.graphql'
 # import * from 'feed.graphql'
-scalar Upload
 
 type Query {
     feeds(o: QueFeed): [Feed]!
@@ -14,7 +13,6 @@ type Mutation {
     sourceAdd(o: AddSource!): SourceRes!
     sourceMod(o: ModSource!): Int!
     sourceDel(source_id: Int!): Int!
-    sourcesImport(file: Upload!): [SourceRes]!
     feeds(o: QueFeed, s: SyncData): [Feed]!
     sources(s: SyncData): [Source]!
 }

@@ -20,8 +20,7 @@ const minify_opts = {
 module.exports = {
     name: 'Minifier',
     order: 800,
-    process: (e) => {
+    process: e => {
         e.content = minify(e.content, minify_opts)
-        return e
     }
 }

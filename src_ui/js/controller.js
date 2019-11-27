@@ -15,15 +15,16 @@ function fetch(v = model.view()) {
 
     return _fetch()
         .then(() => update())
-        .catch(e => alert(JSON.stringify(e)))
+        .catch(e => alert(e))
 }
 
 function toggle(k) {
-    if (model.view() != feed.me()) {
+    if (model.view() != feed.me())
         model.filter({ [k]: model.filter()[k] ? 0 : 1 })
-        update()
-    } else
+    else
         model.modFeed(model.feed(), k)
+
+    update()
 }
 
 function nextFeed(amt) {
@@ -31,6 +32,9 @@ function nextFeed(amt) {
         window.scrollTo(0, 0)
         model.nextFeed(amt)
         update()
+
+        if (model.feed().feed_id == -1)
+            fetch()
     }
 }
 
