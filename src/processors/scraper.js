@@ -13,6 +13,7 @@ module.exports = {
     name: 'Scraper',
     order: 100,
     process: e => {
+        return
         return new Promise((resolve, reject) => {
             request.get(e.link, opts_iconv, (err, res, body) => {
                 e.content = $('.entry', body).html()
