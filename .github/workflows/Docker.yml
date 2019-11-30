@@ -1,6 +1,9 @@
 name: Docker Image CI
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -9,15 +12,10 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build the Docker image
       run: |
-        BRANCH=${GITHUB_REF##*/}
-        IMAGE=docker.pkg.github.com/gllera/rsss/$BRANCH:latest
-        IMAGE2=gllera/rsss:$BRANCH
+        IMAGE1=docker.pkg.github.com/gllera/rsss/rsss
+        IMAGE2=gllera/rsss
         echo ${{ secrets.TOKEN }} | docker login docker.pkg.github.com --username gllera --password-stdin
         echo ${{ secrets.TOKEN_DOCKER }} | docker login --username gllera --password-stdin
-        docker build . --tag $IMAGE --tag $IMAGE2
-        docker push $IMAGE
+        docker build . --tag $IMAGE1 --tag $IMAGE2
+        docker push $IMAGE1
         docker push $IMAGE2
-        if [[ "$BRANCH" == "master" ]]; then
-          docker tag $IMAGE gllera/rsss
-          docker push gllera/rsss
-        fi
