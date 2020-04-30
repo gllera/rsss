@@ -1,4 +1,4 @@
-node_modules
-sqlite.db
-sqlite.devel.db
-dist
+/node_modules
+/data/sqlite.db
+/data/sqlite.devel.db
+/dist
