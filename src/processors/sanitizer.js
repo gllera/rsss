@@ -1,3 +1,5 @@
+// Description: Removes unwanted html tags and attributes. Also it makes sure they are well formed.
+
 const sanitizer = require('sanitize-html')
 
 const sanitize_opts = {

@@ -20,8 +20,8 @@ const opts_parser = {
 const opts_iconv = {
     encoding: null,
     strictSSL: false,
-    timeout: configs.FETCHER_TIMEOUT,
-    headers: { 'User-Agent': configs.FETCHER_AGENT },
+    timeout: configs.fetcher_timeout,
+    headers: { 'User-Agent': configs.fetcher_agent },
 }
 
 const extVal = e => e == null ? '' : Array.isArray(e) ? extVal(e[0]) : typeof e == 'object' ? e.$$ : e

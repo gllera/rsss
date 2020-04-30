@@ -6,7 +6,7 @@ const { db } = require('./db')
 const processor = require('./processor')
 
 let sources = []
-setInterval(() => fetch(), configs.FETCHER_SLEEP)
+setInterval(() => fetch(), configs.fetcher_sleep)
 
 class Feed {
     constructor(source_id, xml_url) {
@@ -58,7 +58,7 @@ class Feed {
 
 function fetch() {
     for (let i = sources.length - 1; i >= 0; i--)
-        if (sources[i]._lastFetch < Date.now() - configs.FETCHER_INTERVAL) {
+        if (sources[i]._lastFetch < Date.now() - configs.fetcher_interval) {
             sources[i].fetch()
             return
         }

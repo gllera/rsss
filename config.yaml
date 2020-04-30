@@ -1,13 +1,13 @@
-PORT: 3000
+port: 3000
 
-GUI_USER: true
-GUI_GRAPHQL: false
+gui_user: true
+gui_graphql: false
 
-DB_NAME: 'sqlite.db'
-DB_FORCE: ''
-DB_CACHED: true
+db_name: 'sqlite.db'
+db_force: ''
+db_cached: true
 
-FETCHER_SLEEP: 1000
-FETCHER_INTERVAL: 600000
-FETCHER_TIMEOUT: 10000
-FETCHER_AGENT: 'rss-parser'
+fetcher_sleep: 1000
+fetcher_interval: 600000
+fetcher_timeout: 10000
+fetcher_agent: 'rss-parser'

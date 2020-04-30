@@ -18,7 +18,7 @@ async function appPromise() {
     app.use(cors())
     app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024, files: 1, fields: 0 } }))
 
-    if (configs.GUI_USER)
+    if (configs.gui_user)
         app.use(express.static('dist'))
 
     const schema = makeExecutableSchema({
@@ -35,7 +35,7 @@ async function appPromise() {
 
     app.use('/rsss',
         graphqlHTTP({
-            graphiql: configs.GUI_GRAPHQL,
+            graphiql: configs.gui_graphql,
             schema,
         }))
 

@@ -1,3 +1,5 @@
+// Description: Removes unnecessary stuff from feed content.
+
 const { minify } = require('html-minifier')
 
 const minify_opts = {

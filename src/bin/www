@@ -13,7 +13,7 @@ const { configs } = require('../utils')
 async function start() {
     let app = await appPromise()
 
-    port = configs.PORT
+    port = configs.port
     app.set('port', port)
 
     server = http.createServer(app)

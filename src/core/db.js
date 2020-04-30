@@ -118,8 +118,8 @@ module.exports = {
         feedExists: async guid => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
     },
     initDB: async () => {
-        DB = await sqlite.open('data/' + configs.DB_NAME, { cached: configs.DB_CACHED })
-        await DB.migrate({ force: configs.DB_FORCE })
+        DB = await sqlite.open('data/' + configs.db_name, { cached: configs.db_cached })
+        await DB.migrate({ force: configs.db_force })
         await DB.get("PRAGMA foreign_keys = ON")
     },
 }
