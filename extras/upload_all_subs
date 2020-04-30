@@ -1,0 +1,5 @@
+#!/bin/bash
+
+upload="all.xml"
+
+source .run

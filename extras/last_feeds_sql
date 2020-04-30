@@ -1,0 +1,7 @@
+#!/bin/bash
+
+sql='
+select * from feed order by feed_id desc limit 1;
+'
+
+source .run

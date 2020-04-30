@@ -1,0 +1,11 @@
+#!/bin/bash
+
+URL="http://localhost:3000/rsss"
+JQ='python -m json.tool'
+DIR="$(dirname "$(readlink -f "$0" || realpath "$0")")"
+
+parse() { echo "{ \"query\": \"$query\", \"variables\": ${variables:-"{}"} }" | tr '\n' ' ' | sed 's/  */ /g'; }
+
+[[ -v upload ]] && curl -s -F "file=@$DIR/subscriptions/$upload"                     $URL/import | $JQ
+[[ -v query  ]] && curl -s -X POST -H "Content-Type: application/json" -d "$(parse)" $URL        | $JQ
+[[ -v sql    ]] && echo ".mode line \n$sql" | sqlite3 $DIR/../data/sqlite.db

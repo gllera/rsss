@@ -1,0 +1,21 @@
+#!/bin/bash
+
+query='
+query( $q: QueFeed! )
+{
+    feeds( o: $q )
+    {
+        feed_id
+        title
+        source_id
+    }
+}'
+
+variables='
+{
+    "q": {
+        "limit": 5
+    }
+}'
+
+source .run
