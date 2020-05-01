@@ -1,5 +1,6 @@
 const sqlite = require('sqlite')
-const { configs } = require('../utils')
+const sqlite3 = require('sqlite3')
+const configs = require('./configs')
 
 /** @typedef {sqlite.Database} Database */
 /** @type {sqlite.Database} */
@@ -104,6 +105,20 @@ async function feeds(o) {
     return await DB.all(`SELECT f.* FROM feed as f LEFT JOIN source AS s ON f.source_id = s.source_id ${where} ORDER BY f.date ${order} LIMIT ?`, values)
 }
 
+
+this._lastFetch = 0
+this._lastGuid = null
+this._err = null
+
+function status() {
+    let res = {}
+    sources.forEach(e => {
+        if (e._err !== null)
+            res[e._source_id] = e._err
+    })
+    return res
+}
+
 module.exports = {
     db: {
         sources: async () => await DB.all(sourcesQuery),
@@ -118,7 +133,11 @@ module.exports = {
         feedExists: async guid => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
     },
     initDB: async () => {
-        DB = await sqlite.open('data/' + configs.db_name, { cached: configs.db_cached })
+        DB = await sqlite.open({
+            filename: 'data/' + configs.db_name,
+            driver: sqlite3.cached.Database
+        })
+
         await DB.migrate({ force: configs.db_force })
         await DB.get("PRAGMA foreign_keys = ON")
     },

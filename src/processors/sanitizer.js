@@ -20,10 +20,4 @@ const sanitize_opts = {
     allowProtocolRelative: false
 }
 
-module.exports = {
-    name: 'Sanitizer',
-    order: 200,
-    process: e => {
-        e.content = sanitizer(e.content, sanitize_opts)
-    }
-}
+module.exports = e => e.content = sanitizer(e.content, sanitize_opts)

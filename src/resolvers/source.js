@@ -1,6 +1,5 @@
 const async = require('async')
-const { fetcher, db } = require('../core')
-const { getSyncInfo } = require('../utils')
+const { parseSyncInfo, db } = require('../utils')
 const debug = require('debug')('rsss:source')
 
 async function sources() {
@@ -12,33 +11,22 @@ async function sources() {
     return srcs
 }
 
-async function sourceAdd(root, { o }) {
+async function sourceAdd(_, { o }) {
     o.source_id = await db.sourcesAdd(o)
-    fetcher.sourceAdd(o)
     return o
 }
 
-async function sourceDel(root, { source_id }) {
-    fetcher.sourceDel(source_id)
-    return await db.sourcesDel(source_id)
-}
-
-async function mutSources(root, { s }) {
-    await db.feedModBulk(getSyncInfo(s))
+async function mutSources(_, { s }) {
+    await db.feedModBulk(parseSyncInfo(s))
     return await sources()
 }
 
-async function sourceMod(root, { o }) {
-    return await db.sourceMod(o)
-}
-
-async function sourceAddBulk(root, { o }) {
+async function sourceAddBulk(_, { o }) {
     let values = []
 
     await async.eachSeries(o, async i => {
         try {
             i.source_id = await db.sourcesAdd(i)
-            fetcher.sourceAdd(i)
             values.push(i)
         } catch (e) {
             i.err = e.message
@@ -55,8 +43,8 @@ module.exports = {
     },
     Mutation: {
         sourceAdd,
-        sourceDel,
-        sourceMod,
+        sourceDel: async (_, { source_id }) => await db.sourcesDel(source_id),
+        sourceMod: async (_, { o }) => await db.sourceMod(o),
         sourceAddBulk,
         sources: mutSources,
     }

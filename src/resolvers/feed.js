@@ -1,5 +1,4 @@
-const { getSyncInfo } = require('../utils')
-const { db } = require('../core')
+const { parseSyncInfo, db } = require('../utils')
 
 async function feeds(root, { o }) {
     return await db.feeds(o)
@@ -10,7 +9,7 @@ async function feedMod(root, { o }) {
 }
 
 async function mutFeeds(root, { o, s }) {
-    await db.feedModBulk(getSyncInfo(s))
+    await db.feedModBulk(parseSyncInfo(s))
     return await feeds(root, { o })
 }
 

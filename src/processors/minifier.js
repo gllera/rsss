@@ -19,10 +19,4 @@ const minify_opts = {
     html5: true
 }
 
-module.exports = {
-    name: 'Minifier',
-    order: 800,
-    process: e => {
-        e.content = minify(e.content, minify_opts)
-    }
-}
+module.exports = e => e.content = minify(e.content, minify_opts)

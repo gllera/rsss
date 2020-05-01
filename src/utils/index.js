@@ -1,8 +1,15 @@
-const parseRSS = require('./rss-parser')
 const configs = require('./configs')
-const importer = require('./importer')
+const parseOPML = require('./opml-parser')
+const parseRSS = require('./rss-parser')
+const { processFeed, initFeedProcessor } = require('./feed-processor')
+const { db, initDB } = require('./db')
 
-function getSyncInfo(s) {
+async function init() {
+    await initDB(configs)
+    await initFeedProcessor()
+}
+
+function parseSyncInfo(s) {
     const upd = {
         seen: [],
         unseen: [],
@@ -30,9 +37,11 @@ function getSyncInfo(s) {
 }
 
 module.exports = {
-    importer,
+    init,
+    db,
     configs,
-    getSyncInfo,
+    parseSyncInfo,
+    parseOPML,
     parseRSS,
-    sleep: ms => new Promise(resolve => setTimeout(resolve, ms)),
+    processFeed
 }

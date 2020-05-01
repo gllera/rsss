@@ -11,16 +11,14 @@ const opts_iconv = {
     headers: { 'User-Agent': configs.fetcher_agent },
 }
 
-module.exports = {
-        name: 'Scraper',
-        order: 100,
-        process: e => {
-        return
-        return new Promise((resolve, reject) => {
-            request.get(e.link, opts_iconv, (err, res, body) => {
-                e.content = $('.entry', body).html()
-                resolve()
-            })
-        })
-    }
-}
+// function process() {
+//     return
+//     return new Promise((resolve, reject) => {
+//         request.get(e.link, opts_iconv, (err, res, body) => {
+//             e.content = $('.entry', body).html()
+//             resolve()
+//         })
+//     })
+// }
+
+module.exports = e => null

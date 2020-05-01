@@ -38,7 +38,8 @@
         "morgan": "~1.9.1",
         "request": "^2.88.2",
         "sanitize-html": "^1.23.0",
-        "sqlite": "^3.0.6"
+        "sqlite": "^4.0.7",
+        "sqlite3": "^4.2.0"
     },
     "devDependencies": {
         "bootstrap": "^4.4.1",
