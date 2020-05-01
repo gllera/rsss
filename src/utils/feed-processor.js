@@ -25,7 +25,11 @@ function initFeedProcessor(configs) {
         includePath('data/processors')
 }
 
-async function processFeed(source, feed) {
+function parseProcessorsStr() {
+
+}
+
+async function processFeed(feed) {
     function parseList(source_list) {
         //configs.fetcher_default_processors
     }
