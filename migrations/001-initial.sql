@@ -21,7 +21,7 @@ CREATE TABLE source
     title       VARCHAR,
     tag         VARCHAR,
     lang        VARCHAR,
-    processors  VARCHAR,
+    tuners      VARCHAR,
     err         VARCHAR,
     last_fetch  DATETIME NOT NULL DEFAULT 0,
     description VARCHAR

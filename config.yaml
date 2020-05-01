@@ -10,6 +10,6 @@ fetcher_sleep: 1000
 fetcher_interval: 600000
 fetcher_timeout: 10000
 fetcher_agent: 'rss-parser'
-fetcher_default_processors: '10-scraper ; 40-sanitizer ; 80-minifier'
+fetcher_default_tuners: '10-scraper ; 40-sanitizer ; 80-minifier'
 
 import_upload_max_filesize: 500000
