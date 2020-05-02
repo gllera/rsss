@@ -1,0 +1,96 @@
+#################### Main
+type Query {
+    feeds(o: QueFeed): [Feed]!
+    sources: [Source]!
+}
+
+type Mutation {
+    feedMod(o: ModFeed!): Int!
+
+    sourceAddBulk(o: [AddSource]!): [SourceRes]!
+    sourceAdd(o: AddSource!): SourceRes!
+    sourceMod(o: ModSource!): Int!
+    sourceDel(source_id: Int!): Int!
+
+    feeds(o: QueFeed, s: SyncData): [Feed]!
+    sources(s: SyncData): [Source]!
+}
+
+input SyncData {
+    seen: [Int]
+    star: [Int]
+}
+
+
+
+#################### Feeds
+type Feed {
+    feed_id: Int!
+    source_id: Int!
+    guid: String!
+    link: String!
+    title: String!
+    content: String!
+    date: Float
+    seen: Int
+    star: Int
+}
+
+input QueFeed {
+    feed_id: Int
+    source_id: Int
+    tag: String
+    seen: Int
+    star: Int
+    limit: Int
+    asc: Int
+    exclude: [Int]
+}
+
+input ModFeed {
+    feed_id: Int!
+    seen: Int
+    star: Int
+}
+
+
+
+#################### Sources
+type Source {
+    source_id: Int!
+    xml_url: String!
+    title: String!
+    description: String
+    html_url: String
+    lang: String
+    tag: String
+    err: String
+    count: Int!
+    unseen: Int!
+    stars: Int!
+}
+
+type SourceRes {
+    source_id: Int
+    xml_url: String!
+    err: String
+}
+
+input AddSource {
+    xml_url: String!
+    title: String!
+    description: String
+    html_url: String
+    lang: String
+    tag: String
+}
+
+input ModSource {
+    source_id: Int!
+    xml_url: String
+    title: String
+    description: String
+    html_url: String
+    lang: String
+    tag: String
+}
