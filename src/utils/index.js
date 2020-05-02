@@ -1,12 +1,12 @@
 const configs = require('./configs')
 const parseOPML = require('./opml-parser')
 const parseRSS = require('./rss-parser')
-const { processFeed, initFeedProcessor } = require('./feed-processor')
+const { tuneFeed, initFeedTuner } = require('./feed-tuner')
 const { db, initDB } = require('./db')
 
 async function init() {
     await initDB(configs)
-    await initFeedProcessor()
+    await initFeedTuner()
 }
 
 function parseSyncInfo(s) {
@@ -43,5 +43,5 @@ module.exports = {
     parseSyncInfo,
     parseOPML,
     parseRSS,
-    processFeed
+    tuneFeed
 }

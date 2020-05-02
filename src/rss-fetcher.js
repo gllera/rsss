@@ -2,7 +2,7 @@ const debug = require('debug')('rsss:fetcher')
 const _ = require('loadsh')
 const async = require('async')
 
-const { parseRSS, configs, db, processFeed } = require('./utils')
+const { parseRSS, configs, db, tuneFeed } = require('./utils')
 let last_guid = {}
 
 async function fetch(source) {
@@ -27,18 +27,17 @@ async function fetch(source) {
                 feed.source_id = source.source_id
                 feed.date = new Date(feed.date).getTime() || Date.now()
 
-                console.log(`Workning on: ${feed}`)
-                //feed = await processFeed(feed)
+                await tuneFeed(source.tuners, feed)
                 await db.feedAdd(feed)
             }
         })
 
-        err = null
         debug(`${source.source_id} DONE`)
+        err = null
     }
     catch (e) {
-        err = e.message || e
         debug(`${source.source_id} ${e}`)
+        err = e.message || e
     }
 
     await db.sourceMod({
