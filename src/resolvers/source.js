@@ -2,13 +2,8 @@ const async = require('async')
 const { parseSyncInfo, db } = require('../utils')
 const debug = require('debug')('rsss:source')
 
-async function sources() {
-    let srcs = await db.sources()
-    let status = fetcher.status()
-
-    srcs.forEach(e => e.err = status[e.source_id])
-
-    return srcs
+async function sources(o) {
+    return await db.sources(o)
 }
 
 async function sourceAdd(_, { o }) {
@@ -18,7 +13,7 @@ async function sourceAdd(_, { o }) {
 
 async function mutSources(_, { s }) {
     await db.feedModBulk(parseSyncInfo(s))
-    return await sources()
+    return await sources({ expanded: true })
 }
 
 async function sourceAddBulk(_, { o }) {
