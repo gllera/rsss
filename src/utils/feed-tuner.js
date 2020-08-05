@@ -33,7 +33,21 @@ async function tuneFeed(tunersStr, feed) {
 
     if (order === undefined) {
         const defaults = configs.tuners_default
-        const current = tunersStr ? JSON.parse(tunersStr) : []
+        let current = tunersStr ? JSON.parse(tunersStr) : []
+
+        defaults.forEach(i => {
+            if (!i.params)
+                i.params = []
+        })
+
+        current = current.map(i => {
+            const e = i.split('%%')
+            return {
+                name: e[0],
+                z: e[1] ? parseInt(e[1]) : undefined,
+                params: e.slice(2)
+            }
+        })
 
         order = tunersStrOrder[tunersStr] = defaults.concat(current).sort(sorter)
     }

@@ -101,7 +101,7 @@ async function feeds(o = {}) {
 module.exports = {
     db: {
         sources: async (o = {}) => await DB.all(`SELECT * FROM ${o.expanded ? 'source_expanded' : 'source'}`),
-        sourcesAdd: async o => (await DB.run('INSERT INTO source ( xml_url, title, description, html_url, lang, tag ) VALUES( ?, ?, ?, ?, ?, ? )', [o.xml_url, o.title, o.description, o.html_url, o.lang, o.tag])).lastID,
+        sourcesAdd: async o => (await DB.run('INSERT INTO source ( xml_url, title, description, html_url, lang, tag, tuners ) VALUES( ?, ?, ?, ?, ?, ?, ? )', [o.xml_url, o.title, o.description, o.html_url, o.lang, o.tag, o.tuners])).lastID,
         sourcesDel: async source_id => (await DB.run('DELETE FROM source WHERE source_id = ?', [source_id])).changes,
         sourceMod,
         sourcePop,

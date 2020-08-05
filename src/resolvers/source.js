@@ -21,6 +21,9 @@ async function sourceAddBulk(_, { o }) {
 
     await async.eachSeries(o, async i => {
         try {
+            if (i.tuners)
+                i.tuners = JSON.stringify(i.tuners)
+
             i.source_id = await db.sourcesAdd(i)
             values.push(i)
         } catch (e) {

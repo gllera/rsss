@@ -83,6 +83,7 @@ input AddSource {
     html_url: String
     lang: String
     tag: String
+    tuners: [String]
 }
 
 input ModSource {
