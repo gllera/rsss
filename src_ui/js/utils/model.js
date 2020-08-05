@@ -97,7 +97,7 @@ function hash(h) {
         asc: parseInt(v[3]),
         view: parseInt(v[4]),
         source_id: v.length == 5 ? 0 : parseInt(v.substring(5), 2),
-        tag: arr[1] ? arr[1] : undefined,
+        tag: arr[1] ? decodeURIComponent(arr[1]) : undefined,
     })
 }
 
