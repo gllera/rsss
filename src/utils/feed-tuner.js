@@ -4,6 +4,7 @@ const path = require('path')
 const configs = require('./configs')
 
 const tuners = {}, tunersStrOrder = {}
+const sorter = (a, b) => (a.z === undefined ? 99 : a.z) - (b.z === undefined ? 99 : b.z)
 
 function includePath(folder) {
     fs.readdirSync(folder).forEach(i => {
@@ -26,34 +27,20 @@ function initFeedTuner(configs) {
         includePath('data/tuners')
 }
 
-function parseTunersStr(tunersStr) {
-    let defaults = JSON.parse(configs.tuners_default)
-    let current = tunersStr ? JSON.parse(tunersStr) : {}
-    let params = { ...defaults, ...current }
-    let order = []
-
-    for (let i = 0; i < 10; i++)
-        for (let j in params)
-            if (params[j].z === i)
-                order.push({
-                    id: j,
-                    params: params[j]
-                })
-
-    return order
-}
-
 async function tuneFeed(tunersStr, feed) {
     tunersStr = tunersStr || ""
-
     let order = tunersStrOrder[tunersStr]
 
-    if (order === undefined)
-        order = tunersStrOrder[tunersStr] = parseTunersStr(tunersStr)
+    if (order === undefined) {
+        const defaults = configs.tuners_default
+        const current = tunersStr ? JSON.parse(tunersStr) : []
+
+        order = tunersStrOrder[tunersStr] = defaults.concat(current).sort(sorter)
+    }
 
     order.forEach(e => {
-        debug(feed.source_id, e.id)
-        tuners[e.id](feed, e.params)
+        debug(feed.source_id, e.name)
+        tuners[e.name](feed, e.params)
     })
 }
 
