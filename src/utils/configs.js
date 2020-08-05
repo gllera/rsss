@@ -22,6 +22,9 @@ for (let e in configs)
             case 'boolean':
                 configs[e] = (process.env[e].toLowerCase() == 'true')
                 break
+            case 'object':
+                configs[e] = JSON.parse(process.env[e])
+                break
         }
 
 console.log('[CONFIGURATIONS]')
