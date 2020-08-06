@@ -52,10 +52,10 @@ async function tuneFeed(tunersStr, feed) {
         order = tunersStrOrder[tunersStr] = defaults.concat(current).sort(sorter)
     }
 
-    order.forEach(e => {
+    for (const e of order) {
         debug(feed.source_id, e.name)
-        tuners[e.name](feed, e.params)
-    })
+        await tuners[e.name](feed, e.params)
+    }
 }
 
 module.exports = { initFeedTuner, tuneFeed }
