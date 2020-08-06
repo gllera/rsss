@@ -50,7 +50,8 @@ variables='
             "tag": "Interesting",
             "lang": "en",
             "tuners": [
-                "scraper%%10"
+                "scraper|10",
+                "edit|11|##crop##|main|##del##|[class^=Noonification__]|[class^=Profile__]|[class^=SocialLinks-]|footer|section"
             ]
         }
     ]

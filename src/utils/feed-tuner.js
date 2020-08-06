@@ -41,7 +41,7 @@ async function tuneFeed(tunersStr, feed) {
         })
 
         current = current.map(i => {
-            const e = i.split('%%')
+            const e = i.split('|')
             return {
                 name: e[0],
                 z: e[1] ? parseInt(e[1]) : undefined,
