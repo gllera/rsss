@@ -1,24 +1,21 @@
 // Description: Extracts feed's content from its url.
 
-const request = require('request')
-const $ = require('cheerio')
+const axios = require('axios')
 const { configs } = require('../utils')
 
-const opts_iconv = {
-    encoding: 'UTF-8',
-    strictSSL: false,
+const instance = axios.create({
     timeout: configs.fetcher_timeout,
-    headers: { 'User-Agent': configs.fetcher_agent },
+    headers: { 'User-Agent': configs.fetcher_agent }
+})
+
+module.exports = async (e, p) => {
+    const res = await instance.get(e.link)
+
+    if (res.status != 200)
+        throw `Got response code "${res.status}"`
+
+    if (!res.data)
+        throw "Got empty response"
+
+    e.content = res.data
 }
-
-// function process() {
-//     return
-//     return new Promise((resolve, reject) => {
-//         request.get(e.link, opts_iconv, (err, res, body) => {
-//             e.content = $('.entry', body).html()
-//             resolve()
-//         })
-//     })
-// }
-
-module.exports = e => null

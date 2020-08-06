@@ -21,6 +21,7 @@
     "dependencies": {
         "async": "^3.2.0",
         "async-mutex": "^0.2.4",
+        "axios": "^0.19.2",
         "cheerio": "^1.0.0-rc.3",
         "cors": "^2.8.5",
         "debug": "~2.6.9",
@@ -37,7 +38,6 @@
         "js-yaml": "^3.14.0",
         "loadsh": "0.0.4",
         "morgan": "~1.9.1",
-        "request": "^2.88.2",
         "sanitize-html": "^1.27.2",
         "sqlite": "^4.0.12",
         "sqlite3": "^4.2.0"
