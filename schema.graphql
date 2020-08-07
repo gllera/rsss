@@ -1,4 +1,8 @@
 #################### Main
+type Query {
+    alive: Int!
+}
+
 type Mutation {
     Sync(o: SyncData): SyncResponse!
     Feed(o: FeedData!): Int!
@@ -62,7 +66,7 @@ type Source {
 }
 
 input SourceData {
-    source_id: Int!
+    source_id: Int
     xml_url: String
     title: String
     description: String

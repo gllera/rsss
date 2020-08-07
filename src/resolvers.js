@@ -1,3 +1,5 @@
+const async = require('async')
+const debug = require('debug')('rsss:resolvers')
 const { parseSyncInfo, db } = require('./libs')
 
 async function feeds(root, { o }) {
@@ -12,10 +14,6 @@ async function mutFeeds(root, { o, s }) {
     await db.feedModBulk(parseSyncInfo(s))
     return await feeds(root, { o })
 }
-
-const async = require('async')
-const { parseSyncInfo, db } = require('./libs')
-const debug = require('debug')('rsss:source')
 
 async function sources(o) {
     return await db.sources(o)
@@ -54,6 +52,9 @@ async function Source(_, { o }) {
 }
 
 module.exports = {
+    Query: {
+        alive: () => 1
+    },
     Mutation: {
         Sync,
         Feed,
