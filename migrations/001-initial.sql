@@ -46,6 +46,6 @@ AS
         s.source_id
 
 -- Down
-DROP VIEW source_expanded;
+DROP VIEW source_view;
 DROP TABLE feed;
 DROP TABLE source;
