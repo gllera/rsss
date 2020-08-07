@@ -27,7 +27,7 @@ CREATE TABLE source
     description VARCHAR
 );
 
-CREATE VIEW source_expanded
+CREATE VIEW source_view
 AS 
     SELECT 
         s.*,
@@ -42,7 +42,8 @@ AS
                 ON f1.feed_id = f2.feed_id AND f2.seen = 0
             LEFT JOIN feed AS f3
                 ON f1.feed_id = f3.feed_id AND f3.star = 1
-    GROUP BY s.source_id
+    GROUP BY
+        s.source_id
 
 -- Down
 DROP VIEW source_expanded;
