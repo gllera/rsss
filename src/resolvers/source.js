@@ -1,5 +1,5 @@
 const async = require('async')
-const { parseSyncInfo, db } = require('../utils')
+const { parseSyncInfo, db } = require('../libs')
 const debug = require('debug')('rsss:source')
 
 async function sources(o) {

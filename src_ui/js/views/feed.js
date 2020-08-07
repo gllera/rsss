@@ -1,5 +1,5 @@
 const $ = require('cash-dom')
-const { model, visibility } = require('../utils')
+const { model, visibility } = require('../libs')
 
 const view = $('.rs-feed')
 const view_header = $('.rs-header')

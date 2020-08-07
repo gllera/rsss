@@ -8,7 +8,7 @@ const { makeExecutableSchema } = require('graphql-tools')
 
 const resolvers = require('./resolvers')
 const startFetcher = require('./rss-fetcher')
-const { configs, parseOPML, init } = require('./utils')
+const { configs, parseOPML, init } = require('./libs')
 
 
 async function appPromise() {

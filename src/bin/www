@@ -8,7 +8,7 @@ let appPromise = require('../app')
 let debug = require('debug')('rsss:server')
 let http = require('http')
 let port, server
-const { configs } = require('../utils')
+const { configs } = require('../libs')
 
 async function start() {
     let app = await appPromise()

@@ -1,5 +1,5 @@
 const $ = require('cash-dom')
-const { model, visibility } = require('../utils')
+const { model, visibility } = require('../libs')
 const ctrl = require('../controller')
 
 const views = []

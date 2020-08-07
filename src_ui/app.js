@@ -2,7 +2,7 @@ const $ = require('cash-dom')
 let hotkeys = require('hotkeys-js')
 let ctrl = require('./js/controller')
 let { feed, sources, importer } = require('./js/views')
-let { model } = require('./js/utils')
+let { model } = require('./js/libs')
 
 ctrl.init(feed, sources, model)
 const hash = () => window.location.hash.substring(1)

@@ -2,7 +2,7 @@ const debug = require('debug')('rsss:fetcher')
 const _ = require('loadsh')
 const async = require('async')
 
-const { parseRSS, configs, db, tuneFeed } = require('./utils')
+const { parseRSS, configs, db, tuneFeed } = require('./libs')
 let last_guid = {}
 
 async function fetch(source) {

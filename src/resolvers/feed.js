@@ -1,4 +1,4 @@
-const { parseSyncInfo, db } = require('../utils')
+const { parseSyncInfo, db } = require('../libs')
 
 async function feeds(root, { o }) {
     return await db.feeds(o)

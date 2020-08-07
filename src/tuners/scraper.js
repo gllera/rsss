@@ -1,7 +1,7 @@
 // Description: Extracts feed's content from its url.
 
 const axios = require('axios')
-const { configs } = require('../utils')
+const { configs } = require('../libs')
 
 const instance = axios.create({
     timeout: configs.fetcher_timeout,
