@@ -12,8 +12,6 @@ input SyncData {
     feed_id: Int
     source_id: Int
     tag: String
-    seen: Int
-    star: Int
     limit: Int
     asc: Int
     seen: [Int]
