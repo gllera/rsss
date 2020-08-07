@@ -6,7 +6,7 @@ const { parseRSS, configs, db, tuneFeed } = require('./libs')
 let last_guid = {}
 
 async function fetch(source) {
-    debug(`${source.source_id} PARSING`)
+    debug(source.source_id, 'PARSING')
     let err
 
     try {
@@ -23,31 +23,31 @@ async function fetch(source) {
         feeds = feeds.filter(e => !(passed = passed || e.guid == current_last_guid))
 
         await async.eachSeries(feeds, async feed => {
-            if (!await db.feedExists(feed.guid)) {
+            if (!await db.feeds.old(feed.guid)) {
                 feed.source_id = source.source_id
                 feed.date = new Date(feed.date).getTime() || Date.now()
 
                 await tuneFeed(source.tuners, feed)
-                await db.feedAdd(feed)
+                await db.feeds.add(feed)
             }
         })
 
-        debug(`${source.source_id} DONE`)
+        debug(source.source_id, 'DONE')
         err = null
     }
     catch (e) {
-        debug(`${source.source_id} ${e}`)
+        debug(source.source_id, e)
         err = e.message || e
     }
 
-    await db.sourceMod({
+    await db.sources.mod({
         source_id: source.source_id,
         err
     })
 }
 
 async function tick() {
-    let source = await db.sourcePop()
+    let source = await db.sources.pop()
     if (source) fetch(source)
 }
 

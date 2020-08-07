@@ -1,19 +1,17 @@
 const sqlite = require('sqlite')
 const sqlite3 = require('sqlite3')
 const configs = require('./configs')
-const { Mutex } = require('async-mutex')
 
 /** @typedef {sqlite.Database} Database */
 /** @type {sqlite.Database} */
 let DB
-let popMutex = new Mutex()
 
 process.on('exit', () => { if (DB) DB.close() })
 process.on('SIGHUP', () => process.exit(128 + 1))
 process.on('SIGINT', () => process.exit(128 + 2))
 process.on('SIGTERM', () => process.exit(128 + 15))
 
-async function sourceMod(o) {
+async function source_mod(o) {
     let query = [], values = []
     const keys = ['xml_url', 'title', 'description', 'html_url', 'lang', 'tag', 'err', 'last_fetch']
 
@@ -32,13 +30,12 @@ async function sourceMod(o) {
     return (await DB.run(`UPDATE source SET ${query.join(',')} WHERE source_id = ?`, values)).changes
 }
 
-async function sourcePop() {
-    let release = await popMutex.acquire()
+async function source_pop() {
+    let source = await DB.get('SELECT * FROM source WHERE last_fetch < ? ORDER BY last_fetch LIMIT 1', [Date.now() - configs.fetcher_interval])
 
-    let source = await DB.get(`SELECT * FROM source WHERE last_fetch < ${Date.now() - configs.fetcher_interval} ORDER BY last_fetch LIMIT 1`)
-    if (source) await DB.run(`UPDATE source SET last_fetch = ${Date.now()} WHERE source_id = ${source.source_id}`)
+    if (source)
+        await DB.run('UPDATE source SET last_fetch = ? WHERE source_id = ?', [Date.now(), source.source_id])
 
-    release()
     return source
 }
 
@@ -100,17 +97,19 @@ async function feeds(o = {}) {
 
 module.exports = {
     db: {
-        sources: async (o = {}) => await DB.all(`SELECT * FROM ${o.expanded ? 'source_expanded' : 'source'}`),
-        sourcesAdd: async o => (await DB.run('INSERT INTO source ( xml_url, title, description, html_url, lang, tag, tuners ) VALUES( ?, ?, ?, ?, ?, ?, ? )', [o.xml_url, o.title, o.description, o.html_url, o.lang, o.tag, o.tuners])).lastID,
-        sourcesDel: async source_id => (await DB.run('DELETE FROM source WHERE source_id = ?', [source_id])).changes,
-        sourceMod,
-        sourcePop,
-
-        feeds,
-        feedAdd: async o => await DB.run('INSERT INTO feed ( guid, link, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.link, o.title, o.content, o.date, o.source_id]),
-        feedMod,
-        feedModBulk,
-        feedExists: async guid => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
+        sources: {
+            // all: async () => await DB.all('SELECT * FROM source_view'),
+            add: async o => (await DB.run('INSERT INTO source ( xml_url, title, description, html_url, lang, tag, tuners ) VALUES( ?, ?, ?, ?, ?, ?, ? )', [o.xml_url, o.title, o.description, o.html_url, o.lang, o.tag, o.tuners])).lastID,
+            del: async id => (await DB.run('DELETE FROM source WHERE source_id = ?', [id])).changes,
+            pop: source_pop,
+            mod: source_mod
+        },
+        feeds: {
+            // all: feeds,
+            old: async guid => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
+            add: async o => await DB.run('INSERT INTO feed ( guid, link, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.link, o.title, o.content, o.date, o.source_id]),
+            // mod: feedModBulk,
+        },
     },
     initDB: async () => {
         DB = await sqlite.open({
