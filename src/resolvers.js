@@ -1,63 +1,38 @@
-const async = require('async')
+const graphqlFields = require('graphql-fields')
 const debug = require('debug')('rsss:resolvers')
-const { parseSyncInfo, db } = require('./libs')
+const { db } = require('./libs')
 
-async function feeds(root, { o }) {
-    return await db.feeds(o)
+async function Sync(_, { o }, __, i) {
+    debug(o)
+
+    const fields = graphqlFields(i)
+    const res = {}
+    o = o || {}
+
+    await db.feeds.mod(o)
+
+    if (fields.sources)
+        res.sources = await db.sources.all()
+
+    if (fields.feeds)
+        res.feeds = await db.feeds.all(o)
+
+    return res
 }
-
-async function feedMod(root, { o }) {
-    return await db.feedMod(o)
-}
-
-async function mutFeeds(root, { o, s }) {
-    await db.feedModBulk(parseSyncInfo(s))
-    return await feeds(root, { o })
-}
-
-async function sources(o) {
-    return await db.sources(o)
-}
-
-async function sourceAdd(_, { o }) {
-    o.source_id = await db.sourcesAdd(o)
-    return o
-}
-
-async function mutSources(_, { s }) {
-    await db.feedModBulk(parseSyncInfo(s))
-    return await sources()
-}
-
-module.exports = {
-    Query: {
-        sources,
-        feeds,
-    },
-    Mutation: {
-        feedMod,
-        feeds: mutFeeds,
-        sourceAdd,
-        sourceDel: async (_, { source_id }) => await db.sourcesDel(source_id),
-        sourceMod: async (_, { o }) => await db.sourceMod(o),
-        sources: mutSources,
-    }
-}
-
 
 async function Source(_, { o }) {
+    debug(o)
+
     if (o.source_id < 0)
-        await db.del_source(parseSyncInfo(s))
-    return await sources()
+        return await db.sources.del(-o.source_id)
+
+    if (!o.source_id)
+        return await db.sources.add(o)
+
+    return await db.sources.mod(o)
 }
 
 module.exports = {
-    Query: {
-        alive: () => 1
-    },
-    Mutation: {
-        Sync,
-        Feed,
-        Source
-    }
+    Query: { alive: () => 1 },
+    Mutation: { Sync, Source }
 }

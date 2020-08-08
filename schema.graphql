@@ -5,7 +5,6 @@ type Query {
 
 type Mutation {
     Sync(o: SyncData): SyncResponse!
-    Feed(o: FeedData!): Int!
     Source(o: SourceData!): Int!
 }
 
@@ -18,8 +17,12 @@ input SyncData {
     tag: String
     limit: Int
     asc: Int
-    seen: [Int]
-    star: [Int]
+    seen: Int
+    star: Int
+    set_seen: [Int]
+    set_star: [Int]
+    set_unseen: [Int]
+    set_unstar: [Int]
 }
 
 type SyncResponse {
@@ -38,12 +41,6 @@ type Feed {
     title: String!
     content: String!
     date: Float
-    seen: Int
-    star: Int
-}
-
-input FeedData {
-    feed_id: Int!
     seen: Int
     star: Int
 }

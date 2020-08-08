@@ -1,60 +1,59 @@
 #!/bin/bash
 
 query='
-mutation( $m: [AddSource]! )
-{
-    sourceAddBulk( o: $m )
-    {
-        source_id
-        xml_url
-        err
-    }
+mutation( $m: SourceData! ) {
+    Source( o: $m )
 }'
 
-variables='
-{
-    "m": [
-        {
-            "title": "Neoteo",
-            "xml_url": "http://www.neoteo.com/feed/",
-            "html_url": "http://www.neoteo.com/",
-            "description": "Tecnología, todos los días. Software, hardware, ciencia y videojuegos.",
-            "tag": "Me",
-            "lang": "es"
-        }, {
-            "title": "FayerWayer",
-            "xml_url": "http://feeds.feedburner.com/fayerwayer",
-            "html_url": "https://www.fayerwayer.com/",
-            "description": "Dosis diarias de tecnología en español.",
-            "tag": "Me",
-            "lang": "es"
-        }, {
-            "title": "El Androide Libre",
-            "xml_url": "http://feeds.feedburner.com/elandroidelibre",
-            "html_url": "http://www.elandroidelibre.com/",
-            "description": "Todo Android.",
-            "tag": "Me",
-            "lang": "es"
-        }, {
-            "title": "SoftZone",
-            "xml_url": "http://feeds.feedburner.com/Softwarezone",
-            "html_url": "http://www.softzone.es/",
-            "description": "Blog sobre software, tutoriales de ayuda, trucos para Windows, Drivers, programas gratis, noticias, manuales P2P, eMule, BitTorrent, Ares, análisis de software.",
-            "tag": "Me",
-            "lang": "es"
-        }, {
-            "title": "Hacker Noon — Medium",
-            "xml_url": "https://hackernoon.com/feed",
-            "html_url": "https://hackernoon.com/?source=rss----3a8144eabfe3---4",
-            "description": "How hackers start their afternoons.",
-            "tag": "Interesting",
-            "lang": "en",
-            "tuners": [
-                "scraper|10",
-                "edit|11|##crop##|main|##del##|[class^=Noonification__]|[class^=Profile__]|[class^=SocialLinks-]|footer|section"
-            ]
-        }
-    ]
-}'
+cases=(
+    '{
+        "title": "Neoteo",
+        "xml_url": "http://www.neoteo.com/feed/",
+        "html_url": "http://www.neoteo.com/",
+        "description": "Tecnología, todos los días. Software, hardware, ciencia y videojuegos.",
+        "tag": "Me",
+        "lang": "es"
+    }'
+    '{
+        "title": "Hacker Noon — Medium",
+        "xml_url": "https://hackernoon.com/feed",
+        "html_url": "https://hackernoon.com/",
+        "description": "How hackers start their afternoons.",
+        "tag": "Interesting",
+        "lang": "en",
+        "tuners": [
+            "scraper|10",
+            "edit|11|##crop##|main|##del##|[class^=Noonification__]|[class^=Profile__]|[class^=SocialLinks-]|footer|section"
+        ]
+    }'
+    '{
+        "title": "FayerWayer",
+        "xml_url": "http://feeds.feedburner.com/fayerwayer",
+        "html_url": "https://www.fayerwayer.com/",
+        "description": "Dosis diarias de tecnología en español.",
+        "tag": "Me",
+        "lang": "es"
+    }'
+    '{
+        "title": "El Androide Libre",
+        "xml_url": "http://feeds.feedburner.com/elandroidelibre",
+        "html_url": "http://www.elandroidelibre.com/",
+        "description": "Todo Android.",
+        "tag": "Me",
+        "lang": "es"
+    }'
+    '{
+        "title": "SoftZone",
+        "xml_url": "http://feeds.feedburner.com/Softwarezone",
+        "html_url": "http://www.softzone.es/",
+        "description": "Blog sobre software, tutoriales de ayuda, trucos para Windows, Drivers, programas gratis, noticias, manuales P2P, eMule, BitTorrent, Ares, análisis de software.",
+        "tag": "Me",
+        "lang": "es"
+    }'
+)
 
-source .run
+for i in "${cases[@]}"
+do
+    variables="{ \"m\": $i}"
+    source .run
+done
