@@ -5,13 +5,14 @@ mutation( $m: SyncData! ) {
     Sync( o: $m ) {
         feeds {
             date
+            feed_id
         }
     }
 }'
 
 cases=(
     '{
-        "limit": 5
+        "flr_limit": 5
     }'
 )
 

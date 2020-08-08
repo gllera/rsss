@@ -26,11 +26,11 @@ const source_mod_values = [
 ]
 
 const feeds_values = [
-    { col: 'f.feed_id', key: 'feed_id' },
-    { col: 'f.source_id', key: 'source_id' },
-    { col: 'f.seen', key: 'seen' },
-    { col: 'f.star', key: 'star' },
-    { col: 's.tag', key: 'tag' },
+    { col: 'f.feed_id', key: 'flr_feed_id' },
+    { col: 'f.source_id', key: 'flr_source_id' },
+    { col: 'f.seen', key: 'flr_seen' },
+    { col: 'f.star', key: 'flr_star' },
+    { col: 's.tag', key: 'flr_tag' },
 ]
 
 process.on('exit', () => { if (DB) DB.close() })
@@ -73,10 +73,9 @@ async function feeds_mod(o) {
     }
 }
 
-async function feeds(o = {}) {
-    debug(o)
-
-    const query = [], values = []
+async function feeds(o) {
+    const query = ['1'], values = []
+    const order = o.flr_asc ? 'ASC' : 'DESC'
 
     for (const e of feeds_values)
         if (o[e.key] !== undefined) {
@@ -84,12 +83,20 @@ async function feeds(o = {}) {
             values.push(o[e.key])
         }
 
-    values.push(o.limit ? o.limit : 50)
+    if (o.flr_page_min !== undefined || o.flr_page_max !== undefined) {
+        if (o.flr_page_min === undefined)
+            o.flr_page_min = 0
 
-    const where = query.length ? `WHERE ${query.join(' AND ')}` : ''
-    const order = o.asc ? 'ASC' : 'DESC'
+        if (o.flr_page_max === undefined)
+            o.flr_page_max = 2000000000
 
-    return await DB.all(`SELECT f.* FROM feed as f LEFT JOIN source AS s ON f.source_id = s.source_id ${where} ORDER BY f.date ${order} LIMIT ?`, values)
+        query.push('( f.feed_id < ? OR f.feed_id > ? )')
+        values.push(o.flr_page_min, o.flr_page_max)
+    }
+
+    values.push(o.flr_limit ? o.flr_limit : 50)
+
+    return await DB.all(`SELECT f.* FROM feed as f LEFT JOIN source AS s ON f.source_id = s.source_id WHERE ${query.join(' AND ')} ORDER BY f.date ${order} LIMIT ?`, values)
 }
 
 module.exports = {

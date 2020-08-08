@@ -12,13 +12,15 @@ type Mutation {
 
 #################### Sync
 input SyncData {
-    feed_id: Int
-    source_id: Int
-    tag: String
-    limit: Int
-    asc: Int
-    seen: Int
-    star: Int
+    flr_page_min: Int
+    flr_page_max: Int
+    flr_feed_id: Int
+    flr_source_id: Int
+    flr_tag: String
+    flr_limit: Int
+    flr_asc: Int
+    flr_seen: Int
+    flr_star: Int
     set_seen: [Int]
     set_star: [Int]
     set_unseen: [Int]
