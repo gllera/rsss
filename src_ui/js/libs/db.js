@@ -8,6 +8,10 @@ const gSync = gql(`
             sources
             {
                 source_id
+                title
+                unseen
+                stars
+                err
             }
 
             feeds
