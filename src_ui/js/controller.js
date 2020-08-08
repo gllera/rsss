@@ -24,10 +24,32 @@ if (hash.get() == '')
 else
     hash.parseTo(filer, panel)
 
+function tags() {
+    const res = []
+    return res
+}
+
+function cards_callback(e) {
+    console.log(e)
+    // {
+    //     const tag = model.filter().tag
+
+    //     model.filter({
+    //         source_id: e.source_id,
+    //         tag: e.hasOwnProperty('tag_filter') ? e.tag_filter : tag
+    //     })
+
+    //     if (e.source_id || tag == e.tag_filter)
+    //         ctrl.show(1)
+    //     else
+    //         ctrl.update()
+    // }
+}
+
 function refresh() {
     switch (panel.view) {
         case 'main':
-            return views['main'].update(db.data.sources)
+            return views['main'].update(db.data.sources, tags(), (e) => cards_callback(e))
         case 'feed':
             const feeds = db.data.feeds
             let clean_feeds = panel.sync_hash != hash.get()

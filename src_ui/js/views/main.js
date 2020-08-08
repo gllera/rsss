@@ -1,22 +1,16 @@
 const $ = require('cash-dom')
 
 const views = []
-const html = {
-    src: {
-        dest: $('.rs-cards'),
-        tmpl: $('.rs-card'),
-    },
-    tag: {
-        dest: $('.rs-tags'),
-        tmpl: $('.rs-tag'),
-    }
-}
+const sources_dest = $('.rs-cards')
+const sources_tmpl = $('.rs-card')
+const tags_dest = $('.rs-tags')
+const tags_tmpl = $('.rs-tag')
 
-function addCard(e, v) {
-    const card = v.tmpl.clone()
+function addCard(e, template, dest, cb) {
+    const card = template.clone()
+
     views.push(card)
-
-    v.dest.append(card)
+    dest.append(card)
 
     card.find('.stitle').html(e.title)
     card.find('.sunseen').html(e.unseen)
@@ -37,27 +31,14 @@ function addCard(e, v) {
         o.stopPropagation()
     })
 
-    card.on('click', () => {
-        const tag = model.filter().tag
-
-        model.filter({
-            source_id: e.source_id,
-            tag: e.hasOwnProperty('tag_filter') ? e.tag_filter : tag
-        })
-
-        if (e.source_id || tag == e.tag_filter)
-            ctrl.show(1)
-        else
-            ctrl.update()
-    })
+    card.on('click', () => cb(e))
 }
 
-function update(sources, filter) {
-    views.forEach(e => e.remove())
+function update(sources, tags, cb) {
+    for (const i of views) i.remove()
     views.length = 0
-
-    // sources.forEach(e => addCard(e, html.src))
-    // tags.forEach(e => addCard(e, html.tag))
+    for (const i of tags) addCard(i, tags_tmpl, tags_dest, cb)
+    for (const i of sources) addCard(i, sources_tmpl, sources_dest, cb)
 }
 
 module.exports = {
