@@ -1,41 +1,63 @@
 const { db, hash, importer } = require('./libs')
 const views = require('./views')
 
+const limit = (val, min, max) => val < min ? min : (val > max ? max : val)
+
 const filer = {
     page_min: undefined,
     page_max: undefined,
     source_id: 0,
     tag: undefined,
-    limit: 50,
     asc: 0,
     seen: 0,
     star: 0,
 }
 
 const panel = {
+    sync_hash: '',
     view: 'main',
-    feed_id: -1,
+    feed_idx: 0,
 }
 
-if (hash.get() === '')
+if (hash.get() == '')
     hash.setFrom(filer, panel)
 else
     hash.parseTo(filer, panel)
 
+function refresh() {
+    switch (panel.view) {
+        case 'main':
+            return views['main'].update(db.data.sources)
+        case 'feed':
+            const feeds = db.data.feeds
+            let clean_feeds = panel.sync_hash != hash.get()
+
+            if (clean_feeds) {
+                panel.sync_hash = hash.get()
+                panel.feed_idx = 0
+            }
+
+            if (clean_feeds || panel.feed_idx >= feeds.length - 5)
+                db.sync(filer, clean_feeds)
+
+            return views['feed'].update(panel.feed_idx == feeds.length ? {} : feeds[panel.feed_idx])
+    }
+}
+
 function show(view) {
-    if (panel.view === view)
+    if (panel.view == view)
         return
 
     window.scrollTo(0, 0)
     panel.view = view
 
     for (const i of Object.keys(views))
-        if (i === view)
+        if (i == view)
             views[i].$.removeAttr('style')
         else
             views[i].$.attr('style', 'display: none')
 
-    views[view].update()
+    refresh()
 }
 
 function toggle(k) {
@@ -44,36 +66,38 @@ function toggle(k) {
             filer[k] = !filer[k]
             break
         case 'feed':
-            const e = db.data.feeds[feed_id]
+            const e = db.data.feeds[feed_idx]
             e[k] = !e[k]
             break
     }
 
-    views[view].update()
+    refresh()
 }
 
-function nextFeed(amt) {
-    if (model.view() == feed.me()) {
-        window.scrollTo(0, 0)
-        model.nextFeed(amt)
-        refresh()
+function next_feed(direction) {
+    if (panel.view != 'feed')
+        return
 
-        if (model.feed().feed_id == -1)
-            sync()
-    }
+    const curr = panel.feed_idx
+
+    panel.feed_idx += direction
+    panel.feed_idx = limit(panel.feed_idx, 0, db.data.feeds.length)
+
+    if (curr != panel.feed_idx)
+        window.scrollTo(0, 0)
+
+    refresh()
 }
 
 module.exports = {
-    next: () => nextFeed(1),
-    prev: () => nextFeed(-1),
-    sync: () => db.sync().then(() => refresh()).catch(e => alert(e)),
-    refresh: () => views[panel.view].update(),
     import: () => importer(),
+    next: () => next_feed(1),
+    prev: () => next_feed(-1),
+    sync: () => db.sync().then(() => refresh()).catch(e => alert(e)),
+    refresh,
     show,
     toggle,
 }
-
-
 
 
 // if (!model.sources().length)
