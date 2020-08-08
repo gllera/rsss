@@ -1,5 +1,3 @@
-const model = require('./model')
-
 function visibility(state, view) {
     const on = model.view() == state.me
 
@@ -14,6 +12,8 @@ function visibility(state, view) {
 }
 
 module.exports = {
-    model,
-    visibility
+    db: require('./db'),
+    hash: require('./hash'),
+    importer: require('./importer'),
+    visibility,
 }
