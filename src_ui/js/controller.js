@@ -1,5 +1,5 @@
-const { feed, main } = require('./js/views')
-const { db, hash, importer } = require('./js/libs')
+const { db, hash, importer } = require('./libs')
+const views = require('./views')
 
 const filer = {
     page_min: undefined,
@@ -22,18 +22,20 @@ if (hash.get() === '')
 else
     hash.parseTo(filer, panel)
 
-function refresh() {
-    sources.update()
-    feed.update()
-}
-
 function show(view) {
-    if (panel.view === v)
+    if (panel.view === view)
         return
 
     window.scrollTo(0, 0)
     panel.view = view
-    refresh()
+
+    for (const i of Object.keys(views))
+        if (i === view)
+            views[i].$.removeAttr('style')
+        else
+            views[i].$.attr('style', 'display: none')
+
+    views[view].update()
 }
 
 function toggle(k) {
@@ -47,7 +49,7 @@ function toggle(k) {
             break
     }
 
-    refresh()
+    views[view].update()
 }
 
 function nextFeed(amt) {
@@ -65,18 +67,18 @@ module.exports = {
     next: () => nextFeed(1),
     prev: () => nextFeed(-1),
     sync: () => db.sync().then(() => refresh()).catch(e => alert(e)),
+    refresh: () => views[panel.view].update(),
     import: () => importer(),
     show,
     toggle,
-    refresh,
 }
 
 
 
 
-if (!model.sources().length)
-    ctrl.fetch(0)
-        .then(e => ctrl.fetch(1))
+// if (!model.sources().length)
+//     ctrl.fetch(0)
+//         .then(e => ctrl.fetch(1))
 
 
 

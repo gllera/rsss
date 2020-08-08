@@ -1,9 +1,6 @@
 const $ = require('cash-dom')
-const { model, visibility } = require('../libs')
-const ctrl = require('../controller')
 
 const views = []
-const view = $('.rs-sources')
 const html = {
     src: {
         dest: $('.rs-cards'),
@@ -13,11 +10,6 @@ const html = {
         dest: $('.rs-tags'),
         tmpl: $('.rs-tag'),
     }
-}
-
-const S = {
-    me: 0,
-    on: true,
 }
 
 function addCard(e, v) {
@@ -60,21 +52,15 @@ function addCard(e, v) {
     })
 }
 
-function update() {
-    if (!visibility(S, view))
-        return
-
+function update(sources, filter) {
     views.forEach(e => e.remove())
     views.length = 0
 
-    const sources = model.sources()
-    const tags = model.tags()
-
-    tags.forEach(e => addCard(e, html.tag))
-    sources.forEach(e => addCard(e, html.src))
+    // sources.forEach(e => addCard(e, html.src))
+    // tags.forEach(e => addCard(e, html.tag))
 }
 
 module.exports = {
+    $: $('.rs-sources'),
     update,
-    me: () => S.me,
 }
