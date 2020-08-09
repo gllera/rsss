@@ -8,7 +8,7 @@ function setFrom(flr, panel) {
         panel.view,
         flr.tag ? flr.tag : '',
         flr.source_id ? flr.source_id : '',
-        flr.seen == undefined ? '' : (flr.seen ? 'seen' : 'unseen'),
+        flr.seen ? 'seen' : '',
         flr.star ? 'star' : '',
         flr.asc ? 'asc' : '',
     ]
@@ -22,7 +22,7 @@ function parseTo(flr, panel) {
     panel.view = arr[0] || 'main'
     flr.tag = decodeURIComponent(arr[1]) || undefined
     flr.source_id = parseInt(arr[2]) || undefined
-    flr.seen = !arr[3] ? undefined : (arr[3] == 'seen' ? 1 : 0)
+    flr.seen = !arr[3] ? undefined : 1
     flr.star = !arr[4] ? undefined : 1
     flr.asc = !arr[5] ? undefined : 1
 }

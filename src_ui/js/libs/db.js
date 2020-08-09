@@ -43,7 +43,7 @@ function sync(flr, clean_feeds) {
         flr_tag: flr.tag,
         flr_limit: flr.limit,
         flr_asc: flr.asc,
-        flr_seen: flr.seen,
+        flr_seen: flr.seen ? undefined : 0,
         flr_star: flr.star,
         set_seen: [],
         set_star: [],
