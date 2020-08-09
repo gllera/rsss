@@ -77,8 +77,8 @@ function cards_callback(e) {
 
         if (go) {
             panel.view = 'feed'
-    hash.setFrom(filer, panel)
-}
+            hash.setFrom(filer, panel)
+        }
     }
 }
 
@@ -136,8 +136,8 @@ function toggle(k) {
             hash.setFrom(filer, panel)
             break
         case 'feed':
-            const e = db.data.feeds[feed_idx]
-            e[k] = !e[k]
+            const e = db.data.feeds[panel.feed_idx]
+            if (e) e[k] = !e[k]
             break
     }
 
@@ -149,14 +149,15 @@ function next_feed(direction) {
         return
 
     const curr = panel.feed_idx
+    const feeds = db.data.feeds
 
     panel.feed_idx += direction
-    panel.feed_idx = limit(panel.feed_idx, 0, db.data.feeds.length)
+    panel.feed_idx = limit(panel.feed_idx, 0, feeds.length)
 
-    if (curr != panel.feed_idx)
-        window.scrollTo(0, 0)
+    if (curr != panel.feed_idx) window.scrollTo(0, 0)
+    if (curr != feeds.length) db.data.feeds[curr]['seen'] = 1
+    if (direction > 0) conditional_sync()
 
-    conditional_sync()
     refresh()
 }
 
