@@ -42,9 +42,9 @@ function sync(flr, clean_feeds) {
         flr_source_id: flr.source_id,
         flr_tag: flr.tag,
         flr_limit: flr.limit,
-        flr_asc: flr.asc ? 1 : undefined,
-        flr_seen: flr.seen ? 1 : undefined,
-        flr_star: flr.star ? 1 : undefined,
+        flr_asc: flr.asc,
+        flr_seen: flr.seen,
+        flr_star: flr.star,
         set_seen: [],
         set_star: [],
         set_unseen: [],
@@ -70,16 +70,23 @@ function sync(flr, clean_feeds) {
     if (!param.set_unseen.length) param.set_unseen = undefined
     if (!param.set_unstar.length) param.set_unstar = undefined
 
-    if (clean_feeds)
+    if (clean_feeds) {
+        flr.page_max = flr.page_min = undefined
         data.feeds.length = 0
+    }
 
     return gSync({ o: param }).then(e => {
         for (const i of e.Sync.feeds) {
             i._seen = i.seen
             i._star = i.star
 
-            flr.page_min = flr.page_min < e.feed_id ? flr.page_min : e.feed_id
-            flr.page_max = flr.page_max > e.feed_id ? flr.page_max : e.feed_id
+            flr.page_min = flr.page_min < i.feed_id ? flr.page_min : i.feed_id
+            flr.page_max = flr.page_max > i.feed_id ? flr.page_max : i.feed_id
+        }
+
+        for (const i of data.feeds) {
+            i._seen = i.seen
+            i._star = i.star
         }
 
         data.feeds = data.feeds.concat(e.Sync.feeds)
