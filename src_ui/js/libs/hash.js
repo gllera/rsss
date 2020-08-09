@@ -1,4 +1,7 @@
-const get = () => window.location.hash.substring(1)
+const get = () => {
+    const idx = window.location.hash.indexOf('~') + 1
+    return window.location.hash.substring(idx || 1)
+}
 
 function setFrom(flr, panel) {
     const arr = [
@@ -14,7 +17,7 @@ function setFrom(flr, panel) {
 }
 
 function parseTo(flr, panel) {
-    const arr = get().split('~')
+    const arr = window.location.hash.substring(1).split('~')
 
     panel.view = arr[0] || 'main'
     flr.tag = decodeURIComponent(arr[1]) || undefined

@@ -95,7 +95,10 @@ function refresh() {
 
     switch (panel.view) {
         case 'main':
-            const filtered = db.data.sources.filter(e => !filer.tag || e.tag == filer.tag)
+            const filtered = db.data.sources
+                .filter(e =>
+                    (!filer.tag || e.tag == filer.tag) &&
+                    (!filer.star || e.stars))
 
             return views['main']
                 .update(filtered, filer.source_id, filer.tag, tags(), (e) => cards_callback(e))
@@ -128,9 +131,10 @@ function toggle(k) {
         case 'feed':
             const e = db.data.feeds[feed_idx]
             e[k] = !e[k]
-            refresh()
             break
     }
+
+    refresh()
 }
 
 function next_feed(direction) {
