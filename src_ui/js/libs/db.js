@@ -9,6 +9,7 @@ const gSync = gql(`
             {
                 source_id
                 title
+                tag
                 unseen
                 stars
                 err
@@ -81,7 +82,7 @@ function sync(flr, clean_feeds) {
             flr.page_max = flr.page_max > e.feed_id ? flr.page_max : e.feed_id
         }
 
-        data.feeds.concat(e.Sync.feeds)
+        data.feeds = data.feeds.concat(e.Sync.feeds)
         data.sources = e.Sync.sources
     })
 }

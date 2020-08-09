@@ -19,50 +19,92 @@ const panel = {
     feed_idx: 0,
 }
 
+const empty_feed = {
+    star: 0,
+    title: '',
+    content: '',
+    link: '',
+}
+
 if (hash.get() == '')
     hash.setFrom(filer, panel)
 else
     hash.parseTo(filer, panel)
 
 function tags() {
-    const res = []
-    return res
+    const tags = {}
+
+    const total = {
+        title: 'ALL',
+        unseen: 0,
+        stars: 0,
+    }
+
+    for (const i of db.data.sources) {
+        total.unseen += i.unseen
+        total.stars += i.stars
+
+        if (i.tag) {
+            if (!tags[i.tag])
+                tags[i.tag] = {
+                    title: i.tag,
+                    tag: i.tag,
+                    unseen: 0,
+                    stars: 0
+                }
+
+            tags[i.tag].unseen += i.unseen
+            tags[i.tag].stars += i.stars
+        }
+    }
+
+    return [total].concat(Object.values(tags))
 }
 
 function cards_callback(e) {
-    console.log(e)
-    // {
-    //     const tag = model.filter().tag
+    if (e.source_id) {
+        filer.source_id = e.source_id
+        panel.view = 'feed'
+    } else {
+        if (filer.tag == e.tag)
+            panel.view = 'feed'
 
-    //     model.filter({
-    //         source_id: e.source_id,
-    //         tag: e.hasOwnProperty('tag_filter') ? e.tag_filter : tag
-    //     })
+        filer.tag = e.tag
+    }
 
-    //     if (e.source_id || tag == e.tag_filter)
-    //         ctrl.show(1)
-    //     else
-    //         ctrl.update()
-    // }
+    hash.setFrom(filer, panel)
+}
+
+function conditional_sync() {
+    if (panel.view != 'feed')
+        return
+
+    const clean_feeds = panel.sync_hash != hash.get()
+    const fetch_more = panel.feed_idx >= db.data.feeds.length - 5
+
+    if (clean_feeds || fetch_more)
+        sync(clean_feeds)
 }
 
 function refresh() {
+    for (const i of Object.keys(views))
+        if (i == panel.view)
+            views[i].$.removeAttr('style')
+        else
+            views[i].$.attr('style', 'display: none')
+
     switch (panel.view) {
         case 'main':
-            return views['main'].update(db.data.sources, tags(), (e) => cards_callback(e))
+            const filtered = db.data.sources.filter(e => !filer.tag || e.tag == filer.tag)
+
+            return views['main']
+                .update(filtered, filer.source_id, filer.tag, tags(), (e) => cards_callback(e))
+
         case 'feed':
             const feeds = db.data.feeds
-            let clean_feeds = panel.sync_hash != hash.get()
 
-            if (clean_feeds) {
-                panel.sync_hash = hash.get()
-                panel.feed_idx = 0
-            }
-
-            if (clean_feeds || panel.feed_idx >= feeds.length - 5)
-                db.sync(filer, clean_feeds)
-
-            return views['feed'].update(panel.feed_idx == feeds.length ? {} : feeds[panel.feed_idx])
+            return views['feed']
+                .update(panel.feed_idx >= feeds.length ? empty_feed : feeds[panel.feed_idx])
     }
 }
 
@@ -73,27 +115,22 @@ function show(view) {
     window.scrollTo(0, 0)
     panel.view = view
 
-    for (const i of Object.keys(views))
-        if (i == view)
-            views[i].$.removeAttr('style')
-        else
-            views[i].$.attr('style', 'display: none')
-
-    refresh()
+    conditional_sync()
+    hash.setFrom(filer, panel)
 }
 
 function toggle(k) {
     switch (panel.view) {
         case 'main':
             filer[k] = !filer[k]
+            hash.setFrom(filer, panel)
             break
         case 'feed':
             const e = db.data.feeds[feed_idx]
             e[k] = !e[k]
+            refresh()
             break
     }
-
-    refresh()
 }
 
 function next_feed(direction) {
@@ -108,14 +145,37 @@ function next_feed(direction) {
     if (curr != panel.feed_idx)
         window.scrollTo(0, 0)
 
+    conditional_sync()
     refresh()
+}
+
+function hash_changed() {
+    hash.parseTo(filer, panel)
+    conditional_sync()
+    refresh()
+}
+
+function sync(clean_feeds) {
+    const curr_hash = hash.get()
+
+    db.sync(filer, clean_feeds)
+        .then(() => {
+            if (clean_feeds) {
+                panel.sync_hash = curr_hash
+                panel.feed_idx = 0
+            }
+
+            refresh()
+        })
+        .catch(e => alert(e))
 }
 
 module.exports = {
     import: () => importer(),
     next: () => next_feed(1),
     prev: () => next_feed(-1),
-    sync: () => db.sync().then(() => refresh()).catch(e => alert(e)),
+    sync,
+    hash_changed,
     refresh,
     show,
     toggle,

@@ -6,7 +6,7 @@ const sources_tmpl = $('.rs-card')
 const tags_dest = $('.rs-tags')
 const tags_tmpl = $('.rs-tag')
 
-function addCard(e, template, dest, cb) {
+function addCard(e, selected, template, dest, cb) {
     const card = template.clone()
 
     views.push(card)
@@ -23,7 +23,7 @@ function addCard(e, template, dest, cb) {
     if (e.err)
         sinfo.addClass('serror')
 
-    if (!e.source_id && model.filter().tag == e.tag_filter)
+    if (selected)
         card.addClass('sselected')
 
     sinfo.on('click', (o) => {
@@ -34,11 +34,15 @@ function addCard(e, template, dest, cb) {
     card.on('click', () => cb(e))
 }
 
-function update(sources, tags, cb) {
+function update(sources, sel_source, sel_tag, tags, cb) {
     for (const i of views) i.remove()
     views.length = 0
-    for (const i of tags) addCard(i, tags_tmpl, tags_dest, cb)
-    for (const i of sources) addCard(i, sources_tmpl, sources_dest, cb)
+
+    for (const i of tags)
+        addCard(i, i.tag == sel_tag, tags_tmpl, tags_dest, cb)
+
+    for (const i of sources)
+        addCard(i, i.source_id == sel_source, sources_tmpl, sources_dest, cb)
 }
 
 module.exports = {

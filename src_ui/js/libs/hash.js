@@ -16,12 +16,12 @@ function setFrom(flr, panel) {
 function parseTo(flr, panel) {
     const arr = get().split('~')
 
-    panel.view = arr[0]
-    flr.tag = arr[1] ? decodeURIComponent(arr[1]) : undefined
-    flr.source_id = arr[2] ? arr[2] : undefined
-    flr.seen = arr[3] == 'seen'
-    flr.star = arr[4] == 'star'
-    flr.asc = arr[5] == 'asc'
+    panel.view = arr[0] || 'main'
+    flr.tag = decodeURIComponent(arr[1]) || undefined
+    flr.source_id = parseInt(arr[2]) || undefined
+    flr.seen = arr[3] || undefined
+    flr.star = arr[4] || undefined
+    flr.asc = arr[5] || undefined
 }
 
 module.exports = {

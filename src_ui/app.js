@@ -15,4 +15,7 @@ hotkeys('x', () => ctrl.toggle('star'))
 hotkeys('1', () => ctrl.show('main'))
 hotkeys('2', () => ctrl.show('feed'))
 
-window.onhashchange = () => ctrl.refresh()
+window.onhashchange = () => ctrl.hash_changed()
+
+ctrl.refresh()
+ctrl.sync(true)
