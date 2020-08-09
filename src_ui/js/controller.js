@@ -64,15 +64,22 @@ function tags() {
 function cards_callback(e) {
     if (e.source_id) {
         filer.source_id = e.source_id
+        hash.setFrom(filer, panel)
+
         panel.view = 'feed'
+        hash.setFrom(filer, panel)
     } else {
-        if (filer.tag == e.tag)
-            panel.view = 'feed'
+        const go = filer.tag == e.tag
 
+        filer.source_id = undefined
         filer.tag = e.tag
-    }
+        hash.setFrom(filer, panel)
 
+        if (go) {
+            panel.view = 'feed'
     hash.setFrom(filer, panel)
+}
+    }
 }
 
 function conditional_sync() {
