@@ -18,6 +18,7 @@ WORKDIR /app
 
 ADD package*.json ./
 
+RUN npm i node-pre-gyp
 RUN npm ci --only=production \
  && mkdir data
 
