@@ -1,43 +1,35 @@
-FROM node:12-alpine as ui-builder
-
+FROM node:14-alpine as base
 WORKDIR /app
+ENV JOBS=max
+RUN apk add --no-cache python2 make g++
+ADD package*.json ./
+RUN npm i --production
 
-ADD package*.json gulpfile.js ./
-RUN npm ci
 
+
+##################
+FROM base as ui-builder
+RUN npm i
+ADD gulpfile.js .
 ADD src_ui src_ui
 RUN npm run build
 
 
 
-
 ##################
-FROM node:12-alpine as cleaner
-
-WORKDIR /app
-
-ADD package*.json ./
-
-RUN npm ci --only=production \
- && mkdir data
-
-ADD migrations  migrations
-ADD shemas_gql  shemas_gql
-ADD src         src
-ADD config.yaml .
-
+FROM base as cleaner
+ADD migrations migrations
+ADD src src
+ADD schema.graphql config.yaml ./
 COPY --from=ui-builder /app/dist dist
-
+RUN mkdir data
 
 
 
 ##################
-FROM node:12-alpine
-
+FROM node:14-alpine
 WORKDIR /app
-
 ENV NODE_ENV=production
-
 COPY --from=cleaner /app .
 
-CMD node --http-parser=legacy src/bin/www
+CMD [ "--http-parser=legacy", "src/bin/www" ]

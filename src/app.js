@@ -1,10 +1,10 @@
 const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
-const graphqlHTTP = require('express-graphql')
 const fileUpload = require('express-fileupload')
+const { graphqlHTTP } = require('express-graphql')
 const { importSchema } = require('graphql-import')
-const { makeExecutableSchema } = require('graphql-tools')
+const { makeExecutableSchema } = require('@graphql-tools/schema')
 
 const resolvers = require('./resolvers')
 const startFetcher = require('./rss-fetcher')
