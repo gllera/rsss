@@ -21,7 +21,7 @@ const re_views = [`${root}/**/*.pug`]
 const re_css = [`${root}/sass/*.sass`]
 const br_app = `${root}/app.js`
 
-sass.compiler = require('sass')
+sass.compiler = require('node-sass')
 
 async function serve() {
     browserSync.init({
