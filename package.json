@@ -38,6 +38,7 @@
         "js-yaml": "^3.14.1",
         "loadsh": "0.0.4",
         "morgan": "~1.9.1",
+        "node-pre-gyp": "^0.17.0",
         "sanitize-html": "^1.27.5",
         "sqlite": "^4.0.18",
         "sqlite3": "^4.2.0"
