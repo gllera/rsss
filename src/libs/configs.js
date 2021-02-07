@@ -3,7 +3,7 @@ const yaml = require('js-yaml')
 const _ = require('loadsh')
 let configs = {}
 
-let _conf_loader = (path) => configs = _.defaultsDeep(yaml.safeLoad(fs.readFileSync(path, 'utf8')), configs)
+let _conf_loader = (path) => configs = _.defaultsDeep(yaml.load(fs.readFileSync(path, 'utf8')), configs)
 
 _conf_loader('config.yaml')
 
@@ -28,6 +28,6 @@ for (let e in configs)
         }
 
 console.log('[CONFIGURATIONS]')
-console.log(yaml.safeDump(configs, { sortKeys: true, lineWidth: 1000 }))
+console.log(yaml.dump(configs, { sortKeys: true, lineWidth: 1000 }))
 
 module.exports = configs

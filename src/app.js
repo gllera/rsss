@@ -3,8 +3,9 @@ const logger = require('morgan')
 const cors = require('cors')
 const fileUpload = require('express-fileupload')
 const { graphqlHTTP } = require('express-graphql')
-const { importSchema } = require('graphql-import')
-const { makeExecutableSchema } = require('@graphql-tools/schema')
+const { loadSchemaSync } = require('@graphql-tools/load')
+const { GraphQLFileLoader } = require('@graphql-tools/graphql-file-loader')
+const { addResolversToSchema } = require('@graphql-tools/schema')
 
 const resolvers = require('./resolvers')
 const startFetcher = require('./rss-fetcher')
@@ -41,9 +42,9 @@ async function appPromise() {
 
     app.use('/rsss', graphqlHTTP({
         graphiql: configs.gui_graphql,
-        schema: makeExecutableSchema({
-            typeDefs: importSchema('schema.graphql'),
-            resolvers
+        schema: addResolversToSchema({
+            schema: loadSchemaSync('schema.graphql', { loaders: [new GraphQLFileLoader()] }),
+            resolvers,
         })
     }))
 
