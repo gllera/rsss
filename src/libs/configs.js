@@ -1,14 +1,10 @@
-const fs = require('fs')
-const yaml = require('js-yaml')
-const _ = require('loadsh')
-let configs = {}
+import fs from 'fs'
+import yaml from 'js-yaml'
+import _ from 'loadsh'
 
-let _conf_loader = (path) => configs = _.defaultsDeep(yaml.load(fs.readFileSync(path, 'utf8')), configs)
-
-_conf_loader('config.yaml')
-
-if (fs.existsSync('data/config.yaml'))
-    _conf_loader('data/config.yaml')
+const configs_base = yaml.load(fs.readFileSync('config.yaml', 'utf8'))
+const configs_user = fs.existsSync('data/config.yaml') ? yaml.load(fs.readFileSync('data/config.yaml', 'utf8')) : {}
+const configs = _.defaultsDeep(configs_base, configs_user)
 
 for (let e in configs)
     if (process.env[e] !== undefined)
@@ -30,4 +26,4 @@ for (let e in configs)
 console.log('[CONFIGURATIONS]')
 console.log(yaml.dump(configs, { sortKeys: true, lineWidth: 1000 }))
 
-module.exports = configs
+export default configs

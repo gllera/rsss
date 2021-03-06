@@ -1,4 +1,4 @@
-const parseXML = require('fast-xml-parser').parse
+import { parse as parseXML } from 'fast-xml-parser'
 
 const opts_parser = {
     ignoreAttributes: false,
@@ -22,7 +22,7 @@ function parseJsImport(o, res, tag) {
         o.outline.forEach(e => parseJsImport(e, res, tag))
 }
 
-module.exports = file => {
+export default file => {
     const txt = parseXML(file.data.toString(), opts_parser)
 
     const RSSs = {}

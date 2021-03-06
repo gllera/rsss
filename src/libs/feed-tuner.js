@@ -1,17 +1,18 @@
-const debug = require('debug')('rsss:tuner')
-const fs = require('fs')
-const path = require('path')
-const configs = require('./configs')
+import fs from 'fs'
+import path from 'path'
+import Debug from 'debug'
+import configs from './configs.js'
 
+const debug = Debug('rsss:tuner')
 const tuners = {}, tunersStrOrder = {}
 const sorter = (a, b) => (a.z === undefined ? 99 : a.z) - (b.z === undefined ? 99 : b.z)
 
 function includePath(folder) {
-    fs.readdirSync(folder).forEach(i => {
+    fs.readdirSync(folder).forEach(async i => {
         const full_path = path.resolve(folder, i)
         const name = path.parse(full_path).name
 
-        tuners[name] = require(full_path)
+        tuners[name] = (await import(full_path)).default
 
         if (typeof tuners[name] !== "function")
             throw (`Invalid tuner file: ${full_path}`)
@@ -20,14 +21,14 @@ function includePath(folder) {
     })
 }
 
-function initFeedTuner(configs) {
+export function initFeedTuner(configs) {
     includePath('src/tuners')
 
     if (fs.existsSync('data/tuners'))
         includePath('data/tuners')
 }
 
-async function tuneFeed(tunersStr, feed) {
+export async function tuneFeed(tunersStr, feed) {
     tunersStr = tunersStr || ""
     let order = tunersStrOrder[tunersStr]
 
@@ -57,5 +58,3 @@ async function tuneFeed(tunersStr, feed) {
         await tuners[e.name](feed, e.params)
     }
 }
-
-module.exports = { initFeedTuner, tuneFeed }

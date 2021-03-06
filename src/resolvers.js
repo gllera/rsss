@@ -1,6 +1,7 @@
-const graphqlFields = require('graphql-fields')
-const debug = require('debug')('rsss:resolvers')
-const { db } = require('./libs')
+import * as graphqlFields from 'graphql-fields'
+import Debug from 'debug'
+const debug = Debug('rsss:resolvers')
+import { db } from './libs/db.js'
 
 async function Sync(_, { o }, __, i) {
     debug(o)
@@ -32,7 +33,7 @@ async function Source(_, { o }) {
     return await db.sources.mod(o)
 }
 
-module.exports = {
+export const resolvers = {
     Query: { alive: () => 1 },
-    Mutation: { Sync, Source }
+    Mutation: { Sync, Source },
 }

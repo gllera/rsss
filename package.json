@@ -2,10 +2,11 @@
     "name": "rsss",
     "version": "0.0.0",
     "private": true,
+    "type": "module",
     "scripts": {
         "start": "node --http-parser=legacy ./src/bin/www",
         "dev": "concurrently -p '{name}' -n 'RSSS,GULP' -c 'bgRed,bgBlue' -k 'npm run gql' 'npm run gserve'",
-        "gql": "cross-env DEBUG=rsss:* nodemon --use_strict --http-parser=legacy ./src/bin/www",
+        "gql": "cross-env DEBUG=rsss:* nodemon --use_strict --http-parser=legacy ./src/bin/www.js",
         "gserve": "cross-env BASE_URL='http://localhost:3000' gulp serve",
         "build": "gulp build",
         "clean": "gulp clean"

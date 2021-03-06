@@ -1,6 +1,6 @@
 // Description: Removes unwanted html tags and attributes. Also it makes sure they are well formed.
 
-const sanitizer = require('sanitize-html')
+import sanitizer from 'sanitize-html'
 
 const sanitize_opts = {
     allowedTags: [
@@ -20,4 +20,4 @@ const sanitize_opts = {
     allowProtocolRelative: false
 }
 
-module.exports = e => e.content = sanitizer(e.content, sanitize_opts)
+export default e => e.content = sanitizer(e.content, sanitize_opts)

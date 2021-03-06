@@ -4,11 +4,14 @@
  * Module dependencies.
  */
 
-let appPromise = require('../app')
-let debug = require('debug')('rsss:server')
-let http = require('http')
+import { appPromise } from '../app.js'
+import Debug from 'debug'
+import http from 'http'
+import { configs } from '../libs/index.js'
+
+const debug = Debug('rsss:server')
+
 let port, server
-const { configs } = require('../libs')
 
 async function start() {
     let app = await appPromise()

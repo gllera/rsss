@@ -1,6 +1,6 @@
 // Description: Removes unnecessary stuff from feed content.
 
-const { minify } = require('html-minifier')
+import { minify } from 'html-minifier'
 
 const minify_opts = {
     collapseWhitespace: true,
@@ -19,4 +19,4 @@ const minify_opts = {
     html5: true
 }
 
-module.exports = e => e.content = minify(e.content, minify_opts)
+export default e => e.content = minify(e.content, minify_opts)

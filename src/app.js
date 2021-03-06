@@ -1,18 +1,17 @@
-const express = require('express')
-const logger = require('morgan')
-const cors = require('cors')
-const fileUpload = require('express-fileupload')
-const { graphqlHTTP } = require('express-graphql')
-const { loadSchemaSync } = require('@graphql-tools/load')
-const { GraphQLFileLoader } = require('@graphql-tools/graphql-file-loader')
-const { addResolversToSchema } = require('@graphql-tools/schema')
+import express from 'express'
+import logger from 'morgan'
+import cors from 'cors'
+import fileUpload from 'express-fileupload'
+import { graphqlHTTP } from 'express-graphql'
+import { loadSchemaSync } from '@graphql-tools/load'
+import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
+import { addResolversToSchema } from '@graphql-tools/schema'
 
-const resolvers = require('./resolvers')
-const startFetcher = require('./rss-fetcher')
-const { configs, parseOPML, init } = require('./libs')
+import { resolvers } from './resolvers.js'
+import { startFetching } from './rss-fetcher.js'
+import { configs, parseOPML, init } from './libs/index.js'
 
-
-async function appPromise() {
+export async function appPromise() {
     await init()
 
     let app = express()
@@ -49,8 +48,6 @@ async function appPromise() {
     }))
 
 
-    startFetcher()
+    startFetching()
     return app
 }
-
-module.exports = appPromise

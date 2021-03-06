@@ -1,10 +1,13 @@
-const sqlite = require('sqlite')
-const sqlite3 = require('sqlite3')
-const debug = require('debug')('rsss:db')
-const configs = require('./configs')
+import { Database, open } from 'sqlite'
+import sqlite3 from 'sqlite3'
+import Debug from 'debug'
 
-/** @typedef {sqlite.Database} Database */
-/** @type {sqlite.Database} */
+const debug = Debug('rsss:db')
+
+import configs from './configs.js'
+
+/** @typedef {Database} Database */
+/** @type {Database} */
 let DB
 
 const feeds_mod_values = [
@@ -99,29 +102,28 @@ async function feeds(o) {
     return await DB.all(`SELECT f.* FROM feed as f LEFT JOIN source AS s ON f.source_id = s.source_id WHERE ${query.join(' AND ')} ORDER BY f.date ${order} LIMIT ?`, values)
 }
 
-module.exports = {
-    db: {
-        sources: {
-            all: async () => await DB.all('SELECT * FROM source_view'),
-            add: async o => (await DB.run('INSERT INTO source ( xml_url, title, description, html_url, lang, tag, tuners ) VALUES( ?, ?, ?, ?, ?, ?, ? )', [o.xml_url, o.title, o.description, o.html_url, o.lang, o.tag, o.tuners])).lastID,
-            del: async id => (await DB.run('DELETE FROM source WHERE source_id = ?', [id])).changes,
-            pop: source_pop,
-            mod: source_mod
-        },
-        feeds: {
-            all: feeds,
-            old: async guid => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
-            add: async o => await DB.run('INSERT INTO feed ( guid, link, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.link, o.title, o.content, o.date, o.source_id]),
-            mod: feeds_mod
-        },
+export const db = {
+    sources: {
+        all: async () => await DB.all('SELECT * FROM source_view'),
+        add: async o => (await DB.run('INSERT INTO source ( xml_url, title, description, html_url, lang, tag, tuners ) VALUES( ?, ?, ?, ?, ?, ?, ? )', [o.xml_url, o.title, o.description, o.html_url, o.lang, o.tag, o.tuners])).lastID,
+        del: async id => (await DB.run('DELETE FROM source WHERE source_id = ?', [id])).changes,
+        pop: source_pop,
+        mod: source_mod
     },
-    initDB: async () => {
-        DB = await sqlite.open({
-            filename: 'data/' + configs.db_name,
-            driver: sqlite3.cached.Database
-        })
+    feeds: {
+        all: feeds,
+        old: async guid => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
+        add: async o => await DB.run('INSERT INTO feed ( guid, link, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.link, o.title, o.content, o.date, o.source_id]),
+        mod: feeds_mod
+    },
+}
 
-        await DB.migrate({ force: configs.db_force })
-        await DB.get("PRAGMA foreign_keys = ON")
-    },
+export async function initDB() {
+    DB = await open({
+        filename: 'data/' + configs.db_name,
+        driver: sqlite3.cached.Database
+    })
+
+    await DB.migrate({ force: configs.db_force })
+    await DB.get("PRAGMA foreign_keys = ON")
 }

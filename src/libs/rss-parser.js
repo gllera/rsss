@@ -1,8 +1,8 @@
-const request = require('request')
-const parser = require('fast-xml-parser')
-const iconv = require('iconv-lite')
-const he = require('he')
-const configs = require('./configs')
+import request from 'request'
+import parser from 'fast-xml-parser'
+import iconv from 'iconv-lite'
+import he from 'he'
+import configs from './configs.js'
 
 const bIni = Buffer.from('<?xml '), bEnd = Buffer.from('?>')
 const regEncRes = /(encoding|charset)\s*=\s*(\S+)/
@@ -26,7 +26,7 @@ const opts_iconv = {
 
 const extVal = e => e == null ? '' : Array.isArray(e) ? extVal(e[0]) : typeof e == 'object' ? e.$$ : e
 
-module.exports = (xml_url) => new Promise((resolve, reject) =>
+export default (xml_url) => new Promise((resolve, reject) =>
     request.get(xml_url, opts_iconv, (err, res, body) => {
         let enc, items
 

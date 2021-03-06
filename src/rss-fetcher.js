@@ -1,8 +1,9 @@
-const debug = require('debug')('rsss:fetcher')
-const _ = require('loadsh')
-const async = require('async')
+import _ from 'loadsh'
+import async from 'async'
+import Debug from 'debug'
+const debug = Debug('rsss:fetcher')
 
-const { parseRSS, configs, db, tuneFeed } = require('./libs')
+import { parseRSS, configs, db, tuneFeed } from './libs/index.js'
 let last_guid = {}
 
 async function fetch(source) {
@@ -51,4 +52,6 @@ async function tick() {
     if (source) fetch(source)
 }
 
-module.exports = () => setInterval(tick, configs.fetcher_sleep)
+export function startFetching() {
+    setInterval(tick, configs.fetcher_sleep)
+} 

@@ -1,8 +1,8 @@
 // Description: Edit feed content.
 
-const $ = require('cheerio')
+import $ from 'cheerio'
 
-module.exports = (e, p) => {
+export default (e, p) => {
     let data = $.load(e.content).root()
     let task = undefined
 

@@ -1,19 +1,21 @@
-const gulp = require('gulp')
-const pug = require('gulp-pug')
-const browserify = require('browserify')
-const source = require('vinyl-source-stream')
-const buffer = require('vinyl-buffer')
-const sourcemaps = require('gulp-sourcemaps')
-const sass = require('gulp-sass')
-const clean = require('gulp-clean')
-const replace = require('gulp-replace')
-const browserSync = require('browser-sync').create()
+import gulp from 'gulp'
+import pug from 'gulp-pug'
+import browserify from 'browserify'
+import source from 'vinyl-source-stream'
+import buffer from 'vinyl-buffer'
+import sourcemaps from 'gulp-sourcemaps'
+import sass from 'gulp-sass'
+import sassCompiler from 'node-sass'
+import clean from 'gulp-clean'
+import replace from 'gulp-replace'
+import browserSyncMod from 'browser-sync'
 
-let S = gulp.series
-let P = gulp.parallel
-let rsss_url = (process.env['BASE_URL'] || '') + '/rsss'
+const browserSync = browserSyncMod.create()
+const S = gulp.series
+const P = gulp.parallel
+const rsss_url = (process.env['BASE_URL'] || '') + '/rsss'
 
-let root = 'src_ui'
+const root = 'src_ui'
 
 const re_copy = [`${root}/**/*`, `!${root}/**/*.pug`, `!${root}/**/*.js`, `!${root}/**/*.sass`]
 const re_js = [`${root}/**/*.js`]
@@ -21,7 +23,7 @@ const re_views = [`${root}/**/*.pug`]
 const re_css = [`${root}/sass/*.sass`]
 const br_app = `${root}/app.js`
 
-sass.compiler = require('node-sass')
+sass.compiler = sassCompiler
 
 async function serve() {
     browserSync.init({

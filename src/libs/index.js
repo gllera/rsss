@@ -1,19 +1,14 @@
-const configs = require('./configs')
-const parseOPML = require('./opml-parser')
-const parseRSS = require('./rss-parser')
-const { tuneFeed, initFeedTuner } = require('./feed-tuner')
-const { db, initDB } = require('./db')
+export * as configs from './configs.js'
+export * as parseOPML from './opml-parser.js'
+export * as parseRSS from './rss-parser.js'
+export { tuneFeed } from './feed-tuner.js'
+export { db } from './db.js'
 
-async function init() {
+import configs from './configs.js'
+import { initFeedTuner } from './feed-tuner.js'
+import { initDB } from './db.js'
+
+export async function init() {
     await initDB(configs)
     await initFeedTuner()
-}
-
-module.exports = {
-    init,
-    db,
-    configs,
-    parseOPML,
-    parseRSS,
-    tuneFeed
 }
