@@ -7,7 +7,7 @@
 import { appPromise } from '../app.js'
 import Debug from 'debug'
 import http from 'http'
-import { configs } from '../libs/index.js'
+import configs from '../libs/configs.js'
 
 const debug = Debug('rsss:server')
 

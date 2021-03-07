@@ -4,7 +4,7 @@ import _ from 'loadsh'
 
 const configs_base = yaml.load(fs.readFileSync('config.yaml', 'utf8'))
 const configs_user = fs.existsSync('data/config.yaml') ? yaml.load(fs.readFileSync('data/config.yaml', 'utf8')) : {}
-const configs = _.defaultsDeep(configs_base, configs_user)
+const configs = _.defaultsDeep(configs_user, configs_base)
 
 for (let e in configs)
     if (process.env[e] !== undefined)

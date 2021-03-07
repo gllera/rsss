@@ -1,7 +1,7 @@
 // Description: Extracts feed's content from its url.
 
 import axios from 'axios'
-import { configs } from '../libs/index.js'
+import configs from '../libs/configs.js'
 
 const instance = axios.create({
     timeout: configs.fetcher_timeout,

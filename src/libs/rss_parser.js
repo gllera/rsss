@@ -50,16 +50,19 @@ export default (xml_url) => new Promise((resolve, reject) =>
             enc = reg ? reg[2] : null
         }
 
-        const js = parser.parse(iconv.decode(body, enc || 'UTF-8'), opts_parser)
+        let js = {}
+        try {
+            js = parser.parse(iconv.decode(body, enc || 'UTF-8'), opts_parser)
+        } catch { }
 
-        if (js.feed)
+        if (js['feed'])
             items = js.feed[0].entry
-        else if (js.rss)
+        else if (js['rss'])
             items = js.rss[0].channel[0].item
         else if (js['rdf:RDF'])
             items = js['rdf:RDF'][0].item
         else
-            return reject(`Invalid RSS format`)
+            return reject('Invalid RSS format')
 
         items = items
             .filter(e => {

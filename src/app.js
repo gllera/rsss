@@ -7,12 +7,16 @@ import { loadSchemaSync } from '@graphql-tools/load'
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 import { addResolversToSchema } from '@graphql-tools/schema'
 
-import { resolvers } from './resolvers.js'
-import { startFetching } from './rss-fetcher.js'
-import { configs, parseOPML, init } from './libs/index.js'
+import configs from './libs/configs.js'
+import parseOPML from './libs/opml_parser.js'
+
+import { resolvers } from './gql_resolvers.js'
+import { initFetching, startFetching } from './rss_fetcher.js'
+import { initDB } from './db.js'
 
 export async function appPromise() {
-    await init()
+    await initFetching()
+    await initDB()
 
     let app = express()
 
@@ -35,7 +39,17 @@ export async function appPromise() {
         if (!req.files || !req.files.file)
             return res.status(400).json({ err: "File not found at field: file" })
 
-        res.json(await resolvers.Mutation.sourceAddBulk(null, { o: parseOPML(req.files.file) }))
+        const results = []
+
+        for (const i of parseOPML(req.files.file))
+            try {
+                results.push(await resolvers.Mutation.Source(null, { o: i }))
+            }
+            catch (e) {
+                results.push(e.message)
+            }
+
+        res.json(results)
     })
 
 

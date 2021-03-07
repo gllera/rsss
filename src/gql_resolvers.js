@@ -1,7 +1,9 @@
-import * as graphqlFields from 'graphql-fields'
+import graphqlFields from 'graphql-fields'
 import Debug from 'debug'
+
+import { db } from './db.js'
+
 const debug = Debug('rsss:resolvers')
-import { db } from './libs/db.js'
 
 async function Sync(_, { o }, __, i) {
     debug(o)

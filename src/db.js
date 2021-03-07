@@ -2,9 +2,9 @@ import { Database, open } from 'sqlite'
 import sqlite3 from 'sqlite3'
 import Debug from 'debug'
 
-const debug = Debug('rsss:db')
+import configs from './libs/configs.js'
 
-import configs from './configs.js'
+const debug = Debug('rsss:db')
 
 /** @typedef {Database} Database */
 /** @type {Database} */
