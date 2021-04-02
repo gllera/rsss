@@ -27,34 +27,53 @@ function includePath(folder) {
     })
 }
 
+function parse_tuners(tuners_str) {
+    const res = {}
+
+    for (let i of tuners_str.split('<%>')) {
+        i = i.replace(/\r?\n|\r/g, ' ').replace(/\s+/g,' ')
+        let pos_idx = i.indexOf('-')
+        let pos_val = i.indexOf(':')
+
+        pos_idx = pos_idx == -1 ? i.length : pos_idx
+        pos_val = pos_val == -1 ? i.length : pos_val
+
+        let idx = parseInt(i.substring(0, pos_idx).trim())
+        let name = i.substring(pos_idx + 1, pos_val).trim()
+        let param = i.substring(pos_val + 1).trim()
+
+        if (!isNaN(idx)) {
+            if (!res.hasOwnProperty(idx))
+                res[idx] = []
+
+            if (name)
+                res[idx].push({ name, param })
+        }
+    }
+
+    return res
+}
+
 async function tuneFeed(tunersStr, feed) {
     tunersStr = tunersStr || ""
     let order = tunersStrOrder[tunersStr]
 
     if (order === undefined) {
-        const defaults = configs.tuners_default
-        let current = tunersStr ? JSON.parse(tunersStr) : []
+        order = tunersStrOrder[tunersStr] = []
 
-        defaults.forEach(i => {
-            if (!i.params)
-                i.params = []
-        })
+        const tmp = {
+            ...parse_tuners(configs.tuners_default),
+            ...parse_tuners(tunersStr)
+        }
 
-        current = current.map(i => {
-            const e = i.split('|')
-            return {
-                name: e[0],
-                z: e[1] ? parseInt(e[1]) : undefined,
-                params: e.slice(2)
-            }
-        })
-
-        order = tunersStrOrder[tunersStr] = defaults.concat(current).sort(sorter)
+        for (const i of Object.keys(tmp).sort())
+            for (const j of tmp[i])
+                order.push(j)
     }
 
     for (const e of order) {
         debug(feed.source_id, e.name)
-        await tuners[e.name](feed, e.params)
+        await tuners[e.name](feed, e.param)
     }
 }
 

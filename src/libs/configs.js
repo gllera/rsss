@@ -1,10 +1,9 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
-import _ from 'loadsh'
 
 const configs_base = yaml.load(fs.readFileSync('config.yaml', 'utf8'))
 const configs_user = fs.existsSync('data/config.yaml') ? yaml.load(fs.readFileSync('data/config.yaml', 'utf8')) : {}
-const configs = _.defaultsDeep(configs_user, configs_base)
+const configs = { ...configs_base, ...configs_user }
 
 for (let e in configs)
     if (process.env[e] !== undefined)

@@ -11,10 +11,8 @@ fetcher_interval: 600000
 fetcher_timeout: 10000
 fetcher_agent: 'rss-parser'
 
-tuners_default:
-  - name: 'sanitizer'
-    z: 40
-  - name: 'minifier'
-    z: 80
+tuners_default: |
+  40 - sanitizer <%>
+  80 - minifier
 
 import_upload_max_filesize: 500000

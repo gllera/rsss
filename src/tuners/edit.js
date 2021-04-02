@@ -4,19 +4,16 @@ import $ from 'cheerio'
 
 export default (e, p) => {
     let data = $.load(e.content).root()
-    let task = undefined
 
-    for (const i of p)
-        switch (i) {
-            case '##crop##':
-                task = e => data = data.find(e).first()
-                break
-            case '##del##':
-                task = e => data.find(e).remove()
-                break
-            default:
-                task(i)
-        }
+    for (const i of p.split('&&')) {
+        let arr = i.trim().split(' ')
+
+        for (let j = 1; j < arr.length; j++)
+            switch (arr[0]) {
+                case 'crop': data = data.find(arr[j]).first() ; break
+                case  'del':        data.find(arr[j]).remove(); break
+            }
+    }
 
     e.content = data.html()
 }
