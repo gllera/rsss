@@ -2,4 +2,9 @@
 
 import { Readability } from '@mozilla/readability'
 
-export default e => e.doc.body.innerHTML = new Readability(e.doc).parse().content
+export default e => {
+    const res = new Readability(e.doc).parse()
+
+    if (res)
+        e.doc.body.innerHTML = res.content
+}

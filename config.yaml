@@ -12,6 +12,7 @@ fetcher_timeout: 10000
 fetcher_agent: 'rss-parser'
 
 tuners_default: |
+  20 - enclosures  <%>
   40 - readability <%>
   80 - minify
 

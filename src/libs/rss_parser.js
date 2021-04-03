@@ -84,6 +84,10 @@ export default (xml_url) => new Promise((resolve, reject) =>
                 title: extVal(e.title),
                 raw: extVal(e['content:encoded'] || e.content || e.description || e.summary),
                 date: extVal(e.published || e.pubDate || e.updated || e['dc:date']),
+                enclosures: !Array.isArray(e.enclosure) ? [] : e.enclosure.map(f => ({
+                    url: f['$url'] || f['$$'],
+                    type: f['$type'] || ''
+                })),
             }))
 
         resolve(items)
