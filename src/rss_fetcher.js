@@ -2,6 +2,7 @@ import async from 'async'
 import fs from 'fs'
 import path from 'path'
 import Debug from 'debug'
+import { JSDOM } from 'jsdom'
 
 import { db } from './db.js'
 import configs from './libs/configs.js'
@@ -98,8 +99,10 @@ async function fetch(source) {
             if (!await db.feeds.old(feed.guid)) {
                 feed.source_id = source.source_id
                 feed.date = new Date(feed.date).getTime() || Date.now()
+                feed.doc = new JSDOM(feed.raw, { url: feed.link }).window.document
 
                 await tuneFeed(source.tuners, feed)
+                feed.content = feed.doc.body.innerHTML
                 await db.feeds.add(feed)
             }
         })

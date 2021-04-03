@@ -82,7 +82,7 @@ export default (xml_url) => new Promise((resolve, reject) =>
                 guid: extVal(e.guid || e.id || e.link),
                 link: extVal(e.link),
                 title: extVal(e.title),
-                content: extVal(e['content:encoded'] || e.content || e.description || e.summary),
+                raw: extVal(e['content:encoded'] || e.content || e.description || e.summary),
                 date: extVal(e.published || e.pubDate || e.updated || e['dc:date']),
             }))
 

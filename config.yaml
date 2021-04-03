@@ -12,7 +12,7 @@ fetcher_timeout: 10000
 fetcher_agent: 'rss-parser'
 
 tuners_default: |
-  40 - sanitizer <%>
-  80 - minifier
+  40 - readability <%>
+  80 - minify
 
 import_upload_max_filesize: 500000

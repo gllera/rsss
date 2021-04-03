@@ -19,4 +19,11 @@ const minify_opts = {
     html5: true
 }
 
-export default e => e.content = minify(e.content, minify_opts)
+export default e => {
+    let node = e.doc.body
+
+    while ( node.childElementCount == 1 && node.childNodes[0].nodeValue === null )
+        node = node.childNodes[0]
+
+    e.doc.body.innerHTML = minify(node.innerHTML, minify_opts)
+}

@@ -1,6 +1,8 @@
 // Description: Extracts feed's content from its url.
 
 import axios from 'axios'
+import { JSDOM } from 'jsdom'
+
 import configs from '../libs/configs.js'
 
 const instance = axios.create({
@@ -8,7 +10,7 @@ const instance = axios.create({
     headers: { 'User-Agent': configs.fetcher_agent }
 })
 
-export default async (e, p) => {
+export default async e => {
     const res = await instance.get(e.link)
 
     if (res.status != 200)
@@ -17,5 +19,5 @@ export default async (e, p) => {
     if (!res.data)
         throw "Got empty response"
 
-    e.content = res.data
+    e.doc = new JSDOM(res.data, { url: e.link }).window.document
 }
