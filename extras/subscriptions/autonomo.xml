@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Subscriptions of Gabriel Llera from Inoreader [https://www.inoreader.com]</title>
+  </head>
+  <body>
+    <outline text="autonomo" title="autonomo">
+      <outline text="Emprender Fácil" title="Emprender Fácil" type="rss" xmlUrl="https://www.emprender-facil.com/feed/" htmlUrl="https://www.emprender-facil.com/"/>
+      <outline text="FinancialRed" title="FinancialRed" type="rss" xmlUrl="http://financialred.com/feed/" htmlUrl="http://financialred.com/"/>
+      <outline text="GesTron" title="GesTron" type="rss" xmlUrl="http://gestron.es/feed/" htmlUrl="http://gestron.es"/>
+      <outline text="Hay otra forma | Blog Laboral Kutxa" title="Hay otra forma | Blog Laboral Kutxa" type="rss" xmlUrl="https://blog.laboralkutxa.com/feed/" htmlUrl="https://blog.laboralkutxa.com/"/>
+      <outline text="Infoautónomos" title="Infoautónomos" type="rss" xmlUrl="http://infoautonomos.eleconomista.es/feed/" htmlUrl="http://infoautonomos.eleconomista.es/feed/"/>
+    </outline>
+  </body>
+</opml>

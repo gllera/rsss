@@ -6,14 +6,14 @@ mutation( $m: SourceData! ) {
 }'
 
 cases=(
-    # '{
-    #     "title": "Neoteo",
-    #     "xml_url": "http://www.neoteo.com/feed/",
-    #     "html_url": "http://www.neoteo.com/",
-    #     "description": "Tecnología, todos los días. Software, hardware, ciencia y videojuegos.",
-    #     "tag": "Me",
-    #     "lang": "es"
-    # }'
+    '{
+        "title": "Neoteo",
+        "xml_url": "http://www.neoteo.com/feed/",
+        "html_url": "http://www.neoteo.com/",
+        "description": "Tecnología, todos los días. Software, hardware, ciencia y videojuegos.",
+        "tag": "Me",
+        "lang": "es"
+    }'
     '{
         "title": "Hacker Noon — Medium",
         "xml_url": "https://hackernoon.com/feed",
@@ -26,30 +26,38 @@ cases=(
 11 - del : .profile | footer ~ *
 "
     }'
-    # '{
-    #     "title": "FayerWayer",
-    #     "xml_url": "http://feeds.feedburner.com/fayerwayer",
-    #     "html_url": "https://www.fayerwayer.com/",
-    #     "description": "Dosis diarias de tecnología en español.",
-    #     "tag": "Me",
-    #     "lang": "es"
-    # }'
-    # '{
-    #     "title": "El Androide Libre",
-    #     "xml_url": "http://feeds.feedburner.com/elandroidelibre",
-    #     "html_url": "http://www.elandroidelibre.com/",
-    #     "description": "Todo Android.",
-    #     "tag": "Me",
-    #     "lang": "es"
-    # }'
-    # '{
-    #     "title": "SoftZone",
-    #     "xml_url": "http://feeds.feedburner.com/Softwarezone",
-    #     "html_url": "http://www.softzone.es/",
-    #     "description": "Blog sobre software, tutoriales de ayuda, trucos para Windows, Drivers, programas gratis, noticias, manuales P2P, eMule, BitTorrent, Ares, análisis de software.",
-    #     "tag": "Me",
-    #     "lang": "es"
-    # }'
+    '{
+        "title": "FayerWayer",
+        "xml_url": "http://feeds.feedburner.com/fayerwayer",
+        "html_url": "https://www.fayerwayer.com/",
+        "description": "Dosis diarias de tecnología en español.",
+        "tag": "Me",
+        "lang": "es",
+    }'
+    '{
+        "title": "elrellano",
+        "xml_url": "https://elrellano.com/feed/",
+        "html_url": "https://elrellano.com",
+        "description": "Its funny",
+        "tag": "Funny",
+        "lang": "es"
+    }'
+    '{
+        "title": "El Androide Libre",
+        "xml_url": "http://feeds.feedburner.com/elandroidelibre",
+        "html_url": "http://www.elandroidelibre.com/",
+        "description": "Todo Android.",
+        "tag": "Me",
+        "lang": "es"
+    }'
+    '{
+        "title": "SoftZone",
+        "xml_url": "http://feeds.feedburner.com/Softwarezone",
+        "html_url": "http://www.softzone.es/",
+        "description": "Blog sobre software, tutoriales de ayuda, trucos para Windows, Drivers, programas gratis, noticias, manuales P2P, eMule, BitTorrent, Ares, análisis de software.",
+        "tag": "Me",
+        "lang": "es"
+    }'
 )
 
 for i in "${cases[@]}"

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-upload="all.xml"
+upload="${1:-all}.xml"
 
 source .run

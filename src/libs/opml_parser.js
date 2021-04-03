@@ -7,6 +7,12 @@ const opts_parser = {
 }
 
 function parseJsImport(o, res, tag) {
+    if (!o)
+        return
+
+    if (Array.isArray(o))
+        return o.forEach(e => parseJsImport(e, res, tag))
+
     if (o.$ && o.$.type == 'rss')
         if (res[o.$.xmlUrl] === undefined)
             res[o.$.xmlUrl] = {
@@ -16,10 +22,7 @@ function parseJsImport(o, res, tag) {
                 tag
             }
 
-    tag = o.$ && o.$.title ? o.$.title : tag
-
-    if (Array.isArray(o.outline))
-        o.outline.forEach(e => parseJsImport(e, res, tag))
+    parseJsImport(o.outline, res, o.$ && o.$.title ? o.$.title : tag)
 }
 
 export default file => {
@@ -28,8 +31,8 @@ export default file => {
     const RSSs = {}
     const res = []
 
-    if (txt && txt.opml && txt.opml.body && Array.isArray(txt.opml.body.outline))
-        txt.opml.body.outline.forEach(e => parseJsImport(e, RSSs))
+    if (txt && txt.opml && txt.opml.body)
+        parseJsImport(txt.opml.body.outline, RSSs)
 
     for (let e in RSSs)
         res.push(RSSs[e])
