@@ -5,25 +5,19 @@ import { db } from './db.js'
 
 const debug = Debug('rsss:resolvers')
 
-async function Sync(_, { o }, __, i) {
-    debug(o)
+async function sync(_, opts, __, i) {
+    debug(opts)
 
     const fields = graphqlFields(i)
-    const res = {}
-    o = o || {}
+    await db.feeds.mod(opts.o || {})
 
-    await db.feeds.mod(o)
-
-    if (fields.sources)
-        res.sources = await db.sources.all()
-
-    if (fields.feeds)
-        res.feeds = await db.feeds.all(o)
-
-    return res
+    return {
+        feeds: fields.feeds ? resolvers.Query.feeds(_, opts) : undefined,
+        sources: fields.sources ? resolvers.Query.sources(_, opts) : undefined
+    }
 }
 
-async function Source(_, { o }) {
+async function source(_, { o }) {
     debug(o)
 
     if (o.source_id < 0)
@@ -36,6 +30,10 @@ async function Source(_, { o }) {
 }
 
 export const resolvers = {
-    Query: { alive: () => 1 },
-    Mutation: { Sync, Source },
+    Query: { 
+        alive: () => 1,
+        feeds: async (_, { o }) => await db.feeds.all(o || {}),
+        sources: async () => await db.sources.all(),
+    },
+    Mutation: { sync, source },
 }

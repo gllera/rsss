@@ -43,7 +43,7 @@ export async function appPromise() {
 
         for (const i of parseOPML(req.files.file))
             try {
-                results.push(await resolvers.Mutation.Source(null, { o: i }))
+                results.push(await resolvers.Mutation.source(null, { o: i }))
             }
             catch (e) {
                 results.push(e.message)

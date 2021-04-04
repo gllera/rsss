@@ -1,11 +1,13 @@
 #################### Main
 type Query {
     alive: Int!
+    sources: [Source]!
+    feeds: [Feed]!
 }
 
 type Mutation {
-    Sync(o: SyncData): SyncResponse!
-    Source(o: SourceData!): Int!
+    sync(o: SyncData): SyncResponse!
+    source(o: SourceData!): Int!
 }
 
 

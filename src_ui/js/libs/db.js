@@ -3,7 +3,7 @@ const gql = require('graphql.js')(config.RSSS_URL)
 const gSync = gql(`
     mutation ($o: SyncData)
     {
-        Sync (o: $o)
+        sync (o: $o)
         {
             sources
             {
@@ -76,7 +76,7 @@ function sync(flr, clean_feeds) {
     }
 
     return gSync({ o: param }).then(e => {
-        for (const i of e.Sync.feeds) {
+        for (const i of e.sync.feeds) {
             i._seen = i.seen
             i._star = i.star
 
@@ -89,8 +89,8 @@ function sync(flr, clean_feeds) {
             i._star = i.star
         }
 
-        data.feeds = data.feeds.concat(e.Sync.feeds)
-        data.sources = e.Sync.sources
+        data.feeds = data.feeds.concat(e.sync.feeds)
+        data.sources = e.sync.sources
     })
 }
 
