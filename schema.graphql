@@ -2,33 +2,17 @@
 type Query {
     alive: Int!
     sources: [Source]!
-    feeds: [Feed]!
+    feeds(o: FeedsFilterInput): [Feed]!
 }
 
 type Mutation {
-    sync(o: SyncData): SyncResponse!
-    source(o: SourceData!): Int!
+    sync(o: FeedsFilterInput, s: SetFeedsInput): SyncResponse!
+    source(o: SourceDataInput!): Int!
 }
 
 
 
 #################### Sync
-input SyncData {
-    flr_page_min: Int
-    flr_page_max: Int
-    flr_feed_id: Int
-    flr_source_id: Int
-    flr_tag: String
-    flr_limit: Int
-    flr_asc: Int
-    flr_seen: Int
-    flr_star: Int
-    set_seen: [Int]
-    set_star: [Int]
-    set_unseen: [Int]
-    set_unstar: [Int]
-}
-
 type SyncResponse {
     sources: [Source]!
     feeds: [Feed]!
@@ -37,6 +21,24 @@ type SyncResponse {
 
 
 #################### Feeds
+input SetFeedsInput {
+    seen: [Int]
+    star: [Int]
+    unseen: [Int]
+    unstar: [Int]
+}
+
+input FeedsFilterInput {
+    feed_id: Int
+    source_id: Int
+    tag: String
+    asc: Int
+    seen: Int
+    star: Int
+    last_id: Int
+    limit: Int
+}
+
 type Feed {
     feed_id: Int!
     source_id: Int!
@@ -60,13 +62,14 @@ type Source {
     html_url: String
     lang: String
     tag: String
+    tuners: String
     err: String
     count: Int!
     unseen: Int!
     stars: Int!
 }
 
-input SourceData {
+input SourceDataInput {
     source_id: Int
     xml_url: String
     title: String
@@ -74,5 +77,5 @@ input SourceData {
     html_url: String
     lang: String
     tag: String
-    tuners: [String]
+    tuners: String
 }

@@ -10,53 +10,10 @@ const debug = Debug('rsss:db')
 /** @type {Database} */
 let DB
 
-const feeds_mod_values = [
-    { col: 'seen', val: 1, key: 'set_seen' },
-    { col: 'star', val: 1, key: 'set_star' },
-    { col: 'seen', val: 0, key: 'set_unseen' },
-    { col: 'star', val: 0, key: 'set_unstar' },
-]
-
-const source_mod_values = [
-    { col: 'xml_url', key: 'xml_url' },
-    { col: 'title', key: 'title' },
-    { col: 'description', key: 'description' },
-    { col: 'html_url', key: 'html_url' },
-    { col: 'lang', key: 'lang' },
-    { col: 'tag', key: 'tag' },
-    { col: 'err', key: 'err' },
-    { col: 'last_fetch', key: 'last_fetch' },
-]
-
-const feeds_values = [
-    { col: 'f.feed_id', key: 'flr_feed_id' },
-    { col: 'f.source_id', key: 'flr_source_id' },
-    { col: 'f.seen', key: 'flr_seen' },
-    { col: 'f.star', key: 'flr_star' },
-    { col: 's.tag', key: 'flr_tag' },
-]
-
 process.on('exit', () => { if (DB) DB.close() })
 process.on('SIGHUP', () => process.exit(128 + 1))
 process.on('SIGINT', () => process.exit(128 + 2))
 process.on('SIGTERM', () => process.exit(128 + 15))
-
-async function source_mod(o) {
-    const query = [], values = []
-
-    for (const e of source_mod_values)
-        if (o[e.key] !== undefined) {
-            query.push(`${e.col} = ?`)
-            values.push(o[e.key])
-        }
-
-    if (!query.length)
-        return 0
-
-    values.push(o.source_id)
-
-    return (await DB.run(`UPDATE source SET ${query.join(',')} WHERE source_id = ?`, values)).changes
-}
 
 async function source_pop() {
     const source = await DB.get('SELECT * FROM source WHERE last_fetch < ? ORDER BY last_fetch LIMIT 1', [Date.now() - configs.fetcher_interval])
@@ -67,54 +24,54 @@ async function source_pop() {
     return source
 }
 
-async function feeds_mod(o) {
-    for (const e of feeds_mod_values) {
-        const arr = o[e.key]
+async function source_add(o) {
+    const keys = Object.keys(o)
+    const fields = Array(keys.length).fill('?')
+    const res = await DB.run(`INSERT INTO source ( ${keys.join(',')} ) VALUES( ${fields.join(',')} )`, Object.values(o))
 
-        if (arr && arr.length)
-            await DB.run(`UPDATE feed SET ${e.col} = ${e.val} WHERE feed_id in (${arr.join(',')})`)
-    }
+    return res.lastID
 }
 
-async function feeds(o) {
-    const query = ['1'], values = []
-    const order = o.flr_asc ? 'ASC' : 'DESC'
+async function source_mod(id, o) {
+    const keys = Object.keys(o).map(i => `${i} = ?`)
+    const res = await DB.run(`UPDATE source SET ${keys.join(',')} WHERE source_id = ${id}`, Object.values(o))
 
-    for (const e of feeds_values)
-        if (o[e.key] !== undefined) {
-            query.push(`${e.col} = ?`)
-            values.push(o[e.key])
-        }
+    return res.changes
+}
 
-    if (o.flr_page_min !== undefined || o.flr_page_max !== undefined) {
-        if (o.flr_page_min === undefined)
-            o.flr_page_min = 0
+async function feed_add(o) {
+    const keys = Object.keys(o)
+    const fields = Array(keys.length).fill('?')
+    const res = await DB.run(`INSERT INTO feed ( ${keys.join(',')} ) VALUES( ${fields.join(',')} )`, Object.values(o))
 
-        if (o.flr_page_max === undefined)
-            o.flr_page_max = 2000000000
+    return res.lastID
+}
 
-        query.push('( f.feed_id < ? OR f.feed_id > ? )')
-        values.push(o.flr_page_min, o.flr_page_max)
-    }
+async function feeds(o, last_id, asc = 0, limit = 50) {
+    const tag = o.tag; delete o.tag
+    const keys = Object.keys(o).map(i => `f.${i} = ?`)
+    if (tag) keys.push(`s.tag = ${tag}`)
+    if (last_id != undefined) keys.push(`f.feed_id ${asc ? '>' : '<'} ${last_id}`)
 
-    values.push(o.flr_limit ? o.flr_limit : 50)
-
-    return await DB.all(`SELECT f.* FROM feed as f LEFT JOIN source AS s ON f.source_id = s.source_id WHERE ${query.join(' AND ')} ORDER BY f.date ${order} LIMIT ?`, values)
+    return await DB.all(`SELECT f.* FROM feed as f LEFT JOIN source AS s ON f.source_id = s.source_id ${keys.length ? 'WHERE ' + keys.join(' AND ') : ''} ORDER BY f.date ${asc ? 'asc' : 'desc'} LIMIT ${limit}`, Object.values(o))
 }
 
 export const db = {
     sources: {
+        columns: ['source_id', 'xml_url', 'html_url', 'title', 'tag', 'lang', 'tuners', 'description'],
         all: async () => await DB.all('SELECT * FROM source_view'),
-        add: async o => (await DB.run('INSERT INTO source ( xml_url, title, description, html_url, lang, tag, tuners ) VALUES( ?, ?, ?, ?, ?, ?, ? )', [o.xml_url, o.title, o.description, o.html_url, o.lang, o.tag, o.tuners])).lastID,
-        del: async id => (await DB.run('DELETE FROM source WHERE source_id = ?', [id])).changes,
+        del: async id => (await DB.run(`DELETE FROM source WHERE source_id = ${id}`)).changes,
+        add: source_add,
         pop: source_pop,
         mod: source_mod
     },
     feeds: {
-        all: feeds,
+        columns: ['feed_id', 'source_id', 'guid', 'link', 'title', 'content', 'date', 'seen', 'star'],
         old: async guid => await DB.get('SELECT * FROM feed WHERE guid = ?', [guid]) !== undefined,
-        add: async o => await DB.run('INSERT INTO feed ( guid, link, title, content, date, source_id ) VALUES( ?, ?, ?, ?, ?, ? )', [o.guid, o.link, o.title, o.content, o.date, o.source_id]),
-        mod: feeds_mod
+        seen: async (feeds, val = 1) => await DB.run(`UPDATE feed SET seen = ${val} WHERE feed_id in (${feeds.join(',')})`),
+        star: async (feeds, val = 1) => await DB.run(`UPDATE feed SET star = ${val} WHERE feed_id in (${feeds.join(',')})`),
+        all: feeds,
+        add: feed_add,
     },
 }
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 query='
-mutation( $m: SourceData! ) {
-    Source( o: $m )
+mutation( $m: SourceDataInput! ) {
+    source( o: $m )
 }'
 
 cases=(
@@ -21,10 +21,7 @@ cases=(
         "description": "How hackers start their afternoons.",
         "tag": "Interesting",
         "lang": "en",
-        "tuners": "
-10 - scrap <%>
-11 - del : .profile | footer ~ *
-"
+        "tuners": "1|scrap||3|del|.profile, footer ~ *"
     }'
     '{
         "title": "FayerWayer",

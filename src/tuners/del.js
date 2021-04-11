@@ -1,6 +1,3 @@
 // Description: Delete feed content.
 
-export default (e, p) => {
-    for (const i of p.split('|'))
-        e.doc.querySelectorAll(i).forEach(j => j.remove())
-}
+export default (e, p) => e.doc.querySelectorAll(p).forEach(i => i.remove())

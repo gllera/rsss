@@ -1,5 +1,0 @@
-port: 3000
-gui_graphql: true
-db_force: 'last'
-fetcher_interval: 300000
-fetcher_sleep: 100

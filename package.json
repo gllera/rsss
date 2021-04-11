@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node --http-parser=legacy ./src/bin/www",
         "dev": "concurrently -p '{name}' -n 'RSSS,GULP' -c 'bgRed,bgBlue' -k 'npm run gql' 'npm run gserve'",
-        "gql": "cross-env DEBUG=rsss:* nodemon --use_strict --http-parser=legacy ./src/bin/www.js",
+        "gql": "cross-env DEBUG=rsss:* DOTENV_CONFIG_PATH=extras/env nodemon -r dotenv/config --use_strict --http-parser=legacy ./src/bin/www.js",
         "gserve": "gulp serve",
         "build": "gulp build",
         "clean": "gulp clean"
@@ -36,7 +36,6 @@
         "he": "^1.2.0",
         "html-minifier": "^4.0.0",
         "iconv-lite": "^0.6.2",
-        "js-yaml": "^4.0.0",
         "jsdom": "^16.5.2",
         "morgan": "~1.10.0",
         "sanitize-html": "^2.3.3",
@@ -50,6 +49,7 @@
         "cash-dom": "^8.1.0",
         "concurrently": "^5.3.0",
         "cross-env": "^7.0.3",
+        "dotenv": "^8.2.0",
         "graphql.js": "^0.6.7",
         "gulp": "^4.0.2",
         "gulp-clean": "^0.4.0",

@@ -11,11 +11,12 @@ import configs from './libs/configs.js'
 import parseOPML from './libs/opml_parser.js'
 
 import { resolvers } from './gql_resolvers.js'
-import { initFetching, startFetching } from './rss_fetcher.js'
+import { initTuners } from './tuner.js'
+import { startFetching } from './fetcher.js'
 import { initDB } from './db.js'
 
 export async function appPromise() {
-    await initFetching()
+    await initTuners()
     await initDB()
 
     let app = express()
@@ -24,14 +25,14 @@ export async function appPromise() {
     app.use(cors())
     app.use(fileUpload({
         limits: {
-            fileSize: configs.import_upload_max_filesize,
+            fileSize: configs.max_size_import,
             files: 1,
             fields: 0
         }
     }))
 
 
-    if (configs.gui_user)
+    if (configs.gui_rsss)
         app.use(express.static('dist'))
 
 
