@@ -97,18 +97,8 @@ module.exports = {
     import: () => importer(),
     prev: () => next(-1),
     sync: () => db.sync(filter, filter_hash()).then(show).catch(alert),
-    toggle,
+    toggle_star: () => toggle('star'),
+    toggle_seen: () => toggle('seen'),
     next,
     show,
 }
-
-
-    // hash_changed,
-// function hash_changed() {
-//     hash.parseTo(filter, panel)
-//     refresh()
-// }
-// if (hash.get() == '')
-//     hash.setFrom(filter, panel)
-// else
-//     hash.parseTo(filter, panel)
