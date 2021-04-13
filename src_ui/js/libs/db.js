@@ -1,9 +1,9 @@
 const gql = require('graphql.js')(config.RSSS_URL)
 
 const gSync = gql(`
-    mutation ($o: SyncData)
+    mutation ($o: FeedsFilterInput, $s: SetFeedsInput)
     {
-        sync (o: $o)
+        sync (o: $o, s: $s)
         {
             sources
             {
@@ -32,69 +32,110 @@ const gSync = gql(`
 
 const data = {
     sources: [],
-    feeds: []
+    feedsById: {},
+    feedsByHash: {},
 }
 
-function sync(flr, clean_feeds) {
-    const param = {
-        flr_page_min: flr.page_min,
-        flr_page_max: flr.page_max,
-        flr_source_id: flr.source_id,
-        flr_tag: flr.tag,
-        flr_limit: flr.limit,
-        flr_asc: flr.asc,
-        flr_seen: flr.seen ? undefined : 0,
-        flr_star: flr.star,
-        set_seen: [],
-        set_star: [],
-        set_unseen: [],
-        set_unstar: [],
+function fillFeedSetter() {
+    const res = {
+        seen: [],
+        star: [],
+        unseen: [],
+        unstar: [],
     }
 
-    for (const i of data.feeds) {
+    for (const i of Object.values(data.feedsById)) {
         if (i.seen != i._seen)
             if (i.seen)
-                param.set_seen.push(i.feed_id)
+                res.seen.push(i.feed_id)
             else
-                param.set_unseen.push(i.feed_id)
+                res.unseen.push(i.feed_id)
 
         if (i.star != i._star)
             if (i.star)
-                param.set_star.push(i.feed_id)
+                res.star.push(i.feed_id)
             else
-                param.set_unstar.push(i.feed_id)
+                res.unstar.push(i.feed_id)
     }
 
-    if (!param.set_seen.length) param.set_seen = undefined
-    if (!param.set_star.length) param.set_star = undefined
-    if (!param.set_unseen.length) param.set_unseen = undefined
-    if (!param.set_unstar.length) param.set_unstar = undefined
+    if (!res.seen.length)   res.seen = undefined
+    if (!res.star.length)   res.star = undefined
+    if (!res.unseen.length) res.unseen = undefined
+    if (!res.unstar.length) res.unstar = undefined
 
-    if (clean_feeds) {
-        flr.page_max = flr.page_min = undefined
-        data.feeds.length = 0
+    return res
+}
+
+function sync(flr, hash) {
+    let feeds = data.feedsByHash[hash]
+
+    if (!feeds)
+        feeds = data.feedsByHash[hash] = []
+
+    const params = {
+        s: fillFeedSetter(),
+        o: {
+            ...flr,
+            last_id: feeds.length ? feeds[feeds.length - 1] : undefined,
+        }
     }
 
-    return gSync({ o: param }).then(e => {
+    return gSync(params).then(e => {
+        for (const i of params.s.seen   || []) data.feedsById[i]._seen = 1
+        for (const i of params.s.star   || []) data.feedsById[i]._star = 1
+        for (const i of params.s.unseen || []) data.feedsById[i]._seen = 0
+        for (const i of params.s.unstar || []) data.feedsById[i]._star = 0
+
         for (const i of e.sync.feeds) {
+            feeds.push(i)
+
             i._seen = i.seen
             i._star = i.star
 
-            flr.page_min = flr.page_min < i.feed_id ? flr.page_min : i.feed_id
-            flr.page_max = flr.page_max > i.feed_id ? flr.page_max : i.feed_id
+            if (data.feedsById[i.feed_id])
+                Object.assign(data.feedsById[i.feed_id], i)
+            else
+                data.feedsById[i.feed_id] = i
         }
 
-        for (const i of data.feeds) {
-            i._seen = i.seen
-            i._star = i.star
-        }
-
-        data.feeds = data.feeds.concat(e.sync.feeds)
         data.sources = e.sync.sources
     })
 }
 
+function tags() {
+    const tags = {}, total = {
+        title: 'ALL',
+        unseen: 0,
+        stars: 0,
+    }
+
+    for (const i of data.sources) {
+        total.unseen += i.unseen
+        total.stars += i.stars
+
+        if (i.tag) {
+            if (!tags[i.tag])
+                tags[i.tag] = {
+                    title: i.tag,
+                    tag: i.tag,
+                    unseen: 0,
+                    stars: 0
+                }
+
+            tags[i.tag].unseen += i.unseen
+            tags[i.tag].stars += i.stars
+        }
+    }
+
+    return [total, ...Object.values(tags)]
+}
+
+const feeds = (hash) => data.feedsByHash[hash] || []
+
 module.exports = {
-    data,
+    sources: () => data.sources,
+    feeds_count: (hash) => feeds(hash).length,
+    feed: (hash, idx) => feeds(hash)[idx],
     sync,
+    tags,
 }

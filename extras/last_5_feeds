@@ -1,7 +1,7 @@
 #!/bin/bash
 
 query='
-mutation( $m: SyncData! ) {
+mutation( $m: FeedsFilterInput! ) {
     Sync( o: $m ) {
         feeds {
             date
