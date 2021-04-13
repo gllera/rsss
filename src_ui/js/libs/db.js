@@ -76,7 +76,7 @@ function sync(flr, hash) {
         s: fillFeedSetter(),
         o: {
             ...flr,
-            last_id: feeds.length ? feeds[feeds.length - 1] : undefined,
+            last_id: feeds.length ? feeds[feeds.length - 1].feed_id : undefined,
         }
     }
 

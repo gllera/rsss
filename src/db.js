@@ -48,9 +48,7 @@ async function feed_add(o) {
 }
 
 async function feeds(o, last_id, asc = 0, limit = 50) {
-    const tag = o.tag; delete o.tag
-    const keys = Object.keys(o).map(i => `f.${i} = ?`)
-    if (tag) keys.push(`s.tag = ${tag}`)
+    const keys = Object.keys(o).map(i => i === 'tag' ? `s.tag = ?` : `f.${i} = ?`)
     if (last_id != undefined) keys.push(`f.feed_id ${asc ? '>' : '<'} ${last_id}`)
 
     return await DB.all(`SELECT f.* FROM feed as f LEFT JOIN source AS s ON f.source_id = s.source_id ${keys.length ? 'WHERE ' + keys.join(' AND ') : ''} ORDER BY f.date ${asc ? 'asc' : 'desc'} LIMIT ${limit}`, Object.values(o))
