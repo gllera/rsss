@@ -20,13 +20,6 @@ const panel = {
 
 const filter_hash = () => [ filter.tag || '', filter.source_id || '', filter.seen || '', filter.star || '', filter.asc || '' ].join('~')
 const next = (delta = 1) => show({idx: (panel.idx[filter_hash()] || 0) + delta})
-const cards_callback = e => show({
-    _source_id: 1,
-    source_id: e.source_id,
-    view: e.source_id || filter.tag == e.tag ? 'feed' : undefined,
-    _tag: !e.source_id,
-    tag: e.tag,
-})
 
 function show(opts) {
     let { view, seen, _seen, star, _star, tag, _tag, source_id, _source_id, asc, idx } = opts || {}
@@ -70,7 +63,13 @@ function show(opts) {
     switch (panel.view) {
         case 'main':
             const filtered = db.sources().filter(e => (!filter.tag || e.tag == filter.tag) && (!filter.star || e.stars))
-            return views['main'].update(filtered, filter.source_id, filter.tag, db.tags(), e => cards_callback(e))
+            return views['main'].update(filtered, filter.source_id, filter.tag, db.tags(), e => show({
+                _source_id: 1,
+                source_id: e.source_id,
+                view: e.source_id || filter.tag == e.tag ? 'feed' : undefined,
+                _tag: !e.source_id,
+                tag: e.tag,
+            }))
         case 'feed':
             return views['feed'].update(db.feed(hash, panel.idx[hash]) || empty_feed)
     }
