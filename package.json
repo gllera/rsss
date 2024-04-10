@@ -40,7 +40,7 @@
         "morgan": "~1.10.0",
         "sanitize-html": "^2.3.3",
         "sqlite": "^4.0.19",
-        "sqlite3": "^5.0.1"
+        "sqlite3": "^5.1.7"
     },
     "devDependencies": {
         "bootstrap": "^4.6.0",
@@ -55,7 +55,7 @@
         "gulp-clean": "^0.4.0",
         "gulp-pug": "^4.0.1",
         "gulp-replace": "^1.0.0",
-        "gulp-sass": "^4.1.0",
+        "gulp-sass": "^5.1.0",
         "gulp-sourcemaps": "^3.0.0",
         "hotkeys-js": "^3.8.2",
         "nodemon": "^2.0.7",
